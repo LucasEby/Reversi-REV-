@@ -1,5 +1,5 @@
 # Reversi
-TODO: Description
+An online game with server and client code to play Reversi against other players
 
 ## Setup
 
@@ -7,7 +7,7 @@ TODO: Description
 Check if python version given in .python-version is installed on your computer. If you need to find your python installation path, type `which python` into your terminal (on Windows, git bash supports this). If you don't have the correct python version installed, download the correct version from https://www.python.org/downloads/ into the default installation location.  
 
 ### Create and activate venv
-Copy your python path given by `which python`. In your terminal, type the following command. Replace "PATH_TO_REVERSI-REV-" with your **full** path to this repository and "CORRECT_PYTHON_PATH" with the output of `which python`.
+Copy your python path given by `which python`. In your terminal, type the following command. Replace "PATH_TO_REVERSI" with your **full** path to this repository and "CORRECT_PYTHON_PATH" with the output of `which python`.
 ```
 CORRECT_PYTHON_PATH -m venv PATH_TO_REVERSI/Reversi-REV-/venv
 ```
@@ -29,3 +29,10 @@ pip install -r requirements.txt
 ```
 
 ## Running Program
+In your terminal in the top level of the repository, the server or client code can be run using the following commands:
+```
+python -m client
+```
+```
+python -m server
+```
