@@ -34,7 +34,9 @@ class GameView:
                     if col == 0:
                         self.__board = self.__board + str(row)
                     else:
-                        if self.__board_obj.getState(row, col) == "DiskP1":  # [row][col]):
+                        if (
+                            self.__board_obj.getState(row, col) == "DiskP1"
+                        ):  # [row][col]):
                             self.__board = self.__board + "  P1"
                         elif self.__board_obj.getState(row, col) == "DiskP2":
                             self.__board = self.__board + "  P2"
@@ -59,9 +61,8 @@ class GameView:
         Prints out the game's score.
         """
         temp_tuple = self.__board_ob.getscore()
-        print("Player 1\'s score: " + temp_tuple[0])
-        print("Player 2\'s score: " + temp_tuple[1])
-
+        print("Player 1's score: " + temp_tuple[0])
+        print("Player 2's score: " + temp_tuple[1])
 
 
 # class Board:
