@@ -11,7 +11,9 @@ class TestBoard(unittest.TestCase):
         self.assertTrue("Board size must be an even number" in str(context.exception))
         with self.assertRaises(Exception) as context:
             Board(6, 0)
-        self.assertTrue("Next turn must be a valid player (1 or 2)" in str(context.exception))
+        self.assertTrue(
+            "Next turn must be a valid player (1 or 2)" in str(context.exception)
+        )
 
     def test_init_cells(self):
         board_2 = Board(2, 1)
@@ -33,10 +35,12 @@ class TestBoard(unittest.TestCase):
         cells_2 = [[Cell.player2, Cell.player1], [Cell.player1, Cell.player2]]
         board_2 = Board(2, 1)
         self.assertEqual(board_2.get_state(), cells_2)
-        cells_4 = [[Cell.empty, Cell.empty, Cell.empty, Cell.empty],
-                   [Cell.empty, Cell.player2, Cell.player1, Cell.empty],
-                   [Cell.empty, Cell.player1, Cell.player2, Cell.empty],
-                   [Cell.empty, Cell.empty, Cell.empty, Cell.empty]]
+        cells_4 = [
+            [Cell.empty, Cell.empty, Cell.empty, Cell.empty],
+            [Cell.empty, Cell.player2, Cell.player1, Cell.empty],
+            [Cell.empty, Cell.player1, Cell.player2, Cell.empty],
+            [Cell.empty, Cell.empty, Cell.empty, Cell.empty],
+        ]
         board_4 = Board(4, 2)
         self.assertEqual(board_4.get_state(), cells_4)
 
@@ -51,5 +55,5 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(board_2.get_num_type(2), 2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

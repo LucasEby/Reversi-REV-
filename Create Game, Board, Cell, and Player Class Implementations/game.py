@@ -6,11 +6,10 @@ from player import *
 class Game:
     def __init__(self, user1: User, user2: User):
         self.id: int = id(self)
+        self.board: Board = Board(user1.pref.board_size, 1)
+        self.rules: ARules = user1.pref.rules
         self.player1: Player = Player(user1)
         self.player2: Player = Player(user2)
-        size: int = player1.pref
-        self.board: Board = board
-        self.rules: [ARules] = user1.pref.rules
         self.curr_player: int = 1
         self.save: Bool = True
 
@@ -24,7 +23,11 @@ class Game:
 
         :return: true if the game is over (no more turns can be made by one or both players), otherwise false
         """
-        return (self.board.get_num_type(0) == 0) | (self.board.get_num_type(1) == 0) | (self.board.get_num_type(2) == 0)
+        return (
+            (self.board.get_num_type(0) == 0)
+            | (self.board.get_num_type(1) == 0)
+            | (self.board.get_num_type(2) == 0)
+        )
 
     def place_tile(self, posn: tuple) -> Bool:
         """
@@ -35,15 +38,23 @@ class Game:
         :raises Exception: Thrown when the given position is not on the board
         :return: True if the move was successfully completed, or false if it was invalid
         """
-        if posn[0] < 0 | posn[0] >= self.board.size | posn[1] < 0 | posn[1] >= self.board.size:
+        if (
+            posn[0]
+            < 0 | posn[0]
+            >= self.board.size | posn[1]
+            < 0 | posn[1]
+            >= self.board.size
+        ):
             raise Exception("out-of bounds move attempted")
         if not self.rules.isValidMove(self.curr_player, posn, self.board):
             return False
-        self.board.cells[posn[0]][posn[1]] = self.board.cells[posn[0]][posn[1]].fill(self.curr_player)
+        self.board.cells[posn[0]][posn[1]] = self.board.cells[posn[0]][posn[1]].fill(
+            self.curr_player
+        )
         self.curr_player = 2 if self.curr_player == 1 else 1
         return True
 
-    def get_valid_moves(self) -> Bool[self.board.size][self.board.size]:
+    def get_valid_moves(self):  # -> Bool[self.board.size][self.board.size]:
         """
         Get a board sized 2-D array of booleans. The boolean values represent whether a move on
         the board at that position is valid for the currently active player.
@@ -52,7 +63,11 @@ class Game:
         """
         for i in self.board.size:
             for j in self.board.size:
-                validMoves[i][j] = 1 if self.rules.isValidMove(self.curr_player, tuple(i, j), self.board) else 0
+                validMoves[i][j] = (
+                    1
+                    if self.rules.isValidMove(self.curr_player, tuple(i, j), self.board)
+                    else 0
+                )
         return validMoves
 
     def get_winner(self) -> int:
@@ -79,4 +94,3 @@ class Game:
         return tuple(self.board.get_num_type(1), self.board.get_num_type(2))
 
     # def forfeit(self):
-

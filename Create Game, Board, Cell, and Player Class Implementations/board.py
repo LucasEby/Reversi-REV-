@@ -8,8 +8,10 @@ class Board:
         if (next_turn != 1) & (next_turn != 2):
             raise Exception("Next turn must be a valid player (1 or 2)")
         self.size: int = size
-        self.next_turn = next_turn
-        self.cells: Cell[size][size] = [[Cell.empty for c in range(size)] for r in range(size)]
+        self.next_turn: int = next_turn
+        self.cells: Cell[size][size] = [
+            [Cell.empty for c in range(size)] for r in range(size)
+        ]
         # initialize the four starting disks at the center of the board
         self.cells[size // 2][size // 2 - 1] = Cell.player1
         self.cells[size // 2 - 1][(size // 2)] = Cell.player1

@@ -24,5 +24,5 @@ class TestCell(unittest.TestCase):
         self.assertEqual(cell_e.fill(2), 2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
