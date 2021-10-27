@@ -1,15 +1,25 @@
+from typing import List, Tuple
+
 from board import *
 from cell import *
 from player import *
 
 
 class Game:
-    def __init__(self, user1: User, user2: User) -> None:
+    def __init__(self, user1: User, user2: User, first_move: bool) -> None:
         self.id: int = id(self)
-        self.board: Board = Board(user1.pref.board_size, 1)
-        self.rules: ARules = user1.pref.rules
-        self.player1: Player = Player(user1)
-        self.player2: Player = Player(user2)
+        # get the player who makes the first move from first_move (1 for user1, 0 for user2), this user will be player1
+        # use the size and rule preference of this person, since both users must use the same size and rules
+        if first_move:
+            self.player1: Player = Player(user1)
+            self.player2: Player = Player(user2)
+            self.board: Board = Board(user1.pref.board_size, 1)
+            self.rules: ARules = user1.pref.rules
+        else:
+            self.player1: Player = Player(user2)
+            self.player2: Player = Player(user1)
+            self.board: Board = Board(user2.pref.board_size, 1)
+            self.rules: ARules = user2.pref.rules
         self.curr_player: int = 1
         self.save: bool = True
 
@@ -29,7 +39,7 @@ class Game:
             or (self.board.get_num_type(2) == 0)
         )
 
-    def place_tile(self, posn: Tuple[int,int]) -> bool:
+    def place_tile(self, posn: Tuple[int, int]) -> bool:
         """
         Place a tile on the given position of the board for the currently active player
         if the position is on the board and the move is valid according to the rules.
@@ -39,11 +49,10 @@ class Game:
         :return: True if the move was successfully completed, or false if it was invalid
         """
         if (
-            (posn[0]
-            < 0) or (posn[0]
-            >= self.board.size) or (posn[1]
-            < 0) or (posn[1]
-            >= self.board.size)
+            (posn[0] < 0)
+            or (posn[0] >= self.board.size)
+            or (posn[1] < 0)
+            or (posn[1] >= self.board.size)
         ):
             raise Exception("out-of bounds move attempted")
         if not self.rules.isValidMove(self.curr_player, posn, self.board):
@@ -51,10 +60,11 @@ class Game:
         self.board.cells[posn[0]][posn[1]] = self.board.cells[posn[0]][posn[1]].fill(
             self.curr_player
         )
+        # flip all Cells that are between this posn and any other curr_player disks
         self.curr_player = 2 if self.curr_player == 1 else 1
         return True
 
-    def get_valid_moves(self): -> List[bool]:
+    def get_valid_moves(self) -> List[bool]:
         """
         Get a board sized 2-D array of booleans. The boolean values represent whether a move on
         the board at that position is valid for the currently active player.
@@ -63,7 +73,9 @@ class Game:
         """
         for i in self.board.size:
             for j in self.board.size:
-                validMoves[i][j] = self.rules.isValidMove(self.curr_player, tuple(i, j), self.board)
+                validMoves[i][j] = self.rules.isValidMove(
+                    self.curr_player, tuple(i, j), self.board
+                )
         return validMoves
 
     def get_winner(self) -> int:
@@ -81,7 +93,7 @@ class Game:
         else:
             return 2
 
-    def get_score(self) -> Tuple[int,int]:
+    def get_score(self) -> Tuple[int, int]:
         """
         Get the scores for each player.
 

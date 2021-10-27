@@ -22,15 +22,12 @@ class Cell(Enum):
 
     def fill(self, curr_player: int) -> int:
         """
-        Fill the empty Cell with the player indicated by curr_player. If the cell is not empty or curr_player is
-        not 1 or 2, don't change it.
+        Fill the empty Cell with the player indicated by curr_player. If the cell is not empty don't change it.
 
         :param curr_player: the player whose turn is in progress, either 1 or 2
         :return: the new Cell state
         """
-        if (self == Cell.empty) & (curr_player == 1):
-            return 1
-        elif (self == Cell.empty) & (curr_player == 2):
-            return 2
+        if self == Cell.empty:
+            return curr_player
         else:
             return self.value

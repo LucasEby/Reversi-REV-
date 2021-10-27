@@ -1,3 +1,5 @@
+from typing import List
+
 from cell import *
 
 
@@ -18,7 +20,7 @@ class Board:
         self.cells[size // 2 - 1][size // 2 - 1] = Cell.player2
         self.cells[size // 2][size // 2] = Cell.player2
 
-    def get_state(self): -> List[Cell]:
+    def get_state(self) -> List[Cell]:
         """
         Get the current state of the board, the cells field.
 
