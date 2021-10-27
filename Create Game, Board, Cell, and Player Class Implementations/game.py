@@ -1,13 +1,17 @@
-import uuid
+from board import *
+from cell import *
+from player import *
 
 
 class Game:
     def __init__(self, user1: User, user2: User):
         self.id: int = id(self)
+        self.player1: Player = Player(user1)
+        self.player2: Player = Player(user2)
+        size: int = player1.pref
         self.board: Board = board
         self.rules: [ARules] = user1.pref.rules
-        self.players: Player[2] = Player[Player(user1), Player(user2)]
-        self.curr_player: int = 0
+        self.curr_player: int = 1
         self.save: Bool = True
 
     # implement another constructor for playing vs AI (one user provided)
@@ -36,7 +40,7 @@ class Game:
         if not self.rules.isValidMove(self.curr_player, posn, self.board):
             return False
         self.board.cells[posn[0]][posn[1]] = self.board.cells[posn[0]][posn[1]].fill(self.curr_player)
-        self.curr_player = 0 if self.curr_player == 1 else 1
+        self.curr_player = 2 if self.curr_player == 1 else 1
         return True
 
     def get_valid_moves(self) -> Bool[self.board.size][self.board.size]:
@@ -54,17 +58,17 @@ class Game:
     def get_winner(self) -> int:
         """
         Get the int representing the player who has more disks on the board.
-        (0 for player1, 1 for player2)
+        (1 for player1, 2 for player2)
 
         :raises Exception: Thrown when the method is called before the game has ended
         :return: the number representing the winning player
         """
         if not Game.is_game_over(self):
             raise Exception("cannot get winner until game is over")
-        if self.board.get_num_type(0) > self.board.get_num_type(1):
-            return 0
-        else:
+        if self.board.get_num_type(1) > self.board.get_num_type(2):
             return 1
+        else:
+            return 2
 
     def get_score(self) -> int[2]:
         """
@@ -72,7 +76,7 @@ class Game:
 
         :return: a tuple containing the scores for the two respective players
         """
-        return tuple(self.board.get_num_type(0), self.board.get_num_type(1))
+        return tuple(self.board.get_num_type(1), self.board.get_num_type(2))
 
     # def forfeit(self):
 
