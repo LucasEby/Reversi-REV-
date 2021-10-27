@@ -1,8 +1,7 @@
 from manage_preferences_page_controller import ManagePreferencesPageController
-from manage_preferences_page_view import ManagePreferencesPageView
 from user import User
 
 
-user = User(21, "got7")
+user = User(21, "John")
 controller = ManagePreferencesPageController(user)
 controller.pref_go()
