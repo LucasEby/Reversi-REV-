@@ -1,12 +1,13 @@
 from enum import Enum
 
+
 class Rule(Enum):
     """
     An enum representing the two ruls.
     """
+
     A = "a"
     STANDARD = "standard"
-
 
     @staticmethod
     def has_rule(rule: str) -> bool:

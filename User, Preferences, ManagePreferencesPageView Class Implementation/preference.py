@@ -7,15 +7,15 @@ class Preference:
     The class represents the preferences for a signed in user. It stores the choice of different settings in the game.
     It also includes setters and getters to modify and get the preference choices.
     """
+
     def __init__(self) -> None:
         self.__board_size = 8
         self.__board_color = Color.GREEN
         self.__my_disk_color = Color.WHITE
         self.__opp_disk_color = Color.BLACK
         self.__line_color = Color.BLACK
-        self.__rule = Rule.STANDARD # Rule should be ARule or StandardRule
+        self.__rule = Rule.STANDARD  # Rule should be ARule or StandardRule
         self.__tile_move_confirmation = True
-
 
     # setters and getters
     def set_board_size(self, size: int) -> None:
@@ -28,14 +28,12 @@ class Preference:
             raise ValueError("Size should be an even number")
         self.__board_size = size
 
-    
     def get_board_size(self) -> int:
         """
         Get the size of the board.
         :return:    the size of the board
         """
         return self.__board_size
-
 
     def set_board_color(self, color: Color) -> bool:
         """
@@ -54,7 +52,6 @@ class Preference:
 
         return True
 
-    
     def get_board_color(self) -> str:
         """
         Get the color of the board.
@@ -62,7 +59,6 @@ class Preference:
         """
         return str(self.__board_color.value)
 
-    
     def set_my_disk_color(self, color: Color) -> bool:
         """
         Set the disk color for the user oneself.
@@ -80,14 +76,12 @@ class Preference:
 
         return True
 
-    
     def get_my_disk_color(self) -> str:
         """
         Get the color of the disk using by the user.
         :return:    the color the user's disk
         """
         return str(self.__my_disk_color.value)
-
 
     def set_opp_disk_color(self, color: Color) -> bool:
         """
@@ -106,14 +100,12 @@ class Preference:
 
         return True
 
-    
     def get_opp_disk_color(self) -> str:
         """
         Get the color of the disk shown on the board as opponent.
         :return:    the color of opponent's disk
         """
         return str(self.__opp_disk_color.value)
-
 
     def set_line_color(self, color: Color) -> bool:
         """
@@ -132,14 +124,12 @@ class Preference:
 
         return True
 
-    
     def get_line_color(self) -> str:
         """
         Get the color of the lines in the board.
         :return:    the color of the lines in the board
         """
         return str(self.__line_color.value)
-
 
     def set_rule(self, rule: Rule) -> None:
         """
@@ -148,14 +138,12 @@ class Preference:
         """
         self.__rule = rule
 
-    
     def get_rule(self) -> str:
         """
         Get the name of the rule that is set in the preference right now.
         :return:    the name of the rule in preference
         """
         return str(self.__rule.value)
-
 
     def set_tile_move_confirmation(self, prompt: bool) -> None:
         """
@@ -164,7 +152,6 @@ class Preference:
         """
         self.__tile_move_confirmation = prompt
 
-    
     def get_tile_move_confirmation(self) -> bool:
         """
         Get the current status of tile move confirmation either be ON or OFF.
@@ -172,13 +159,15 @@ class Preference:
         """
         return self.__tile_move_confirmation
 
-
     def _check_color_validity(self) -> bool:
         """
         Check if the color settings are valid to avoid components in the same color that will worsen the visibility
         :return:    False if the there is repeated color for compoenents that will harm visibility; True if not
         """
-        if self.__board_color == self.__my_disk_color or self.__board_color == self.__opp_disk_color:
+        if (
+            self.__board_color == self.__my_disk_color
+            or self.__board_color == self.__opp_disk_color
+        ):
             return False
         elif self.__board_color == self.__line_color:
             return False

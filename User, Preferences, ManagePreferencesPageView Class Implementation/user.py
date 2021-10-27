@@ -5,6 +5,7 @@ class User:
     """
     This class represents a user with an ID number, a username, and one's preference setting.
     """
+
     def __init__(self, id_num: int, username: str) -> None:
         """
         Construct a user with given ID number and username, and initialize the preference object.
@@ -14,7 +15,6 @@ class User:
         self.__id_num = id_num
         self.__username = username
         self.__preference = Preference()
-
 
     def get_id(self) -> int:
         """
@@ -30,7 +30,6 @@ class User:
         """
         return self.__username
 
-    
     def get_preference(self) -> Preference:
         """
         Get the preference settings for the user.
@@ -38,6 +37,4 @@ class User:
         """
         return self.__preference
 
-
     # def set_preferences(preference: Preference) -> None:
-        

@@ -5,6 +5,7 @@ class ManagePreferencesPageView:
     """
     The class represents the view for Manage Preferences Page. It will display the preference choice for the given user.
     """
+
     def __init__(self, user: User) -> None:
         """
         Construct a new ManagePreferencesPageView with given user object.
@@ -14,13 +15,11 @@ class ManagePreferencesPageView:
         self.__user = user
         self.__preference = self.__user.get_preference()
 
-
     def print_board_size(self) -> None:
         """
         Print out the current board size.
         """
         print("Current board size: " + str(self.__preference.get_board_size()))
-
 
     def print_board_color(self) -> None:
         """
@@ -28,20 +27,20 @@ class ManagePreferencesPageView:
         """
         print("Current board color: " + self.__preference.get_board_color())
 
-
     def print_my_disk_color(self) -> None:
         """
         Print out the current disk color for oneself.
         """
         print("My current disk color: " + self.__preference.get_my_disk_color())
 
-
     def print_opp_disk_color(self) -> None:
         """
         Print out the current disk color for opponent.
         """
-        print("My opponent's current disk color: " + self.__preference.get_opp_disk_color())
-
+        print(
+            "My opponent's current disk color: "
+            + self.__preference.get_opp_disk_color()
+        )
 
     def print_line_color(self) -> None:
         """
@@ -49,13 +48,11 @@ class ManagePreferencesPageView:
         """
         print("Current line color: " + self.__preference.get_line_color())
 
-
     def print_rule(self) -> None:
         """
         Print out the current rule.
         """
         print("Current rule: " + self.__preference.get_rule())
-
 
     def print_tile_move_confirmation(self) -> None:
         """
@@ -65,7 +62,6 @@ class ManagePreferencesPageView:
             print("Current tile move confirmation: On")
         else:
             print("Current tile move confirmation: Off")
-
 
     @staticmethod
     def print_menu() -> None:

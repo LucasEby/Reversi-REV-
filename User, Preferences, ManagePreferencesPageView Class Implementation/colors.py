@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class Color(Enum):
     BLACK = "black"
     WHITE = "white"
@@ -9,7 +10,6 @@ class Color(Enum):
     GREEN = "green"
     BLUE = "blue"
     PURPLE = "purple"
-
 
     @staticmethod
     def has_color(color: str) -> bool:
