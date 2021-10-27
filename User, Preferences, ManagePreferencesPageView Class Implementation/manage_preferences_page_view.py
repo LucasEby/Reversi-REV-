@@ -23,7 +23,7 @@ class ManagePreferencesPageView:
 
     def print_board_color(self) -> None:
         """
-        Print out the current boare color.
+        Print out the current board color.
         """
         print("Current board color: " + self.__preference.get_board_color())
 
