@@ -11,6 +11,8 @@ class PlayGamePageController(HomeButtonPageController):
     ) -> None:
         """
         Page controller used for handling and responding to user inputs that occur in-game
+        :param go_home_callback: Callback to call when user requested going to the home screen
+        :param end_game_callback: Callback to call after a game ended
         """
         super().__init__(go_home_callback=go_home_callback)
         self._task_execute_dict["place_tile"] = self.__execute_task_place_tile
