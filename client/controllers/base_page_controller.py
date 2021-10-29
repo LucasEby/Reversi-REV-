@@ -1,8 +1,9 @@
+from abc import ABC
 from queue import Queue
 from typing import Dict, Callable, Any, Union
 
 
-class BasePageController:
+class BasePageController(ABC):
     def __init__(self) -> None:
         """
         PageController containing functions and attributes that all page controllers should have.
