@@ -12,10 +12,10 @@ class GamePageView(BasePageView):
         :param board_obj: The specific board object the print_board method prints the state of.
         :param game_obj: A specific game object who's attributes will be accessed and printed.
         """
-        self.__board = ""
-        self.__game_obj = game_obj
-        self.__board_obj = board_obj
-        self.__size = board_obj.size
+        self.__board: string = ""
+        self.__game_obj: Game = game_obj
+        self.__board_obj: Board = board_obj
+        self.__size: Board.size = board_obj.size
         self.__board_state = board_obj.get_state()
 
     def display(self) -> None:
@@ -30,7 +30,7 @@ class GamePageView(BasePageView):
         go from 0 to 1 - size [0, size). This was done on purpose to make space for the row numbers
         and column letters:
         """
-        self.__board = ""  # reset board string.
+        self.__board: string = ""  # reset board string.
         for row in range(0, self.__size + 1):
             for col in range(0, self.__size + 1):
                 if row == 0:
@@ -60,16 +60,16 @@ class GamePageView(BasePageView):
         """
         Prints out the winner of the game.
         """
-        winner_string = str(self.__game_obj.get_winner())
+        winner_string: string = str(self.__game_obj.get_winner())
         print("Player " + winner_string + " won the game!")
 
     def display_score(self) -> None:
         """
         Prints out the game's score.
         """
-        temp_tuple = self.__game_obj.get_score()
-        temp_string0 = str(temp_tuple[0])
-        temp_string1 = str(temp_tuple[1])
+        temp_tuple: tuple = self.__game_obj.get_score()
+        temp_string0: string = str(temp_tuple[0])
+        temp_string1: string = str(temp_tuple[1])
         print("Player 1's score: " + temp_string0)
         print("Player 2's score: " + temp_string1)
 
@@ -77,7 +77,7 @@ class GamePageView(BasePageView):
         """
         Updates the board and game objects.
         """
-        self.__game_obj = game_obj
-        self.__board_obj = board_obj
-        self.__size = board_obj.size
+        self.__game_obj: Game = game_obj
+        self.__board_obj: Board = board_obj
+        self.__size: Board.size = board_obj.size
         self.__board_state = board_obj.get_state()
