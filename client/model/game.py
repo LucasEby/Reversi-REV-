@@ -59,9 +59,22 @@ class Game:
         return True
 
     def is_valid_posn(self, x: int, y: int) -> bool:
+        """
+        Checks if the given x,y coordinate is within the board of Cells.
+
+        :param x: the x coordinate
+        :param y: the y coordinate
+        :return: True if the x,y coordinate is on the board, else False
+        """
         return (x in range(self.board.size)) and (y in range(self.board.size))
 
     def __flip_opponents_tiles(self, posn: Tuple[int, int]) -> None:
+        """
+        Check for opponent disks around the given Tuple and flip any opponent cells that are between the given Tuple
+        and any other curr_player disks.
+
+        :param posn: the curr_player disk that may cause opponent tiles to be flipped
+        """
         # check every cell around posn
         for x_offset, y_offset in (
             [1, 1],
