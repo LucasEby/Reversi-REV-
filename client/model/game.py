@@ -13,13 +13,13 @@ class Game:
         if first_move:
             self.player1: Player = Player(user1, 1)
             self.player2: Player = Player(user2, 2)
-            self.board: Board = Board(user1.pref.board_size, 1)
-            self.rules: ARules = user1.pref.rules
+            self.board: Board = Board(user1.get_preference().get_board_size(), 1)
+            self.rules: ARules = user1.get_preference().get_rule()
         else:
             self.player1: Player = Player(user2, 1)
             self.player2: Player = Player(user1, 2)
-            self.board: Board = Board(user2.pref.board_size, 1)
-            self.rules: ARules = user2.pref.rules
+            self.board: Board = Board(user2.get_preference().get_board_size(), 1)
+            self.rules: ARules = user2.get_preference().get_rule()
         self.curr_player: int = 1
         self.save: bool = True
 
