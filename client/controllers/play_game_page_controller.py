@@ -8,6 +8,8 @@ class PlayGamePageController(HomeButtonPageController):
         self,
         go_home_callback: Callable[[], None],
         end_game_callback: Callable[[], None],
+        # end_game_callback: Callable[[Game], None],
+        # game: Game
     ) -> None:
         """
         Page controller used for handling and responding to user inputs that occur in-game
@@ -18,6 +20,8 @@ class PlayGamePageController(HomeButtonPageController):
         self._task_execute_dict["place_tile"] = self.__execute_task_place_tile
         self._task_execute_dict["forfeit"] = self.__execute_task_forfeit
         self._end_game_callback: Callable[[], None] = end_game_callback
+        # self._game = game
+        # self._view = GamePageView(self._game)
 
     def __handle_place_tile(self, coordinate: Tuple[int, int]) -> None:
         """
@@ -39,8 +43,20 @@ class PlayGamePageController(HomeButtonPageController):
         :param task_info: coordinate (see __handle_place_tile)
         """
         coordinate = task_info
-        # TODO: Use coordinate with the game
-        # TODO: Update view given result of game knowledge
+        # Try placing tile. If tile placement doesn't work, don't do anything.
+        # Having no action occur on a click is enough feedback to user that their click is invalid
+        try:
+            # if not self._game.place_tile(posn=coordinate):
+                # return
+            pass
+        except Exception:
+            return
+        # Update view
+        # self._view.update_game_and_board(self._game)
+        # self._view.display()
+        # If game is over, notify parent via callback
+        # if self._game.is_game_over():
+            # self._end_game_callback(self._game)
 
     def __execute_task_forfeit(self, task_info: int) -> None:
         """
@@ -48,5 +64,6 @@ class PlayGamePageController(HomeButtonPageController):
         :param task_info: player_num (see __handle_forfeit)
         """
         player_num = task_info
-        # TODO: Use player num with the game
-        # TODO: Update view given result of game knowledge
+        # Notify model who forfeited and notify parent game is over
+        # self._game.forfeit(player_num)
+        # self._end_game_callback(self._game)

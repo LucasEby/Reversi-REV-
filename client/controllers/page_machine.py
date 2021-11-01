@@ -27,6 +27,7 @@ class PageMachine:
         pass
 
     def end_game_callback(self) -> None:
+    #def end_game_callback(self, game: Game) -> None:
         """
         Update current page controller to end game page when gameplay has completed
         """
