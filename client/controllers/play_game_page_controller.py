@@ -47,7 +47,7 @@ class PlayGamePageController(HomeButtonPageController):
         # Having no action occur on a click is enough feedback to user that their click is invalid
         try:
             # if not self._game.place_tile(posn=coordinate):
-                # return
+            # return
             pass
         except Exception:
             return
@@ -56,7 +56,7 @@ class PlayGamePageController(HomeButtonPageController):
         # self._view.display()
         # If game is over, notify parent via callback
         # if self._game.is_game_over():
-            # self._end_game_callback(self._game)
+        # self._end_game_callback(self._game)
 
     def __execute_task_forfeit(self, task_info: int) -> None:
         """
