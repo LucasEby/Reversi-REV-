@@ -39,9 +39,7 @@ class GamePageView(BasePageView):
                     if col == 0:
                         self.__board = self.__board + str(row)
                     else:
-                        if (
-                            board_state[row][col].state == "DiskP1"
-                        ):  # [row][col]):
+                        if board_state[row][col].state == "DiskP1":  # [row][col]):
                             self.__board = self.__board + "  P1"
                         elif board_state[row][col].state == "DiskP2":
                             self.__board = self.__board + "  P2"
