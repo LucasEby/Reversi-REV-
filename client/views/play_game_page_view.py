@@ -1,7 +1,7 @@
 import string
 
 
-class GamePageView(BasePageView):
+class PlayGamePageView(BasePageView):
 
     __ABC_ARRAY = list(string.ascii_lowercase)
 
