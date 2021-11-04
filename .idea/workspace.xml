@@ -21,53 +21,11 @@
   <component name="ChangeListManager">
     <list default="true" id="dac05590-e0bc-48ae-8fb2-d6a9514432cb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/code.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/code.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Create Game, Board, Cell, and Player Class Implementations/whatever you want to call this.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Create playGame View Class/GameView/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Create playGame View Class/GameView/.idea/GameView.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Create playGame View Class/GameView/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Create playGame View Class/GameView/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Create playGame View Class/GameView/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Create playGame View Class/GameView/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Create playGame View Class/GameView/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Create playGame View Class/GameView/GameView.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PageMachine and PlayGameController Implementations/whatever you want to call this.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/.idea/Reversi-REV-.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/.python-version" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/Abstract Rules and Standard Rules Implementation/whatever you want to call this.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/client/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/client/__main__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/client/controllers/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/client/controllers/base_page_controller.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/client/controllers/home_button_page_controller.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/client/controllers/manage_preferences_page_controller.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/client/model/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/client/model/colors.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/client/model/preference.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/client/model/rule.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/client/model/user.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/client/views/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/client/views/manage_preferences_page_view.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/requirements.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reversi-REV-/server/__main__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/User, Preferences, ManagePreferencesPageView Class Implementation/.idea/User, Preferences, ManagePreferencesPageView Class Implementation.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/User, Preferences, ManagePreferencesPageView Class Implementation/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/User, Preferences, ManagePreferencesPageView Class Implementation/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/User, Preferences, ManagePreferencesPageView Class Implementation/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/User, Preferences, ManagePreferencesPageView Class Implementation/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/User, Preferences, ManagePreferencesPageView Class Implementation/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/controllers/base_page_controller.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/controllers/home_button_page_controller.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/client/controllers/manage_preferences_page_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/client/controllers/manage_preferences_page_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/model/colors.py" beforeDir="false" afterPath="$PROJECT_DIR$/client/model/colors.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/test/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/test/test_preference.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/views/manage_preferences_page_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/client/views/manage_preferences_page_view.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,6 +49,7 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/client" />
       <recent name="$PROJECT_DIR$/Reversi-REV-" />
     </key>

@@ -39,7 +39,8 @@ class ManagePreferencesPageView:
         Display the current disk color for opponent.
         """
         print(
-            "My opponent's current disk color: " + self.__preference.get_opp_disk_color()
+            "My opponent's current disk color: "
+            + self.__preference.get_opp_disk_color()
         )
 
     def display_line_color(self) -> None:

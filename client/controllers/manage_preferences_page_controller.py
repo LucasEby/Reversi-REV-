@@ -18,7 +18,7 @@ class ManagePreferencesPageController(HomeButtonPageController):
         self,
         go_home_callback: Callable[[], None],
         end_home_callback: Callable[[], None],
-        user: User
+        user: User,
     ) -> None:
         """
         Construct the controller with a view for the passed in user
@@ -31,7 +31,9 @@ class ManagePreferencesPageController(HomeButtonPageController):
         self._task_execute_dict["opp_disk_color"] = self.__execute_change_opp_disk_color
         self._task_execute_dict["line_color"] = self.__execute_change_line_color
         self._task_execute_dict["rule"] = self.__execute_change_rule
-        self._task_execute_dict["tile_move_confirmation"] = self.__execute_change_tile_move_confirmation
+        self._task_execute_dict[
+            "tile_move_confirmation"
+        ] = self.__execute_change_tile_move_confirmation
         # execute stuffs
         self._end_game_callback: Callable[[], None] = end_home_callback
         self.__user: User = user
@@ -273,4 +275,4 @@ class ManagePreferencesPageController(HomeButtonPageController):
         return color
 
 
-#TODO:Changes in execute might be needed for re-enter to cooperate with the GUI?
+# TODO:Changes in execute might be needed for re-enter to cooperate with the GUI?

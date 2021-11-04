@@ -24,4 +24,8 @@ class HomeButtonPageController(BasePageController):
         """
         Takes action on the home button by notifying callback
         """
+<<<<<<< HEAD
         self._go_home_callback()
+=======
+        self._go_home_callback()
+>>>>>>> 5152c868477c0d6489b734af86870145d2614011
