@@ -10,7 +10,7 @@ class PlayGamePageController(HomeButtonPageController):
         self,
         go_home_callback: Callable[[], None],
         end_game_callback: Callable[[Game], None],
-        game: Game
+        game: Game,
     ) -> None:
         """
         Page controller used for handling and responding to user inputs that occur in-game

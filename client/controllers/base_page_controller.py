@@ -32,12 +32,12 @@ class BasePageController(ABC):
 
     def queue(self, task_name: str, task_info: Any = None) -> None:
         """
-        Queue tasks in the correct format so child classes don't need to know that format
-<<<<<<< HEAD
-=======
+                Queue tasks in the correct format so child classes don't need to know that format
+        <<<<<<< HEAD
+        =======
 
->>>>>>> 5152c868477c0d6489b734af86870145d2614011
-        :param task_name: Name of the task
-        :param task_info: Additional info associated with the task, as 1 data type
+        >>>>>>> 5152c868477c0d6489b734af86870145d2614011
+                :param task_name: Name of the task
+                :param task_info: Additional info associated with the task, as 1 data type
         """
         self._queue.put((task_name, task_info))
