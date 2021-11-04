@@ -1,6 +1,10 @@
 from enum import Enum
 
 
+def staticmethod(args):
+    pass
+
+
 class Color(Enum):
     BLACK = "black"
     WHITE = "white"

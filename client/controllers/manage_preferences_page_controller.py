@@ -273,4 +273,4 @@ class ManagePreferencesPageController(HomeButtonPageController):
         return color
 
 
-#TODO:Changes in execute might be needed for reenter to cooperate with the GUI?
+#TODO:Changes in execute might be needed for re-enter to cooperate with the GUI?
