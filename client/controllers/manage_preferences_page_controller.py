@@ -77,7 +77,7 @@ class ManagePreferencesPageController(HomeButtonPageController):
             elif instruction == 7:
                 q = True
 
-        quit()  # connect back to page machine?
+        quit()  # connect back to page machine
 
     def __handle_change_board_size(self, size: int) -> None:
         """

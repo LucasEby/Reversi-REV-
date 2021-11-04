@@ -15,6 +15,7 @@ class ManagePreferencesPageView:
         """
         self.__user: User = user
         self.__preference: Preference = self.__user.get_preference()
+        self.display()
 
     def display_board_size(self) -> None:
         """
@@ -64,17 +65,24 @@ class ManagePreferencesPageView:
         else:
             print("Current tile move confirmation: Off")
 
-    @staticmethod
-    def display() -> None:
+    def display(self) -> None:
         """
         Display the menu for preference. Initial page that display to the user.
         """
         print("Here are the options for your preference:")
         print("0. Change board size")
+        self.display_board_size()
         print("1. Change board color")
+        self.display_board_color()
         print("2. Change my disk color")
+        self.display_my_disk_color()
         print("3. Change opponent's disk color")
+        self.display_opp_disk_color()
         print("4. Change line color")
+        self.display_line_color()
         print("5. Change rule")
+        self.display_rule()
         print("6. Set tile move confirmation")
+        self.display_tile_move_confirmation()
         print("7. Exit preference setting")
+        # back to home page command
