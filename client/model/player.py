@@ -1,3 +1,6 @@
+from client.model.user import User
+
+
 class Player:
     def __init__(self, user: User, player_num: int) -> None:
         if user:
