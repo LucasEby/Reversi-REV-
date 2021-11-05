@@ -12,13 +12,13 @@ class Board:
         self.size: int = size
         self.next_turn: int = next_turn
         self.cells: List[List[Cell]] = [
-            [Cell(CellState.empty) for c in range(size)] for r in range(size)
+            [Cell(CellState.empty) for _ in range(size)] for _ in range(size)
         ]
         # initialize the four starting disks at the center of the board
-        self.cells[size // 2][size // 2 - 1] = Cell.state.player1
-        self.cells[size // 2 - 1][(size // 2)] = Cell.state.player1
-        self.cells[size // 2 - 1][size // 2 - 1] = Cell.state.player2
-        self.cells[size // 2][size // 2] = Cell.state.player2
+        self.cells[size // 2][size // 2 - 1].state = CellState.player1
+        self.cells[size // 2 - 1][size // 2].state = CellState.player1
+        self.cells[size // 2 - 1][size // 2 - 1].state = CellState.player2
+        self.cells[size // 2][size // 2].state = CellState.player2
 
     def get_state(self) -> List[List[Cell]]:
         """
