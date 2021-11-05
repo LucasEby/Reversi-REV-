@@ -8,10 +8,8 @@ class CellState(Enum):
 
 
 class Cell:
-    state: CellState = CellState.empty
-
     def __init__(self, state: CellState):
-        self.state = state
+        self.state = state.empty
 
     def flip(self) -> None:
         """
