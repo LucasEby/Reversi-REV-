@@ -1,7 +1,7 @@
 import string
-from typing import List
+from typing import List, Callable, Tuple
 
-from client.model.cell import Cell
+from client.model.cell import Cell, CellState
 from client.model.game import Game
 from client.views.base_page_view import BasePageView
 
@@ -10,18 +10,23 @@ class PlayGamePageView(BasePageView):
 
     __ABC_ARRAY = list(string.ascii_lowercase)
 
-    def __init__(self, game_obj: Game) -> None:
+    def __init__(self, game_obj: Game, place_tile_cb: Callable[[Tuple[int, int]], None], forfeit_cb: Callable[[int], None]) -> None:
         """
         Fills in the needed board variables and initializes the current state of the board
         :param game_obj: A specific game object who's attributes will be accessed and displayed.
+        :param place_tile_cb: Callback function to call when a tile is placed
+        :param forfeit_cb: Callback function to call when a player forfeits
         """
-        super().__init__()
         self._game_obj: Game = game_obj
         self._size: int = game_obj.board.size
+        self._place_tile_cb = place_tile_cb
+        self._forfeit_cb = forfeit_cb
+        super().__init__()
 
     def display(self) -> None:
         self.__display_board()
         self.__display_score()
+        self.__display_tile_placement()
 
     def __display_board(self) -> None:
         """
@@ -42,17 +47,13 @@ class PlayGamePageView(BasePageView):
                     if col == 0:
                         board = board + str(row)
                     else:
-                        if board_state[row][col].state == "DiskP1":  # [row][col]):
+                        if board_state[row - 1][col - 1].state == CellState.player1:
                             board = board + "  P1"
-                        elif board_state[row][col].state == "DiskP2":
+                        elif board_state[row - 1][col - 1].state == CellState.player2:
                             board = board + "  P2"
-                        elif board_state[row][col].state == "Invalid":
-                            print(
-                                "Cell State was Invalid. Error in __constructBoard function of GameView"
-                            )
-                        elif board_state[row][col].state == "Empty":
+                        elif board_state[row - 1][col - 1].state == CellState.empty:
                             board = board + "  __"
-                if col == self._size - 1:
+                if col == self._size:
                     board = board + "\n"
         print(board)
 
@@ -65,6 +66,26 @@ class PlayGamePageView(BasePageView):
         temp_string1: string = str(temp_tuple[1])
         print("Player 1's score: " + temp_string0)
         print("Player 2's score: " + temp_string1)
+
+    def __display_tile_placement(self) -> None:
+        """
+        Displays graphic for user to enter tile placement info
+        """
+        valid_input: bool = False
+        row: int = 0
+        col: int = 0
+        print(f"\nPlayer {self._game_obj.curr_player}'s turn")
+        while not valid_input:
+            row_str: str = input("Enter row for disk: ")
+            col_str = input("Enter col for disk: ")
+            try:
+                row = int(row_str) - 1
+                col = ord(col_str.lower()) - 97
+            except ValueError:
+                print("Invalid row or col. Please try again.")
+                continue
+            valid_input = True
+        self._place_tile_cb((row, col))
 
     # TODO: move display_winner into the end game view
     def display_winner(self) -> None:

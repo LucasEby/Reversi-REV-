@@ -3,28 +3,31 @@ from typing import List, Tuple
 from client.model.board import Board
 from client.model.cell import CellState
 from client.model.player import Player
+from client.model.user import User
 
 
 class Game:
-    def __init__(self, user1: User, user2: User, first_move: bool) -> None:
-        self.id: int = id(self)
+    def __init__(self, user1: User, user2: User, p1_first_move: bool = True, save: bool = False) -> None:
+        """
+        Initializes a game with the given parameters
+        :param user1: User correlating to player 1 (playing first)
+        :param user2: User correlating to player 2 (playing second)
+        :param p1_first_move: True if user1 has first move, false if user2 has first move
+        :param save: Whether to save game after every turn
+        """
+        self._id: int = id(self)
         # get the player who makes the first move from first_move (1 for user1, 0 for user2), this user will be player1
         # use the size and rule preference of this person, since both users must use the same size and rules
-        if first_move:
-            self.player1: Player = Player(user1, 1)
-            self.player2: Player = Player(user2, 2)
-            self.board: Board = Board(user1.get_preference().get_board_size(), 1)
-            self.rules: ARules = user1.get_preference().get_rule()
-        else:
-            self.player1: Player = Player(user2, 1)
-            self.player2: Player = Player(user1, 2)
-            self.board: Board = Board(user2.get_preference().get_board_size(), 1)
-            self.rules: ARules = user2.get_preference().get_rule()
+        self._player1: Player = Player(user1, 1)
+        self._player2: Player = Player(user2, 2)
+        active_user: User = user1 if p1_first_move else user2
+        self.board: Board = Board(active_user.get_preference().get_board_size(), 1)
+        self._rules: ARules = active_user.get_preference().get_rule()
+        self.save: bool = save
         self.curr_player: int = 1
-        self.save: bool = True
 
-    # implement another constructor for playing vs AI (one user provided)
-    # def __int__(self, user: User):
+    # TODO: implement another constructor for playing vs AI (one user provided)
+    # def __init__(self, user: User):
 
     def is_game_over(self) -> bool:
         """
@@ -50,8 +53,8 @@ class Game:
         """
         if not self.is_valid_posn(posn[0], posn[1]):
             raise Exception("out-of bounds move attempted")
-        if not self.rules.isValidMove(self.curr_player, posn, self.board):
-            return False
+        #if not self._rules.is_valid_move(self.curr_player, posn, self.board):
+        #    return False
         self.board.cells[posn[0]][posn[1]].fill(self.curr_player)
         # flip all Cells that are between this posn and any other curr_player disks
         self.__flip_opponents_tiles(posn)
@@ -90,27 +93,30 @@ class Game:
             x += x_offset
             y += y_offset
             # make sure the cell is on the board and is filled with opponent's disk
-            if self.is_valid_posn(x, y) and (
-                not self.board.cells[x][y].state.value
-                in List[CellState.empty.value, self.curr_player]
+            if self.is_valid_posn(x, y) and not (
+                self.board.cells[x][y].state.value
+                in [CellState.empty.value, self.curr_player]
             ):
-                # iterate through all cells on the board in this direction that are filled with opponent's disk
-                while self.is_valid_posn(x, y) and (
-                    not self.board.cells[x][y].state.value
-                    in List[CellState.empty.value, self.curr_player]
+                # Iterate through all cells on the board in this direction that are filled with opponent's disk
+                while self.is_valid_posn(x, y) and not (
+                    self.board.cells[x][y].state.value
+                    in [CellState.empty.value, self.curr_player]
                 ):
                     x += x_offset
                     y += y_offset
                 # if the adjacent cell is not on the board, skip to next offset direction
                 if not self.is_valid_posn(x, y):
                     continue
-                # if we have found another curr_player disk, move backwards toward original posn,
+                # If we have found another curr_player disk, move backwards toward original posn,
                 # flipping opponent disks as we go
                 if self.board.cells[x][y].state.value == self.curr_player:
+                    # Move back once at beginning
+                    x -= x_offset
+                    y -= y_offset
                     while (x, y) != posn:
+                        self.board.cells[x][y].flip()
                         x -= x_offset
                         y -= y_offset
-                        self.board.cells[x][y].flip()
 
     def get_valid_moves(self) -> List[List[bool]]:
         """
@@ -122,7 +128,7 @@ class Game:
         valid_moves: List[List[bool]]
         for i in range(self.board.size):
             for j in range(self.board.size):
-                valid_moves[i][j] = self.rules.isValidMove(
+                valid_moves[i][j] = self._rules.isValidMove(
                     self.curr_player, (i, j), self.board
                 )
         return valid_moves

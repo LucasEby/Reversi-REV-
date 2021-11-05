@@ -23,7 +23,7 @@ class PlayGamePageController(HomeButtonPageController):
         self._task_execute_dict["forfeit"] = self.__execute_task_forfeit
         self._end_game_callback: Callable[[], None] = end_game_callback
         self._game = game
-        self._view = PlayGamePageView(game_obj=self._game)
+        self._view = PlayGamePageView(game_obj=self._game, place_tile_cb=self.__handle_place_tile, forfeit_cb=self.__handle_forfeit)
 
     def __handle_place_tile(self, coordinate: Tuple[int, int]) -> None:
         """
@@ -47,18 +47,19 @@ class PlayGamePageController(HomeButtonPageController):
         coordinate = task_info
         # Try placing tile. If tile placement doesn't work, don't do anything.
         # Having no action occur on a click is enough feedback to user that their click is invalid
+        valid_placement: bool = False
         try:
-            if not self._game.place_tile(posn=coordinate):
-                return
-            pass
+            valid_placement = self._game.place_tile(posn=coordinate)
         except Exception:
-            return
-        # Update view
-        self._view.update_game(game=self._game)
-        self._view.display()
+            valid_placement = False
         # If game is over, notify parent via callback
         if self._game.is_game_over():
             self._end_game_callback(self._game)
+            return
+        # Update view
+        if valid_placement:
+            self._view.update_game(game=self._game)
+        self._view.display()
 
     def __execute_task_forfeit(self, task_info: int) -> None:
         """
