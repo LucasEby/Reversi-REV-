@@ -14,6 +14,51 @@ class standard_rules(AbstractRules):
         else:
             #throw an error
             pass
+    #"""
+    def __check_horizontal_2(brd: Board, posn: Tuple[int, int],plyr_num: int):
+        target_x = posn[0]
+        target_y = posn[1]
+        opp_num = __opponent_state(plyr_num)
+        if ((posn[0] > 1) and  (posn[0] < len(brd)-2)):
+            
+            #Checking to the left here
+            if (posn[0] > 1):
+                
+                left_cells = []
+                #list that holds all the cells to the left of the target
+                
+                #\/ Populate list of cells that are to the left of the target 
+                for lft_cll in range(0, target_x):
+                    left_cells = left_cells + brd[lft_cll, target_y]
+                
+                if (opp_num in left_cells ) and (plyr_num in left_cells):
+                    opp_pos = 0
+                    #nearest opponent cell position
+                    friend_pos = 0
+                    #nearest friendly cell position
+                    search_pos = 0
+                    #current position being checked
+                    
+                    #loop over the list of cells to left 
+                    for c in reversed(left_cells):
+                        #if the cell is a friendly cell update the friends cell position
+                        if c == plyr_num :
+                            friend_pos = search_pos
+                        #if the cell is an opponent cell update the opponent cell position
+                        elif c == opp_num:
+                            opp_pos = search_pos
+                        #update the search position once searching is done
+                        search_pos += 1
+                        #Check if an opponent exists to the left of the target and that a friendly exists to the right of that opponent
+                        if(opp_pos > 0 and friend_pos > opp_pos):
+                            return True
+
+            #Checking to the right here
+            elif posn[0] < len(brd)-2:
+                pass
+        else:
+            return False
+    #"""
 
     def __check_horizontal(brd: Board, posn: Tuple[int, int],plyr_num: int):
         is_horizontal_huh: bool = False
@@ -27,8 +72,9 @@ class standard_rules(AbstractRules):
 
         #check to the left
         # iterate from 0 to posn[0] if posn[0] > 2
-        if(posn[1] > 2):
-            for cell in brd.cells[posn[0]]:
+        if(posn[0] > 1):
+            i = 0
+            for this_cell in brd.cells[posn[i]]:
                 #first we gotta check to see if their is even is an opponent cell to the left of the selected cell
                 if(cell.state == __opponent_state(plyr_num)):
                     #since there is an opponent we then check for a friendly cell to the left of the opposing cell
