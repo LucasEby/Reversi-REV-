@@ -8,6 +8,11 @@ class standard_rules(AbstractRules):
     def __opponent_state(plyr_num: int):
         """
         finds the opposite player number given the current player number
+
+
+        :param plyr_num: the current player's number state 
+        :raises error: None
+        :return: int state
         """
         if(plyr_num == 1):
             return 2
@@ -18,6 +23,15 @@ class standard_rules(AbstractRules):
             pass
     #"""
     def __check_horizontal(brd: Board, posn: Tuple[int, int],plyr_num: int):
+        """
+        check to see if a valid move exists on the hoizontal with the chosen cell
+
+        :param plyr_num: the current player's number state
+        :param brd: current board state
+        :param posn: tuple of the cell in question 
+        :raises error: None
+        :return: bool, is it valid in the horizontal dimension
+        """
         target_x = posn[0]
         target_y = posn[1]
         opp_num = __opponent_state(plyr_num)
@@ -87,6 +101,15 @@ class standard_rules(AbstractRules):
             return False
 
     def __check_vertical(brd: Board, posn: Tuple[int, int], plyr_num: int):
+        """
+        determines if a move is valid by checking the tiles in the same column as the target
+
+        :param plyr_num: the current player's number state
+        :param brd: current board state
+        :param posn: potential position tuple
+        :raises error: None
+        :return: bool Is this a valid move?
+        """
         target_x = posn[0]
         target_y = posn[1]
         opp_num = __opponent_state(plyr_num)
@@ -160,7 +183,16 @@ class standard_rules(AbstractRules):
         return False
     
     def __check_diagonal(brd: Board, posn: Tuple[int, int], plyr_num: int):
-        
+        """
+        deteremines whether or not a move is valid based on the position of tiles located along the diagonal
+
+
+        :param plyr_num: the current player's number state
+        :param brd: current board state
+        :param posn: potential position tuple
+        :raises error: None
+        :return: bool Is this a valid move?
+        """
         #check up and left, increase row, decrease column
         target_x: int = posn[0]
         target_y = posn[1]
@@ -310,9 +342,10 @@ class standard_rules(AbstractRules):
         determines if a move that was played is valid based on a given ruleset
 
         :param ply_num:the number of players in the game
-        :param posn: the position of the move that is being evaluated
+        :param brd: current board state
+        :param posn: potential position tuple
         :raises error: None
-        :return: Whether a move was valid, True, or not, False
+        :return: bool Is this a valid move?
         """
         #"must place a disk in such a position that there exists at least one straight (hoirzontal 
         # vertical or diagonal) line between the new disk and any of her disks"
