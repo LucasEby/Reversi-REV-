@@ -19,7 +19,7 @@ class AbstractRules(ABC):
         self.name: string = name_string
         pass
 
-    def __is_valid_move(plyr_num: int, posn: Tuple[int, int], brd: Board):
+    def __is_valid_move(plyr_num: int, posn: Tuple[int, int], brd: Board) -> bool:
         """
         determines if a move that was played is valid based on a given ruleset
 
