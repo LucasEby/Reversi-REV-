@@ -9,7 +9,7 @@ class Standard_Rules_2(AbstractRules):
         finds the opposite player number given the current player number
 
 
-        :param plyr_num: the current player's number state
+        :param plyr_num: the player number of the player attempting to place a disk
         :raises error: None
         :return: int state
         """
@@ -26,7 +26,7 @@ class Standard_Rules_2(AbstractRules):
         """
         check to see if a valid move exists on the hoizontal with the chosen cell
 
-        :param plyr_num: the current player's number state
+        :param plyr_num: the player number of the player attempting to place a disk
         :param brd: current board state
         :param posn: tuple of the cell in question
         :raises error: None
