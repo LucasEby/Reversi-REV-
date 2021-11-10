@@ -1,6 +1,7 @@
 from abstract_rules import AbstractRules
 from typing import Tuple, List
 from client.model.board import Board
+from client.model.cell import Cell, CellState
 
 
 class StandardRules(AbstractRules):
@@ -8,7 +9,7 @@ class StandardRules(AbstractRules):
         """
         Determines if a move that was played is valid based on the given ruleset
 
-        :param ply_num: the player number of the player attempting to place a disk
+        :param plyr_num: the player number of the player attempting to place a disk
         :param posn: the position of the move that is being evaluated
         :param brd: current board state
         :return: Whether a move was valid, True, or not, False
@@ -23,12 +24,17 @@ class StandardRules(AbstractRules):
             # Check next cell is opposite player's
             if brd.is_valid_posn(posn[0], posn[1]) and brd.state[posn[0] + dir[0]][
                 posn[1] + dir[1]
-            ].state != self._opposite_cell_state(plyr_num):
+            ].state != (CellState.player_1 if plyr_num == 1 else CellState.player_2):
                 continue
             x, y = posn
             # Use direction iterator to traverse board. Move is valid if same player disk is reached before edge of board or empty cell
-            while brd.is_valid_posn(x, y) and brd.state[x][y].state != 0:
-                if brd.state[x][y].state == self._player_cell_state(plyr_num):
+            while (
+                brd.is_valid_posn(x, y)
+                and brd.state[x][y].state != self.CellState.empty
+            ):
+                if brd.state[x][y].state == (
+                    CellState.player_1 if plyr_num == 1 else CellState.player_2
+                ):
                     return True
                 x += dir[0]
                 y += dir[1]
