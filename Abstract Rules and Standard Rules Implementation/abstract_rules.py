@@ -16,11 +16,11 @@ class AbstractRules(ABC):
         self.name: string = name_string
 
     @abstractmethod
-    def __is_valid_move(plyr_num: int, posn: Tuple[int, int], brd: Board) -> bool:
+    def __is_valid_move(self, plyr_num: int, posn: Tuple[int, int], brd: Board) -> bool:
         """
         determines if a move that was played is valid based on a given ruleset
 
-        :param ply_num: the player number of the player attempting to place a disk
+        :param plyr_num: the player number of the player attempting to place a disk
         :param posn: the position of the move that is being evaluated
         :param brd: current board state
         :raises error: None
