@@ -1,18 +1,17 @@
-
 from abc import ABC, abstractmethod
-#from client.model.player import Player
+
+# from client.model.player import Player
 from client.model.board import Board
 from typing import Tuple, List
 import string
 
 
 class AbstractRules(ABC):
-    
     def __init__(self, name_string: string) -> None:
         """
         constructs a rules object
 
-        :param : 
+        :param :
         :raises error: None
         :return: None
         """
@@ -29,5 +28,5 @@ class AbstractRules(ABC):
         :raises error: None
         :return: Whether a move was valid, True, or not, False
         """
-        #check flip oppenent tiles function for data
+        # check flip oppenent tiles function for data
         pass
