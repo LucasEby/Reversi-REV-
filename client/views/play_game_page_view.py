@@ -42,7 +42,7 @@ class PlayGamePageView(BasePageView):
         and column letters:
         """
         board: string = ""  # reset board string.
-        board_state: List[List[Cell]] = self._game_obj.board.get_state()
+        board_state: List[List[CellState]] = self._game_obj.board.get_state()
         for row in range(0, self._size + 1):
             for col in range(0, self._size + 1):
                 if row == 0:
@@ -50,16 +50,16 @@ class PlayGamePageView(BasePageView):
                         board = board + "   " + self.__ABC_ARRAY[col - 1]
                 else:  # row > 0
                     if col == 0:
-                        board = board + str(row)
+                        board += str(row)
                     else:
-                        if board_state[row - 1][col - 1].state == CellState.player1:
-                            board = board + "  P1"
-                        elif board_state[row - 1][col - 1].state == CellState.player2:
-                            board = board + "  P2"
-                        elif board_state[row - 1][col - 1].state == CellState.empty:
-                            board = board + "  __"
+                        if board_state[row - 1][col - 1] == CellState.player1:
+                            board += "  P1"
+                        elif board_state[row - 1][col - 1] == CellState.player2:
+                            board += "  P2"
+                        elif board_state[row - 1][col - 1] == CellState.empty:
+                            board += "  __"
                 if col == self._size:
-                    board = board + "\n"
+                    board += "\n"
         print(board)
 
     def __display_score(self) -> None:
