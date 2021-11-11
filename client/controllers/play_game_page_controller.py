@@ -51,7 +51,6 @@ class PlayGamePageController(HomeButtonPageController):
         coordinate = task_info
         # Try placing tile. If tile placement doesn't work, don't do anything.
         # Having no action occur on a click is enough feedback to user that their click is invalid
-        valid_placement: bool = False
         try:
             valid_placement = self._game.place_tile(posn=coordinate)
         except Exception:

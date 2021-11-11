@@ -1,5 +1,6 @@
 from typing import List, Tuple
 
+from client.model.abstract_rule import AbstractRule
 from client.model.board import Board
 from client.model.cell import CellState
 from client.model.player import Player
@@ -24,7 +25,7 @@ class Game:
         self._player2: Player = Player(user2, 2)
         active_user: User = user1 if p1_first_move else user2
         self.board: Board = Board(active_user.get_preference().get_board_size(), 1)
-        self._rules: ARules = active_user.get_preference().get_rule()
+        self._rules: AbstractRule = active_user.get_preference().get_rule()
         self.save: bool = save
         self.curr_player: int = 1
 
@@ -33,8 +34,10 @@ class Game:
 
     def is_game_over(self) -> bool:
         """
-        Check if the board has no empty spaces, no player1 disks, or no player2 disks.
+        Check if the board has no empty spaces, no player1 disks, no player2 disks, or current player has no valid moves.
         These are the states in which the game ends.
+        If current player has no valid moves, then no valid moves exist for either player since turn would
+        have been ceded to opponent already.
 
         :return: true if the game is over (no more turns can be made by one or both players), otherwise false
         """
@@ -42,6 +45,7 @@ class Game:
             (self.board.get_num_type(CellState.empty) == 0)
             or (self.board.get_num_type(CellState.player1) == 0)
             or (self.board.get_num_type(CellState.player2) == 0)
+            or (not self.valid_moves_exist())
         )
 
     def place_tile(self, posn: Tuple[int, int]) -> bool:
@@ -53,25 +57,18 @@ class Game:
         :raises Exception: Thrown when the given position is not on the board
         :return: True if the move was successfully completed, or false if it was invalid
         """
-        if not self.is_valid_posn(posn[0], posn[1]):
+        if not self.board.is_valid_posn(posn[0], posn[1]):
             raise Exception("out-of bounds move attempted")
-        # if not self._rules.is_valid_move(self.curr_player, posn, self.board):
-        #    return False
+        if not self._rules.is_valid_move(self.curr_player, posn, self.board):
+            return False
         self.board.cells[posn[0]][posn[1]].fill(self.curr_player)
         # flip all Cells that are between this posn and any other curr_player disks
         self.__flip_opponents_tiles(posn)
+        # Set next player if they have a valid move
         self.curr_player = 2 if self.curr_player == 1 else 1
+        if not self.valid_moves_exist():
+            self.curr_player = 2 if self.curr_player == 1 else 1
         return True
-
-    def is_valid_posn(self, x: int, y: int) -> bool:
-        """
-        Checks if the given x,y coordinate is within the board of Cells.
-
-        :param x: the x coordinate
-        :param y: the y coordinate
-        :return: True if the x,y coordinate is on the board, else False
-        """
-        return (x in range(self.board.size)) and (y in range(self.board.size))
 
     def __flip_opponents_tiles(self, posn: Tuple[int, int]) -> None:
         """
@@ -95,19 +92,19 @@ class Game:
             x += x_offset
             y += y_offset
             # make sure the cell is on the board and is filled with opponent's disk
-            if self.is_valid_posn(x, y) and not (
+            if self.board.is_valid_posn(x, y) and not (
                 self.board.cells[x][y].state.value
                 in [CellState.empty.value, self.curr_player]
             ):
                 # Iterate through all cells on the board in this direction that are filled with opponent's disk
-                while self.is_valid_posn(x, y) and not (
+                while self.board.is_valid_posn(x, y) and not (
                     self.board.cells[x][y].state.value
                     in [CellState.empty.value, self.curr_player]
                 ):
                     x += x_offset
                     y += y_offset
                 # if the adjacent cell is not on the board, skip to next offset direction
-                if not self.is_valid_posn(x, y):
+                if not self.board.is_valid_posn(x, y):
                     continue
                 # If we have found another curr_player disk, move backwards toward original posn,
                 # flipping opponent disks as we go
@@ -127,13 +124,20 @@ class Game:
 
         :return: a 2-D array of booleans representing the locations of valid moves for the current player
         """
-        valid_moves: List[List[bool]]
+        valid_moves: List[List[bool]] = [[False for _ in range(self.board.size)] for _ in range(self.board.size)]
         for i in range(self.board.size):
             for j in range(self.board.size):
-                valid_moves[i][j] = self._rules.isValidMove(
+                valid_moves[i][j] = self._rules.is_valid_move(
                     self.curr_player, (i, j), self.board
                 )
         return valid_moves
+
+    def valid_moves_exist(self) -> bool:
+        """
+        Return whether any valid moves exist for the active player
+        :return: Moves exist (true) or not (false)
+        """
+        return any([any([cell is True for cell in row]) for row in self.get_valid_moves()])
 
     def get_winner(self) -> int:
         """

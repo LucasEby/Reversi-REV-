@@ -54,7 +54,7 @@ class ManagePreferencesPageView:
         """
         Display the current rule.
         """
-        print("Current rule: " + self.__preference.get_rule())
+        print("Current rule: " + str(self.__preference.get_rule()))
 
     def display_tile_move_confirmation(self) -> None:
         """

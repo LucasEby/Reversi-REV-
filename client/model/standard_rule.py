@@ -1,0 +1,55 @@
+from typing import Tuple, List
+
+from client.model.abstract_rule import AbstractRule
+from client.model.board import Board
+from client.model.cell import CellState
+
+
+class StandardRule(AbstractRule):
+
+    def __init__(self) -> None:
+        super().__init__()
+
+    @staticmethod
+    def is_valid_move(plyr_num: int, posn: Tuple[int, int], brd: Board) -> bool:
+        """
+        Determines if a move that was played is valid based on the given ruleset
+
+        :param plyr_num: the player number of the player attempting to place a disk
+        :param posn: the position of the move that is being evaluated
+        :param brd: current board state
+        :return: Whether a move was valid, True, or not, False
+        """
+        # Verify the current cell is unoccupied
+        brd_state: List[List[CellState]] = brd.get_state()
+        if not brd_state[posn[0]][posn[1]] == CellState.empty:
+            return False
+
+        # Generates a list of tuples that are the used to find the cells surrounding a given cell
+        dir_iterators = [(x, y) for x in [-1, 0, 1] for y in [-1, 0, 1]]
+        # Remove the tuple representing no movement
+        dir_iterators.remove((0, 0))
+
+        # Iterate through positions in all direction
+        for dir in dir_iterators:
+            # Check next cell is opposite player's
+            if brd.is_valid_posn(posn[0] + dir[0], posn[1] + dir[1]) and brd_state[posn[0] + dir[0]][
+                posn[1] + dir[1]
+            ] != (CellState.player2 if plyr_num == 1 else CellState.player1):
+                continue
+            x, y = (posn[0] + dir[0], posn[1] + dir[1])
+            # Use direction iterator to traverse board. Move is valid if same player disk is reached before edge of board or empty cell
+            while (
+                brd.is_valid_posn(x, y)
+                and brd_state[x][y] != CellState.empty
+            ):
+                if brd_state[x][y] == (
+                    CellState.player1 if plyr_num == 1 else CellState.player2
+                ):
+                    return True
+                x += dir[0]
+                y += dir[1]
+        return False
+
+    def __str__(self) -> str:
+        return "StandardRule"

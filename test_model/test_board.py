@@ -17,42 +17,42 @@ class TestBoard(unittest.TestCase):
 
     def test_init_cells(self):
         board_2 = Board(2, 1)
-        self.assertEqual(board_2.cells[0][0], Cell.state.player2)
-        self.assertEqual(board_2.cells[1][0], Cell.state.player1)
-        self.assertEqual(board_2.cells[0][1], Cell.state.player1)
-        self.assertEqual(board_2.cells[1][1], Cell.state.player2)
+        self.assertEqual(board_2.cells[0][0].state, CellState.player2)
+        self.assertEqual(board_2.cells[1][0].state, CellState.player1)
+        self.assertEqual(board_2.cells[0][1].state, CellState.player1)
+        self.assertEqual(board_2.cells[1][1].state, CellState.player2)
         board_4 = Board(4, 2)
-        self.assertEqual(board_4.cells[0][0], Cell.state.empty)
-        self.assertEqual(board_4.cells[0][3], Cell.state.empty)
-        self.assertEqual(board_4.cells[3][0], Cell.state.empty)
-        self.assertEqual(board_4.cells[3][3], Cell.state.empty)
-        self.assertEqual(board_4.cells[1][1], Cell.state.player2)
-        self.assertEqual(board_4.cells[1][2], Cell.state.player1)
-        self.assertEqual(board_4.cells[2][1], Cell.state.player1)
-        self.assertEqual(board_4.cells[2][2], Cell.state.player2)
+        self.assertEqual(board_4.cells[0][0].state, CellState.empty)
+        self.assertEqual(board_4.cells[0][3].state, CellState.empty)
+        self.assertEqual(board_4.cells[3][0].state, CellState.empty)
+        self.assertEqual(board_4.cells[3][3].state, CellState.empty)
+        self.assertEqual(board_4.cells[1][1].state, CellState.player2)
+        self.assertEqual(board_4.cells[1][2].state, CellState.player1)
+        self.assertEqual(board_4.cells[2][1].state, CellState.player1)
+        self.assertEqual(board_4.cells[2][2].state, CellState.player2)
 
     def test_get_state(self):
         cells_2 = [
-            [Cell.state.player2, Cell.state.player1],
-            [Cell.state.player1, Cell.state.player2],
+            [CellState.player2, CellState.player1],
+            [CellState.player1, CellState.player2],
         ]
         board_2 = Board(2, 1)
         self.assertEqual(board_2.get_state(), cells_2)
         cells_4 = [
-            [Cell.state.empty, Cell.state.empty, Cell.state.empty, Cell.state.empty],
+            [CellState.empty, CellState.empty, CellState.empty, CellState.empty],
             [
-                Cell.state.empty,
-                Cell.state.player2,
-                Cell.state.player1,
-                Cell.state.empty,
+                CellState.empty,
+                CellState.player2,
+                CellState.player1,
+                CellState.empty,
             ],
             [
-                Cell.state.empty,
-                Cell.state.player1,
-                Cell.state.player2,
-                Cell.state.empty,
+                CellState.empty,
+                CellState.player1,
+                CellState.player2,
+                CellState.empty,
             ],
-            [Cell.state.empty, Cell.state.empty, Cell.state.empty, Cell.state.empty],
+            [CellState.empty, CellState.empty, CellState.empty, CellState.empty],
         ]
         board_4 = Board(4, 2)
         self.assertEqual(board_4.get_state(), cells_4)
