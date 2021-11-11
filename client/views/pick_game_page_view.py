@@ -2,7 +2,6 @@ from client.views.base_page_view import BasePageView
 
 
 class PickGamePageView(BasePageView):
-
     def __init__(
         self,
     ) -> None:
@@ -53,4 +52,3 @@ class PickGamePageView(BasePageView):
         Confirms to the user that the online user vs user option was chosen.
         """
         print("User vs user online game was chosen.\n")
-

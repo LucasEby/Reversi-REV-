@@ -8,10 +8,7 @@ from client.model.user import User
 
 class PickGamePageController(HomeButtonPageController):
     def __init__(
-        self,
-        go_home_callback: Callable[[], None],
-            user1: User,
-            user2: User
+        self, go_home_callback: Callable[[], None], user1: User, user2: User
     ) -> None:
         """
         Page controller used for handling and responding to user inputs that occur in the "pick game"
@@ -30,7 +27,7 @@ class PickGamePageController(HomeButtonPageController):
         """
         self.game_obj = Game(self._user1, self._user2, True, False)
         self._view.display_local_single_player_game_chosen()
-        #TODO:
+        # TODO:
         # Incorporate AI levels. I wasn't sure if we were going to make a separate
         # page for it or if we would just have say 5 buttons on the screen (online, local vs User,
         # local vs easy AI, local vs medium AI, and local vs hard AI)?
@@ -49,7 +46,7 @@ class PickGamePageController(HomeButtonPageController):
         """
         self.game_obj = Game(self._user1, self._user2, True, True)
         self._view.display_online_game_chosen()
-        #TODO:
+        # TODO:
         # need to incorporate the MatchMakerRequest class when it is made.
         # def __handle_match_found(self, user: User) -> None:
         # comment description for the function:
