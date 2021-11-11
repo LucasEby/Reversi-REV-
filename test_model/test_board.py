@@ -1,7 +1,7 @@
 import unittest
 
 from client.model.board import Board
-from client.model.cell import Cell, CellState
+from client.model.cell import CellState
 
 
 class TestBoard(unittest.TestCase):

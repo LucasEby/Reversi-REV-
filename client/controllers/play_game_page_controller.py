@@ -1,4 +1,4 @@
-from typing import Tuple, Optional, Callable
+from typing import Tuple, Callable
 
 from client.controllers.home_button_page_controller import HomeButtonPageController
 from client.model.game import Game

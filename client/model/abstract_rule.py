@@ -4,7 +4,6 @@ from typing import Tuple
 
 
 class AbstractRule(ABC):
-
     def __init__(self) -> None:
         pass
 

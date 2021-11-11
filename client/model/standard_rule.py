@@ -6,7 +6,6 @@ from client.model.cell import CellState
 
 
 class StandardRule(AbstractRule):
-
     def __init__(self) -> None:
         super().__init__()
 
@@ -31,24 +30,24 @@ class StandardRule(AbstractRule):
         dir_iterators.remove((0, 0))
 
         # Iterate through positions in all direction
-        for dir in dir_iterators:
+        for d in dir_iterators:
             # Check next cell is opposite player's
-            if brd.is_valid_posn(posn[0] + dir[0], posn[1] + dir[1]) and brd_state[posn[0] + dir[0]][
-                posn[1] + dir[1]
-            ] != (CellState.player2 if plyr_num == 1 else CellState.player1):
-                continue
-            x, y = (posn[0] + dir[0], posn[1] + dir[1])
-            # Use direction iterator to traverse board. Move is valid if same player disk is reached before edge of board or empty cell
-            while (
-                brd.is_valid_posn(x, y)
-                and brd_state[x][y] != CellState.empty
+            if brd.is_valid_posn(posn[0] + d[0], posn[1] + d[1]) and brd_state[
+                posn[0] + d[0]
+            ][posn[1] + d[1]] != (
+                CellState.player2 if plyr_num == 1 else CellState.player1
             ):
+                continue
+            x, y = (posn[0] + d[0], posn[1] + d[1])
+            # Use direction iterator to traverse board. Move is valid if same player disk is reached before edge of
+            # board or empty cell
+            while brd.is_valid_posn(x, y) and brd_state[x][y] != CellState.empty:
                 if brd_state[x][y] == (
                     CellState.player1 if plyr_num == 1 else CellState.player2
                 ):
                     return True
-                x += dir[0]
-                y += dir[1]
+                x += d[0]
+                y += d[1]
         return False
 
     def __str__(self) -> str:

@@ -34,7 +34,7 @@ class Game:
 
     def is_game_over(self) -> bool:
         """
-        Check if the board has no empty spaces, no player1 disks, no player2 disks, or current player has no valid moves.
+        Check if the board has no empty spaces, no player1 disks, no player2 disks, or current player has no valid moves
         These are the states in which the game ends.
         If current player has no valid moves, then no valid moves exist for either player since turn would
         have been ceded to opponent already.
@@ -124,7 +124,9 @@ class Game:
 
         :return: a 2-D array of booleans representing the locations of valid moves for the current player
         """
-        valid_moves: List[List[bool]] = [[False for _ in range(self.board.size)] for _ in range(self.board.size)]
+        valid_moves: List[List[bool]] = [
+            [False for _ in range(self.board.size)] for _ in range(self.board.size)
+        ]
         for i in range(self.board.size):
             for j in range(self.board.size):
                 valid_moves[i][j] = self._rules.is_valid_move(
@@ -137,7 +139,9 @@ class Game:
         Return whether any valid moves exist for the active player
         :return: Moves exist (true) or not (false)
         """
-        return any([any([cell is True for cell in row]) for row in self.get_valid_moves()])
+        return any(
+            [any([cell is True for cell in row]) for row in self.get_valid_moves()]
+        )
 
     def get_winner(self) -> int:
         """

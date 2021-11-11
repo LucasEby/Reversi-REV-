@@ -1,7 +1,7 @@
 import string
 from typing import List, Callable, Tuple
 
-from client.model.cell import Cell, CellState
+from client.model.cell import CellState
 from client.model.game import Game
 from client.views.base_page_view import BasePageView
 
