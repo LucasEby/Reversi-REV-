@@ -621,19 +621,19 @@ class DatabaseManager:
         # Run query to get account info
         success: bool = True
         query_str: str = (
-                             f"select "
-                             f"{'game_id,' if get_game_id else ''}"
-                             f"{'complete,' if get_complete else ''}"
-                             f"{'board_state,' if get_board_state else ''}"
-                             f"{'rules,' if get_rules else ''}"
-                             f"{'next_turn,' if get_next_turn else ''}"
-                             f"{'p1_account_id,' if get_p1_account_id else ''}"
-                             f"{'p2_account_id,' if get_p2_account_id else ''}"
-                             f"{'ai_difficulty,' if get_ai_difficulty else ''}"
-                             f"{'last_save,' if get_last_save else ''}"
-                         )[
-                         :-1
-                         ]  # Remove last comma
+            f"select "
+            f"{'game_id,' if get_game_id else ''}"
+            f"{'complete,' if get_complete else ''}"
+            f"{'board_state,' if get_board_state else ''}"
+            f"{'rules,' if get_rules else ''}"
+            f"{'next_turn,' if get_next_turn else ''}"
+            f"{'p1_account_id,' if get_p1_account_id else ''}"
+            f"{'p2_account_id,' if get_p2_account_id else ''}"
+            f"{'ai_difficulty,' if get_ai_difficulty else ''}"
+            f"{'last_save,' if get_last_save else ''}"
+        )[
+            :-1
+        ]  # Remove last comma
         query_str += " from game "
         if last_game:
             query_str += f"where p1_account_id = {key} or p2_account_id = {key} order by last_save desc limit 1"
@@ -653,9 +653,9 @@ class DatabaseManager:
                 temp_dbg: List[Any] = [None] * len(requested_fields)
                 for i in range(len(requested_fields)):
                     if requested_fields[i]:
-                        if i == dbg._fields.index('complete'):
+                        if i == dbg._fields.index("complete"):
                             temp_dbg[i] = bool(result[result_cnt])
-                        elif i == dbg._fields.index('board_state'):
+                        elif i == dbg._fields.index("board_state"):
                             temp_dbg[i] = self.bytes_to_board(result[result_cnt])
                         else:
                             temp_dbg[i] = result[result_cnt]

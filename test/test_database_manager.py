@@ -2,7 +2,11 @@ import datetime
 import unittest
 from unittest.mock import MagicMock
 
-from server.database_management.database_manager import DatabaseManager, DatabaseAccount, DatabaseGame
+from server.database_management.database_manager import (
+    DatabaseManager,
+    DatabaseAccount,
+    DatabaseGame,
+)
 
 
 class TestDatabaseManager(unittest.TestCase):
@@ -143,14 +147,34 @@ class TestDatabaseManager(unittest.TestCase):
         account_id: int = callback.call_args[0][1].account_id
 
         # Create game function with no errors
-        dbg: DatabaseGame = DatabaseGame(None, False, [[1, 2], [2, 1]], "standard", 1, account_id, None, None, datetime.datetime.strptime("11-01-2021 03:00:00", "%m-%d-%Y %H:%M:%S"))
+        dbg: DatabaseGame = DatabaseGame(
+            None,
+            False,
+            [[1, 2], [2, 1]],
+            "standard",
+            1,
+            account_id,
+            None,
+            None,
+            datetime.datetime.strptime("11-01-2021 03:00:00", "%m-%d-%Y %H:%M:%S"),
+        )
         callback.reset_mock()
         dbm.create_game(callback=callback, database_game=dbg)
         dbm.run()
         callback.assert_called_once_with(True)
 
         # Create second (more recent) game with same account as P2
-        dbg2: DatabaseGame = DatabaseGame(None, False, [[1, 2], [2, 1]], "standard", 1, None, account_id, None, datetime.datetime.strptime("11-02-2021 03:00:00", "%m-%d-%Y %H:%M:%S"))
+        dbg2: DatabaseGame = DatabaseGame(
+            None,
+            False,
+            [[1, 2], [2, 1]],
+            "standard",
+            1,
+            None,
+            account_id,
+            None,
+            datetime.datetime.strptime("11-02-2021 03:00:00", "%m-%d-%Y %H:%M:%S"),
+        )
         callback.reset_mock()
         dbm.create_game(callback=callback, database_game=dbg2)
         dbm.run()
@@ -184,7 +208,11 @@ class TestDatabaseManager(unittest.TestCase):
 
         # Update game and check updates occurred
         callback.reset_mock()
-        dbm.update_game(callback=callback, game_id=game_id, database_game=DatabaseGame(complete=True, next_turn=2))
+        dbm.update_game(
+            callback=callback,
+            game_id=game_id,
+            database_game=DatabaseGame(complete=True, next_turn=2),
+        )
         dbm.run()
         callback.assert_called_once_with(True)
 
