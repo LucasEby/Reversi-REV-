@@ -1,54 +1,108 @@
 from client.views.base_page_view import BasePageView
+from client.controllers.pick_game_page_controller import PickGamePageController
+import tkinter as tk
 
 
 class PickGamePageView(BasePageView):
     def __init__(
         self,
+        pgc: PickGamePageController
     ) -> None:
         """
-        TODO:
-        This will later initialize the Pick Game Page with a list of buttons.
+        Creates the button window with the 3 buttons: a local single player button, a local multiplayer button,
+        and an online multiplayer button. When a button is clicked, a "loading game" message is displayed and the
+        controller is notified.
+
+        :param pgc: the pick game page controller object.
         """
         super().__init__()
+        self._pgc = pgc
 
-    def display(self) -> None:
-        print("Game Options: \n")
-        self.__display_local_single_player_game()
-        self.__display_local_multiplayer_game()
-        self.__display_online_game()
+        # Set up window:
+        self.__window = tk.Tk()
 
-    def __display_local_single_player_game(self) -> None:
-        """
-        Notifies the user that a local user/guest vs AI game is a game option:
-        """
-        print("User/guest vs AI local game.\n")
+        # Make the main window buttons
+        self.__btn_local_single_player = tk.Button(self.__window, text="Play local single player game", padx=50,
+                                                   pady=50, fg="black", bg="purple",
+                                                   command=self._pgc.handle_local_single_player_game())
+        self.__btn_local_multiplayer_game = tk.Button(self.__window, text="Play local multiplayer game", padx=50,
+                                                      pady=50, fg="black", bg="purple",
+                                                      command=self._pgc.handle_local_multiplayer_game())
+        self.__btn_online_game = tk.Button(self.__window, text="Play online multiplayer game", padx=50, pady=50,
+                                           fg="black", bg="purple", command=self._pgc.handle_online_game())
+        self.__btn_change_pref = tk.Button(self.__window, text="Change preferences", padx=50, pady=50,
+                                           fg="black", bg="purple", command=self._pgc.handle_change_preferences())
 
-    def display_local_single_player_game_chosen(self) -> None:
-        """
-        Confirms to the user that the local user/guest vs AI option was chosen.
-        """
-        print("User/guest vs AI local game was chosen.\n")
+        # Initialize window and button attributes:
+        self.__initialize_window_and_buttons()
 
-    def __display_local_multiplayer_game(self) -> None:
+    def __initialize_window_and_buttons(self) -> None:
         """
-        Notifies the user that a local user vs guest game is a game option:
-        """
-        print("User vs guest local game.\n")
+        Sets the window attributes and adds the buttons to it.
 
-    def display_local_multiplayer_game_chosen(self) -> None:
+        :return: None
         """
-        Confirms to the user that the local user vs guest option was chosen.
-        """
-        print("User vs guest online game was chosen.\n")
+        self.__window.attributes("-topmost", 1)
+        self.__window_pref.lower()
 
-    def __display_online_game(self) -> None:
-        """
-        Notifies the user that a User vs user online game is a game option:
-        """
-        print("User vs user online game.\n")
+        self.__window.title("")
+        self.__window_pref.title("")
 
-    def display_online_game_chosen(self) -> None:
+        # Make it so the window is not resizable
+        self.__window.resizable(False, False)
+        self.__window_pref.resizable(False, False)
+
+        # Stick the buttons on the window
+        self.__btn_local_single_player.pack()
+        self.__btn_local_multiplayer_game.pack()
+        self.__btn_online_game.pack()
+
+        # Start window loop
+        self.__window.mainloop()
+
+    def __destroy_buttons_and_load(self, load_message) -> None:
         """
-        Confirms to the user that the online user vs user option was chosen.
+        Destroys the buttons and displays the loading screen.
+
+        :param self: the PickGamePageView object.
+        :param load_message: the load message that is displayed to the user
+        :return: None
         """
-        print("User vs user online game was chosen.\n")
+        self.__btn_local_single_player.destroy()
+        self.__btn_local_multiplayer_game.destroy()
+        self.__btn_online_game.destroy()
+        L = tk.Label(self.__window, text=load_message)
+        L.pack()
+
+    def display_matchmaking_load_local_single(self) -> None:
+        """
+        Displays "loading local single player game" and calls the local single player game handle in the
+        controller.
+
+        :param self: the PickGamePageView object.
+        :return: None
+        """
+        self.__destroy_buttons_and_load("Loading local single player game...")
+        self._pgc.handle_local_single_player_game()
+
+    def display_matchmaking_load_local_multi(self) -> None:
+        """
+        Displays "loading local single player game" and calls the local single player game handle in the
+        controller.
+
+        :param self: the PickGamePageView object.
+        :return: None
+        """
+        self.__destroy_buttons_and_load("Loading local multi player game...")
+        self._pgc.handle_local_multiplayer_game()
+
+    def display_matchmaking_load_online(self) -> None:
+        """
+        Displays "loading local single player game" and calls the local single player game handle in the
+        controller.
+
+        :param self: the PickGamePageView object.
+        :return: None
+        """
+        self.__destroy_buttons_and_load("Loading online multi player game...")
+        self._pgc.handle_online_game()
