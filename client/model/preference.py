@@ -1,5 +1,6 @@
+from client.model.abstract_rule import AbstractRule
 from client.model.colors import Color
-from client.model.rule import Rule
+from client.model.standard_rule import StandardRule
 
 
 class Preference:
@@ -14,7 +15,7 @@ class Preference:
         self.__my_disk_color: Color = Color.WHITE
         self.__opp_disk_color: Color = Color.BLACK
         self.__line_color: Color = Color.BLACK
-        self.__rule: Rule = Rule.STANDARD  # Rule should be ARule or StandardRule
+        self.__rule: AbstractRule = StandardRule()
         self.__tile_move_confirmation: bool = True
 
     # setters and getters
@@ -131,19 +132,19 @@ class Preference:
         """
         return str(self.__line_color.value)
 
-    def set_rule(self, rule: Rule) -> None:
+    def set_rule(self, rule: AbstractRule) -> None:
         """
         Set the rule of the game to be either StandardRule or ARule.
         :param rule:    the type rule the user wants to have
         """
         self.__rule = rule
 
-    def get_rule(self) -> str:
+    def get_rule(self) -> AbstractRule:
         """
         Get the name of the rule that is set in the preference right now.
         :return:    the name of the rule in preference
         """
-        return str(self.__rule.value)
+        return self.__rule
 
     def set_tile_move_confirmation(self, prompt: bool) -> None:
         """
