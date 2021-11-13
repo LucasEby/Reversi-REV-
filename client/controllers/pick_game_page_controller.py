@@ -14,8 +14,6 @@ class PickGamePageController(HomeButtonPageController):
         play_local_multiplayer_game_callback: Callable[[Game], None],
         play_online_game_callback: Callable[[Game], None],
         manage_preferences_callback: Callable[[Game], None],
-        user1: User,
-        user2: User,
     ) -> None:
         """
         Page controller used for handling and responding to user inputs that occur in the "pick game"
@@ -24,8 +22,6 @@ class PickGamePageController(HomeButtonPageController):
         :param go_home_callback: Callback to call when user requested going to the home screen
         """
         super().__init__(go_home_callback=go_home_callback)
-        self._user1 = user1
-        self._user2 = user2
         self._play_local_single_player_game_callback: Callable[
             [Game], None
         ] = play_local_single_player_game_callback
