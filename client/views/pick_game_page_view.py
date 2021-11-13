@@ -4,10 +4,7 @@ import tkinter as tk
 
 
 class PickGamePageView(BasePageView):
-    def __init__(
-        self,
-        pgc: PickGamePageController
-    ) -> None:
+    def __init__(self, pgc: PickGamePageController) -> None:
         """
         Creates the button window with the 3 buttons: a local single player button, a local multiplayer button,
         and an online multiplayer button. When a button is clicked, a "loading game" message is displayed and the
@@ -22,16 +19,42 @@ class PickGamePageView(BasePageView):
         self.__window = tk.Tk()
 
         # Make the main window buttons
-        self.__btn_local_single_player = tk.Button(self.__window, text="Play local single player game", padx=50,
-                                                   pady=50, fg="black", bg="purple",
-                                                   command=self._pgc.handle_local_single_player_game())
-        self.__btn_local_multiplayer_game = tk.Button(self.__window, text="Play local multiplayer game", padx=50,
-                                                      pady=50, fg="black", bg="purple",
-                                                      command=self._pgc.handle_local_multiplayer_game())
-        self.__btn_online_game = tk.Button(self.__window, text="Play online multiplayer game", padx=50, pady=50,
-                                           fg="black", bg="purple", command=self._pgc.handle_online_game())
-        self.__btn_change_pref = tk.Button(self.__window, text="Change preferences", padx=50, pady=50,
-                                           fg="black", bg="purple", command=self._pgc.handle_change_preferences())
+        self.__btn_local_single_player = tk.Button(
+            self.__window,
+            text="Play local single player game",
+            padx=50,
+            pady=50,
+            fg="black",
+            bg="purple",
+            command=self._pgc.handle_local_single_player_game(),
+        )
+        self.__btn_local_multiplayer_game = tk.Button(
+            self.__window,
+            text="Play local multiplayer game",
+            padx=50,
+            pady=50,
+            fg="black",
+            bg="purple",
+            command=self._pgc.handle_local_multiplayer_game(),
+        )
+        self.__btn_online_game = tk.Button(
+            self.__window,
+            text="Play online multiplayer game",
+            padx=50,
+            pady=50,
+            fg="black",
+            bg="purple",
+            command=self._pgc.handle_online_game(),
+        )
+        self.__btn_change_pref = tk.Button(
+            self.__window,
+            text="Change preferences",
+            padx=50,
+            pady=50,
+            fg="black",
+            bg="purple",
+            command=self._pgc.handle_change_preferences(),
+        )
 
         # Initialize window and button attributes:
         self.__initialize_window_and_buttons()
