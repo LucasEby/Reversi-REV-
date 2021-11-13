@@ -19,11 +19,10 @@ class Game:
         :param save: Whether to save game after every turn
         """
         self._id: int = id(self)
-        # get the player who makes the first move from first_move (1 for user1, 0 for user2), this user will be player1
-        # use the size and rule preference of this person, since both users must use the same size and rules
         self._player1: Player = Player(user1, 1)
         self._player2: Player = Player(user2, 2)
         active_user: User = user1 if p1_first_move else user2
+        # Use the size and rule preference of active user, since both users must use the same size and rules
         self.board: Board = Board(active_user.get_preference().get_board_size(), 1)
         self._rules: AbstractRule = active_user.get_preference().get_rule()
         self.save: bool = save

@@ -9,7 +9,7 @@ class CellState(Enum):
 
 class Cell:
     def __init__(self, state: CellState):
-        self.state = state.empty
+        self.state = state
 
     def flip(self) -> None:
         """
