@@ -1,126 +1,120 @@
-from typing import Callable
+from typing import List
 import json
 import traceback
-from threading import Thread
 import socket
 
 
-ADDRESS = ('127.0.0.1', 7777)
+ADDRESS = ('127.0.0.1', 7777)   # the address to connect to the server (the one right now is just for testing)
 
 
 class ClientCommManager:
-    # def __init__(self, callback: Callable[[], None]) -> None:
-    def __init__(self, receive_key: str) -> None:
+    """
+    This ClientCommManager class initializes connection to the server and provides methods that send message to the
+    server or handle the received message.
+    """
+    def __init__(self, receive_key: str, callback: str) -> None:
         """
-        Construct a
+        Construct a class serves as the client side of the network connection.
         """
-        self.receive_key = receive_key
-        self.client = socket.socket()
+        self.receive_key: str = receive_key  # TODO: what is receive key for (have it in the class diagram)
+        self.callback: str = callback        # TODO: what is callback for (have it in the class diagram)
+        self.client: socket = socket.socket()
         self.client.connect(ADDRESS)
+        self.__returned_message: dict = {}   # message returned by the server
 
     def send(self, message: dict) -> None:
-        # pkg = self.receive_key + "\n" + message
-        # self.client.send(pkg.encode(encoding='utf8'))
-        json_msg = json.dumps(message, ensure_ascii=False) + '$$'
-        self.client.send(json_msg.encode())
+        """
+        Send out the message to the server for communication and the message will be encapsulated before transmission.
+        After message is sent out, it will wait for response and handle it.
+        Protocol types include:
+            - client_login
+            - client_guest
+            - client_create_account
+            - client_update_board
+            - client_get_elo
+            - client_match_request
+        :param message: the message to be sent to the server in dictionary; it should at least have 'protocol_type'
+                        specified
+        :raise ValueError: if the passed in message does not contain a 'protocol_type'
+        """
+        # check if the message have specified protocol type and throw ValueError if
+        if not message['protocol_type']:
+            raise ValueError("Message must have a protocol_type.")
+        # put '$$' to signify end of message and encapsulate the message
+        json_msg: str = json.dumps(message, ensure_ascii=False) + '$$'
+        #
+        try:
+            self.client.send(json_msg.encode())
+            self._handle_receive()
+        except socket.error as e:
+            print(e)
 
-    def handle_receive(self) -> None:
-        pcg = self.client.recv(4096)
+    def _handle_receive(self) -> None:
+        """
+        This method gets back the message from the server and handles it.
+        """
+        pcg: bytes = self.client.recv(2048)
+        # if the received package is empty, connection lost should be handled
         if len(pcg) == 0:
             self.client.close()
-            # TODO:deal with connection lost
+            # TODO: deal with connection lost
             traceback.print_exc()
-            return
+            pass
         # parse and deal with the data
         self.__parse_data(pcg)
-        # ORIGINAL codes
-        # received_msg: str = self.client.recv(1024).decode(encoding='utf8')
-        # parsed_msg: [str] = received_msg.split("\n")
-        # for msg in parsed_msg:
-        #     print(msg)
 
-    def __parse_data(self, pcg):
-        protocols = pcg.decode()
-        protocols = protocols.split('$$')
-        # deal with all the protocols except the empty one at last
-        for str_protocol in protocols[:-1]:
-            protocol = json.loads(str_protocol)
-            self.__deal_with_data(protocol)
+    def __parse_data(self, pcg: bytes) -> None:
+        """
+        This method decodes and splits the package into protocols. Protocols in the package will be parsed and executed
+        one after another.
+        :param pcg: the received package directly from the server in bytes
+        """
+        protocols: str = pcg.decode()
+        protocols: List[str] = protocols.split('$$')
+        if protocols.__len__() > 2:
+            raise Exception("Multiple messages are received at once.")
+        protocol: dict = json.loads(protocols[0])
+        self.__deal_with_data(protocol)
+        self.__returned_message = protocol
 
-    def __deal_with_data(self, protocol: dict):
-        if protocol['protocol_type'] == 'client_login':
+    def get_returned_message(self, key: str) -> str:
+        """
+        Get specific value in the returned message with provided key.
+        :param key: the key to access the value in the returned dictionary
+        :returns:   the value corresponding to the given key
+        """
+        return self.__returned_message[key]
+
+    def close_the_connection(self) -> None:
+        """
+        Closing the socket.
+        """
+        self.client.close()
+        print("Connection on the client side is closed.")
+
+    @staticmethod
+    def __deal_with_data(protocol: dict) -> None:
+        """
+        Trying to parse the received data and make operations accordingly, but was only printing for check right now.
+        :param protocol: parsed protocol at least includes 'protocol_type' and it might contain more keys and values
+        """
+        if protocol['protocol_type'] == 'client_login':  # TODO: change 'protocol_type' accordingly
             # 'server_login' gives back result
             print("Client received login feedback:")
             for key, value in protocol.items():
                 print(key, value)
-        elif protocol['protocol_type'] == 'client_match_request':
+        elif protocol['protocol_type'] == 'client_match_request':  # TODO: change 'protocol_type' accordingly
             # 'server_match_request' gives back the matching opponent
             print("Client received match_request feedback:")
             for key, value in protocol.items():
                 print(key, value)
-        elif protocol['protocol_type'] == 'client_move':
+        elif protocol['protocol_type'] == 'client_move':  # TODO: change 'protocol_type' accordingly
             # 'server_move' gives opponent's move
             print("Client received move feedback:")
             for key, value in protocol.items():
                 print(key, value)
-        elif protocol['protocol_type'] == 'client_elo':
-            # 'server_elo' gives back elo
+        elif protocol['protocol_type'] == 'client_elo':  # TODO: change 'protocol_type' accordingly
+            # 'server_elo' gives opponent's move
             print("Client received elo feedback:")
             for key, value in protocol.items():
                 print(key, value)
-
-    def send_login(self, user_id: int, password: str):
-        """
-        Login information
-        TODO: needs to be put into other file
-        """
-        data = {
-            'protocol_type': 'client_login',
-            'user_id': user_id,
-            'password': password
-        }
-        self.send(data)
-
-    def send_game_match_request(self, user_id: int):
-        """
-        Send a online matching game request
-        TODO: needs to be put into other file
-        """
-        data = {
-            'protocol_type': 'client_match_request',
-            'user_id': user_id
-        }
-        self.send(data)
-
-    def send_move(self, player: str):
-        """
-        Player's move
-        TODO: needs to be put into other file
-        """
-        data = {
-            'protocol_type': 'client_move',
-            'player': player    # for testing
-            # 'x': player.next_move_x,
-            # 'y': player.next_move_y
-        }
-        self.send(data)
-
-    def send_get_elo(self, user_id: int):
-        """
-        Get elo request
-        TODO: needs to be put into other file
-        """
-        data = {
-            'protocol_type': 'client_elo',
-            'user_id': user_id
-        }
-        self.send(data)
-
-
-if __name__ == '__main__':
-    comm = ClientCommManager("key")
-    comm.send_get_elo(777)
-    comm.send_move("player1")
-    comm.send_login(7, "this_is_password~123")
-    comm.send_game_match_request(777)
-    comm.handle_receive()
