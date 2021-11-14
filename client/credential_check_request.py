@@ -12,9 +12,9 @@ class CredentialCheckRequest:
         :param password: password string typed in by the user
         """
         data = {
-            'protocol_type': 'client_login',
-            'username': username,
-            'password': password
+            "protocol_type": "client_login",
+            "username": username,
+            "password": password,
         }
         self.client_manager.send(data)
 
@@ -26,9 +26,8 @@ class CredentialCheckRequest:
             - user id ?
         :returns: True if the username and password pair matches one in the database; otherwise return False
         """
-        result = self.client_manager.get_returned_message('username')
-        print(result)   # TODO: replaced by checking credential result
+        result = self.client_manager.get_returned_message("username")
+        print(result)  # TODO: replaced by checking credential result
         # if result_message == 'correct':
         #     return True
         return False
-

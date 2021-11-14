@@ -4,7 +4,10 @@ import traceback
 import socket
 
 
-ADDRESS = ('127.0.0.1', 7777)   # the address to connect to the server (the one right now is just for testing)
+ADDRESS = (
+    "127.0.0.1",
+    7777,
+)  # the address to connect to the server (the one right now is just for testing)
 
 
 class ClientCommManager:
@@ -12,15 +15,20 @@ class ClientCommManager:
     This ClientCommManager class initializes connection to the server and provides methods that send message to the
     server or handle the received message.
     """
+
     def __init__(self, receive_key: str, callback: str) -> None:
         """
         Construct a class serves as the client side of the network connection.
         """
-        self.receive_key: str = receive_key  # TODO: what is receive key for (have it in the class diagram)
-        self.callback: str = callback        # TODO: what is callback for (have it in the class diagram)
+        self.receive_key: str = (
+            receive_key  # TODO: what is receive key for (have it in the class diagram)
+        )
+        self.callback: str = (
+            callback  # TODO: what is callback for (have it in the class diagram)
+        )
         self.client: socket = socket.socket()
         self.client.connect(ADDRESS)
-        self.__returned_message: dict = {}   # message returned by the server
+        self.__returned_message: dict = {}  # message returned by the server
 
     def send(self, message: dict) -> None:
         """
@@ -38,10 +46,10 @@ class ClientCommManager:
         :raise ValueError: if the passed in message does not contain a 'protocol_type'
         """
         # check if the message have specified protocol type and throw ValueError if
-        if not message['protocol_type']:
+        if not message["protocol_type"]:
             raise ValueError("Message must have a protocol_type.")
         # put '$$' to signify end of message and encapsulate the message
-        json_msg: str = json.dumps(message, ensure_ascii=False) + '$$'
+        json_msg: str = json.dumps(message, ensure_ascii=False) + "$$"
         #
         try:
             self.client.send(json_msg.encode())
@@ -70,7 +78,7 @@ class ClientCommManager:
         :param pcg: the received package directly from the server in bytes
         """
         protocols: str = pcg.decode()
-        protocols: List[str] = protocols.split('$$')
+        protocols: List[str] = protocols.split("$$")
         if protocols.__len__() > 2:
             raise Exception("Multiple messages are received at once.")
         protocol: dict = json.loads(protocols[0])
@@ -98,22 +106,30 @@ class ClientCommManager:
         Trying to parse the received data and make operations accordingly, but was only printing for check right now.
         :param protocol: parsed protocol at least includes 'protocol_type' and it might contain more keys and values
         """
-        if protocol['protocol_type'] == 'client_login':  # TODO: change 'protocol_type' accordingly
+        if (
+            protocol["protocol_type"] == "client_login"
+        ):  # TODO: change 'protocol_type' accordingly
             # 'server_login' gives back result
             print("Client received login feedback:")
             for key, value in protocol.items():
                 print(key, value)
-        elif protocol['protocol_type'] == 'client_match_request':  # TODO: change 'protocol_type' accordingly
+        elif (
+            protocol["protocol_type"] == "client_match_request"
+        ):  # TODO: change 'protocol_type' accordingly
             # 'server_match_request' gives back the matching opponent
             print("Client received match_request feedback:")
             for key, value in protocol.items():
                 print(key, value)
-        elif protocol['protocol_type'] == 'client_move':  # TODO: change 'protocol_type' accordingly
+        elif (
+            protocol["protocol_type"] == "client_move"
+        ):  # TODO: change 'protocol_type' accordingly
             # 'server_move' gives opponent's move
             print("Client received move feedback:")
             for key, value in protocol.items():
                 print(key, value)
-        elif protocol['protocol_type'] == 'client_elo':  # TODO: change 'protocol_type' accordingly
+        elif (
+            protocol["protocol_type"] == "client_elo"
+        ):  # TODO: change 'protocol_type' accordingly
             # 'server_elo' gives opponent's move
             print("Client received elo feedback:")
             for key, value in protocol.items():

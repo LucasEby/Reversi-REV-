@@ -12,13 +12,13 @@ class MyTestCase(unittest.TestCase):
         """
         # Run a server to listen for a connection and then close it
         server_sock = socket.socket()
-        server_sock.bind(('127.0.0.1', 7777))
+        server_sock.bind(("127.0.0.1", 7777))
         server_sock.listen()
         print("Waiting for a connection, server started")
         while True:
             client, info = server_sock.accept()
             print("Connected to:", info)
-            start_new_thread(threaded_client, (client, ))
+            start_new_thread(threaded_client, (client,))
 
 
 def threaded_client(client):
@@ -29,7 +29,7 @@ def threaded_client(client):
     while True:
         try:
             data: str = client.recv(2048).decode()
-            messages: [str] = data.split('$$')
+            messages: [str] = data.split("$$")
 
             if not data:
                 print("Disconnected")
@@ -40,7 +40,7 @@ def threaded_client(client):
                     protocol = json.loads(str_protocol)
                     for key, value in protocol.items():
                         print(key, value)
-                    client.sendall((str_protocol + '$$').encode())
+                    client.sendall((str_protocol + "$$").encode())
         except error as e:
             print(e)
             break
@@ -64,5 +64,5 @@ def threaded_client(client):
 #         return False
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

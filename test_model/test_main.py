@@ -1,7 +1,7 @@
 from client.client_comm_manager import ClientCommManager
 from client.credential_check_request import CredentialCheckRequest
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     """
     The main program to start a client side connection to check the login information.
     """
@@ -11,7 +11,7 @@ if __name__ == '__main__':
     while True:
         username: str = input("Enter your username: ")
         password: str = input("Enter your password: ")
-        if username == 'q' or password == 'q':
+        if username == "q" or password == "q":
             comm.close_the_connection()
             exit(0)
         login = CredentialCheckRequest(comm)
@@ -26,10 +26,7 @@ def send_game_match_request(user_id: int):
     Send a online matching game request
     TODO: needs to be put into other file
     """
-    data = {
-        'protocol_type': 'client_match_request',
-        'user_id': user_id
-    }
+    data = {"protocol_type": "client_match_request", "user_id": user_id}
     comm.send(data)
 
 
@@ -39,8 +36,8 @@ def send_move(player: str):
     TODO: needs to be put into other file
     """
     data = {
-        'protocol_type': 'client_move',
-        'player': player    # for testing
+        "protocol_type": "client_move",
+        "player": player  # for testing
         # 'x': player.next_move_x,
         # 'y': player.next_move_y
     }
@@ -52,8 +49,5 @@ def send_get_elo(user_id: int):
     Get elo request
     TODO: needs to be put into other file
     """
-    data = {
-        'protocol_type': 'client_elo',
-        'user_id': user_id
-    }
+    data = {"protocol_type": "client_elo", "user_id": user_id}
     comm.send(data)
