@@ -46,6 +46,9 @@ class DatabaseGame(NamedTuple):
 
 
 class DatabaseManager:
+
+    _singleton = None
+
     def __init__(self) -> None:
         """
         Database Manager for communication with a mySQL database
@@ -63,6 +66,12 @@ class DatabaseManager:
             "get_game": self._get_game,
             "update_game": self._update_game,
         }
+
+    @classmethod
+    def get_instance(cls):
+        if cls._singleton is None:
+            cls._singleton = DatabaseManager()
+        return cls._singleton
 
     def run(self) -> None:
         """
