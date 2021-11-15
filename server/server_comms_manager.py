@@ -69,14 +69,20 @@ PORT = 5050
 
 
 class ServerCommsManager:
+
+    _singleton = None
+
     def __init__(self):
         self.database_manager = DatabaseManager()
 
-    def get_instance(self) -> ServerCommsManager:
+    @classmethod
+    def get_instance(cls):
         """ "
-        Get this instance of the ServerCommsManager class.
+        Get the singleton of the ServerCommsManager class.
         """
-        return self
+        if cls._singleton is None:
+            cls._singleton = ServerCommsManager()
+        return cls._singleton
 
     def run(self) -> None:
         """
