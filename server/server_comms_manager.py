@@ -1,7 +1,7 @@
 from __future__ import annotations
 import socket
 import json
-from _thread import *
+from _thread import start_new_thread
 from typing import List, Optional
 
 """
@@ -71,9 +71,9 @@ PORT = 5050
 class ServerCommsManager:
 
     _singleton = None
+    _messages_so_far: str = ""
 
     def __init__(self):
-        self.database_manager = DatabaseManager()
         # make sure the server is only instantiated once
         if ServerCommsManager._singleton is None:
             raise Exception("This class is a singleton!")
@@ -103,6 +103,7 @@ class ServerCommsManager:
         while True:
             try:
                 conn, addr = s.accept()
+                conn.settimeout(20)  # set connection timeout to 20 seconds
                 print("Connected to: ", addr)
                 start_new_thread(self.__threaded_client, (conn, addr))
             finally:
@@ -143,16 +144,23 @@ class ServerCommsManager:
         Parse JSON data and then handle it accordingly.
         """
         package: str = data.decode()
+        package = self._messages_so_far + package
+        self._messages_so_far = ""
         package: List[str] = package.split("$$")
-        if package.__len__() > 2:
-            raise Exception("Multiple messages are received at once.")
+        if len(package) > 2:
+            for p in range(len(package) - 1):
+                if p == 0:
+                    continue
+                self._messages_so_far += p
         msg: dict = json.loads(package[0])
-        self.__handle_data(msg, conn, addr)
+        # self.__handle_data(msg, conn, addr)
+        # TODO create and use message classes to handle the data
 
+    """
     def __handle_data(self, data, conn, addr) -> None:
-        """
-        Based on the type of request received, create and send a response.
-        """
+    """
+    # Based on the type of request received, create and send a response.
+    """
         # handle client login request
         if data["protocol_type"] == "client_login":
             print("Client requested login check")
@@ -240,3 +248,4 @@ class ServerCommsManager:
             }
         # finally, send the server's response to the client's request
         self.send(response, conn, addr)
+    """
