@@ -1,3 +1,4 @@
+import threading
 import unittest
 from _thread import *
 
@@ -6,18 +7,44 @@ from client.credential_check_request import CredentialCheckRequest
 
 
 class MyTestCase(unittest.TestCase):
+    comm = None
+
     @classmethod
     def setUp(cls):
+        """
+        This method sets up the test class with ClientCommManager constructed.
+        """
         cls.comm: ClientCommManager = ClientCommManager()
+        print(cls.comm)
 
     def test_client_manager_singleton(self) -> None:
         """
         This test makes sure that the singleton is working so that error message will be given if the class is
         constructed more than once.
         """
-        with self.assertRaises(Exception) as context:
-            ClientCommManager()
-        self.assertTrue("This class is a singleton!" in str(context.exception))
+        s = ClientCommManager()
+        print(s)
+        self.assertTrue(self.comm, s)
+
+    def test_client_singleton_thread(self) -> None:
+        """
+        This test make sure that the singleton pattern is also avoiding ClientCommManager constructed more than twice
+        in different threads. With the lock in __new__(cls) method, only one thread can access ClientCommManager class
+        at a time.
+        """
+        x = threading.Thread(target=self.thread_function)
+        x.start()
+        x.join()  # have to joint thread x so that thread x2 can access ClientCommManager
+        x2 = threading.Thread(target=self.thread_function)
+        x2.start()
+
+    def thread_function(self):
+        """
+        This method represent a thread for the test method 'test_client_singleton_thread'.
+        """
+        s = ClientCommManager()
+        print(s)
+        self.assertEqual(self.comm, s)
 
     def test_run_client(self) -> None:
         """

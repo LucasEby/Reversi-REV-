@@ -1,3 +1,4 @@
+from threading import Lock
 from typing import List, Dict, Callable, Any
 import json
 import traceback
@@ -15,7 +16,9 @@ class ClientCommManager:
     server or handle the received message.
     """
 
-    __singleton = None  # initialize singleton as None if ClientCommManager class has not been constructed ever
+    # initialize singleton as None if ClientCommManager class has not been constructed ever
+    _singleton: "ClientCommManager" = None
+    _lock: Lock = Lock()
     __protocol_map: Dict[str, str] = {
         "client_login": "server_login",
         "client_create_account": "server_create_account",
@@ -25,16 +28,20 @@ class ClientCommManager:
         "client_get_game": "server_get_game",
     }
 
+    def __new__(cls) -> "ClientCommManager":
+        """
+        Create a ClientCommManager object. Initialized object will be return if it already exists, otherwise a new one
+        will be initialized.
+        """
+        with cls._lock:
+            if not cls._singleton:
+                cls._singleton = super(ClientCommManager, cls).__new__(cls)
+            return cls._singleton
+
     def __init__(self) -> None:
         """
-        Construct a class serves as the client side of the network connection.
+        Initialize the class which serves as the client side of the network connection.
         """
-        # Make sure the class cannot be initialized a second time.
-        if ClientCommManager.__singleton is not None:
-            raise Exception("This class is a singleton!")
-        else:
-            # set the singleton to itself so it can be retrieved
-            ClientCommManager.__singleton = self
         self.client: socket = socket.socket()
         self.client.connect(ADDRESS)
         self._callback_map: Dict[str, List[Callable[[], Any]]] = {
@@ -45,16 +52,6 @@ class ClientCommManager:
             "server_save_game": [],
             "server_get_game": [],
         }
-
-    @staticmethod
-    def get_instance():
-        """
-        Static access method. It will initialize a ClientCommManager class if it is not yet initialized. Otherwise, if
-        the existing class will be returned.
-        """
-        if ClientCommManager.__singleton is None:
-            ClientCommManager()
-        return ClientCommManager.__singleton
 
     def send(self, message: Dict[str, str], callback: Callable[[], Any]) -> None:
         """
