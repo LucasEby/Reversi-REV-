@@ -74,6 +74,11 @@ class ServerCommsManager:
 
     def __init__(self):
         self.database_manager = DatabaseManager()
+        # make sure the server is only instantiated once
+        if ServerCommsManager._singleton is None:
+            raise Exception("This class is a singleton!")
+        else:
+            ServerCommsManager.__instance = self
 
     @classmethod
     def get_instance(cls):
