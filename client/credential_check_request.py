@@ -1,13 +1,18 @@
+from _thread import start_new_thread
+from typing import Dict
+
 from client.client_comm_manager import ClientCommManager
 
 
 class CredentialCheckRequest:
-    def __init__(self, client_manager: ClientCommManager) -> None:
-        self.client_manager = client_manager
+    def __init__(self) -> None:
+        # get the constructed ClientCommManager
+        self.client_manager = ClientCommManager.get_instance()
 
     def send_login(self, username: str, password: str) -> None:
         """
         Prepare the login information to be sent to the server.
+
         :param username: username string typed in by the user
         :param password: password string typed in by the user
         """
@@ -16,18 +21,13 @@ class CredentialCheckRequest:
             "username": username,
             "password": password,
         }
-        self.client_manager.send(data)
+        self.client_manager.send(data, self.print_method_to_test)
 
-    def check_credential_check_request(self) -> bool:
+    def print_method_to_test(self, success: bool, protocol: Dict[str, str]) -> None:
         """
-        Check the result from the server.
-        TODO: Expected server returned message contains:
-            - match or not ?
-            - user id ?
-        :returns: True if the username and password pair matches one in the database; otherwise return False
+        This is just a method representing the callable passed in with login message for testing.
         """
-        result = self.client_manager.get_returned_message("username")
-        print(result)  # TODO: replaced by checking credential result
-        # if result_message == 'correct':
-        #     return True
-        return False
+        print("This is a method only for testing if CALLABLE functions well.")
+        print("Message transfer status: " + str(success))
+        print("username: " + protocol["username"])
+        print("password: " + protocol["password"])
