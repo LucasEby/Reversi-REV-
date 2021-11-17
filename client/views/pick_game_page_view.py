@@ -1,6 +1,13 @@
 from client.views.base_page_view import BasePageView
-from client.controllers.pick_game_page_controller import PickGamePageController
 import tkinter as tk
+
+try:
+    from client.controllers.pick_game_page_controller import PickGamePageController
+except ImportError:
+    import sys
+
+    PickGamePageController = sys.modules["client.controllers.pick_game_page_controller"]
+    # __package__ + '.PickGamePageController']
 
 
 class PickGamePageView(BasePageView):
@@ -13,7 +20,7 @@ class PickGamePageView(BasePageView):
         :param pgc: the pick game page controller object.
         """
         super().__init__()
-        self._pgc = pgc
+        self.__pgc = pgc
 
         # Set up window:
         self.__window = tk.Tk()
@@ -26,7 +33,7 @@ class PickGamePageView(BasePageView):
             pady=50,
             fg="black",
             bg="purple",
-            command=self._pgc.handle_local_single_player_game(),
+            command=self.__local_single_clicked,
         )
         self.__btn_local_multiplayer_game = tk.Button(
             self.__window,
@@ -35,7 +42,7 @@ class PickGamePageView(BasePageView):
             pady=50,
             fg="black",
             bg="purple",
-            command=self._pgc.handle_local_multiplayer_game(),
+            command=self.__local_multi_clicked,
         )
         self.__btn_online_game = tk.Button(
             self.__window,
@@ -44,7 +51,7 @@ class PickGamePageView(BasePageView):
             pady=50,
             fg="black",
             bg="purple",
-            command=self._pgc.handle_online_game(),
+            command=self.__online_clicked,
         )
         self.__btn_change_pref = tk.Button(
             self.__window,
@@ -53,27 +60,21 @@ class PickGamePageView(BasePageView):
             pady=50,
             fg="black",
             bg="purple",
-            command=self._pgc.handle_change_preferences(),
+            command=pgc.handle_change_preferences,
         )
 
-        # Initialize window and button attributes:
-        self.__initialize_window_and_buttons()
-
-    def __initialize_window_and_buttons(self) -> None:
+    def display(self) -> None:
         """
         Sets the window attributes and adds the buttons to it.
 
         :return: None
         """
         self.__window.attributes("-topmost", 1)
-        self.__window_pref.lower()
 
         self.__window.title("")
-        self.__window_pref.title("")
 
         # Make it so the window is not resizable
         self.__window.resizable(False, False)
-        self.__window_pref.resizable(False, False)
 
         # Stick the buttons on the window
         self.__btn_local_single_player.pack()
@@ -97,7 +98,16 @@ class PickGamePageView(BasePageView):
         L = tk.Label(self.__window, text=load_message)
         L.pack()
 
-    def display_matchmaking_load_local_single(self) -> None:
+    def __local_single_clicked(self) -> None:
+        self.__pgc.handle_local_single_player_game()
+
+    def __local_multi_clicked(self) -> None:
+        self.__pgc.handle_local_multiplayer_game()
+
+    def __online_clicked(self) -> None:
+        self.__pgc.handle_online_game()
+
+    def display_local_single_player_game_chosen(self) -> None:
         """
         Displays "loading local single player game" and calls the local single player game handle in the
         controller.
@@ -106,9 +116,8 @@ class PickGamePageView(BasePageView):
         :return: None
         """
         self.__destroy_buttons_and_load("Loading local single player game...")
-        self._pgc.handle_local_single_player_game()
 
-    def display_matchmaking_load_local_multi(self) -> None:
+    def display_local_multiplayer_game_chosen(self) -> None:
         """
         Displays "loading local single player game" and calls the local single player game handle in the
         controller.
@@ -117,9 +126,8 @@ class PickGamePageView(BasePageView):
         :return: None
         """
         self.__destroy_buttons_and_load("Loading local multi player game...")
-        self._pgc.handle_local_multiplayer_game()
 
-    def display_matchmaking_load_online(self) -> None:
+    def display_online_game_chosen(self) -> None:
         """
         Displays "loading local single player game" and calls the local single player game handle in the
         controller.
@@ -128,4 +136,3 @@ class PickGamePageView(BasePageView):
         :return: None
         """
         self.__destroy_buttons_and_load("Loading online multi player game...")
-        self._pgc.handle_online_game()

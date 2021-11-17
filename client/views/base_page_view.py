@@ -6,7 +6,7 @@ class BasePageView(ABC):
         """
         Abstract page view for all others to build off of
         """
-        self.display()
+        # self.display()
 
     @abstractmethod
     def display(self) -> None:
