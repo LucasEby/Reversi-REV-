@@ -3,11 +3,13 @@ from typing import List, Dict, Callable, Any
 import json
 import traceback
 import socket
+from client.config.config_reader import ConfigReader
 
-ADDRESS = (
-    "127.0.0.1",
-    7777,
-)  # the address to connect to the server (the one right now is just for testing)
+# ADDRESS = (
+#     "127.0.0.1",
+#     7777,
+# )  # the address to connect to the server (the one right now is just for testing)
+ADDRESS = ConfigReader().get_server_info()
 
 
 class ClientCommManager:
@@ -118,8 +120,12 @@ class ClientCommManager:
 
         :param protocol: parsed protocol at least includes 'protocol_type' and it might contain more keys and values
         """
-        # get the first callable in the list corresponding to 'protocol_type' and run it with corresponding parameters
-        self._callback_map[protocol["protocol_type"]][0](True, protocol)
+        if protocol.__len__() == 1:
+            self._callback_map[protocol["protocol_type"]][0](False, protocol)
+        else:
+            # get the first callable in the list corresponding to 'protocol_type' and run it with corresponding
+            # parameters
+            self._callback_map[protocol["protocol_type"]][0](True, protocol)
         self._callback_map[protocol["protocol_type"]].pop(
             0
         )  # get rid of the first callable in the list

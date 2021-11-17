@@ -2,8 +2,8 @@ import threading
 import unittest
 from _thread import *
 
-from client.client_comm_manager import ClientCommManager
-from client.credential_check_request import CredentialCheckRequest
+from client.client_comm.client_comm_manager import ClientCommManager
+from client.client_comm.credential_check_request import CredentialCheckRequest
 
 
 class MyTestCase(unittest.TestCase):

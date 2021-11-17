@@ -1,13 +1,12 @@
-from _thread import start_new_thread
 from typing import Dict
 
-from client.client_comm_manager import ClientCommManager
+from client.client_comm.client_comm_manager import ClientCommManager
 
 
 class CredentialCheckRequest:
     def __init__(self) -> None:
         # get the constructed ClientCommManager
-        self.client_manager = ClientCommManager.get_instance()
+        self.client_manager = ClientCommManager()
 
     def send_login(self, username: str, password: str) -> None:
         """
