@@ -1,8 +1,9 @@
 from __future__ import annotations
 import socket
 import json
+import threading
 from _thread import start_new_thread
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 
 """
 --- Message Formats ---
@@ -70,24 +71,19 @@ PORT = 5050
 
 class ServerCommsManager:
 
-    _singleton = None
+    _instance = None
+    _lock = threading.Lock()
     _messages_so_far: str = ""
 
-    def __init__(self):
-        # make sure the server is only instantiated once
-        if ServerCommsManager._singleton is None:
-            raise Exception("This class is a singleton!")
-        else:
-            ServerCommsManager.__instance = self
-
-    @classmethod
-    def get_instance(cls):
-        """ "
-        Get the singleton of the ServerCommsManager class.
+    def __new__(cls):
         """
-        if cls._singleton is None:
-            cls._singleton = ServerCommsManager()
-        return cls._singleton
+        Ensure that this class is a Singleton.
+        """
+        if not cls._instance:
+            with cls._lock:
+                if not cls._instance:
+                    cls._instance = super(ServerCommsManager, cls).__new__(cls)
+        return cls._instance
 
     def run(self) -> None:
         """
@@ -97,7 +93,8 @@ class ServerCommsManager:
         try:
             s.bind((HOST, PORT))
         except socket.error as e:
-            str(e)
+            print(str(e))
+            return
         s.listen(2)
         print("server started, waiting for connections")
         while True:
@@ -109,7 +106,7 @@ class ServerCommsManager:
             finally:
                 break
 
-    def send(self, msg: dict, s: socket, addr) -> None:
+    def send(self, msg: Dict[str, str], s: socket, addr) -> None:
         """ "
         Send the given dict message to the given client connection.
         """
@@ -152,7 +149,7 @@ class ServerCommsManager:
                 if p == 0:
                     continue
                 self._messages_so_far += p
-        msg: dict = json.loads(package[0])
+        msg: Dict[str, Any] = json.loads(package[0])
         # self.__handle_data(msg, conn, addr)
         # TODO create and use message classes to handle the data
 
