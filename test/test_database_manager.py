@@ -64,7 +64,9 @@ class TestDatabaseManager(unittest.TestCase):
 
         # Get account ID
         callback.reset_mock()
-        DatabaseManager().get_account(callback=callback, key="username", get_account_id=True)
+        DatabaseManager().get_account(
+            callback=callback, key="username", get_account_id=True
+        )
         DatabaseManager().run()
         account_id: int = callback.call_args[0][1].account_id
 
@@ -109,7 +111,9 @@ class TestDatabaseManager(unittest.TestCase):
         callback.assert_called_once_with(True)
 
         callback.reset_mock()
-        DatabaseManager().get_account(callback=callback, key=account_id, get_account_id=True)
+        DatabaseManager().get_account(
+            callback=callback, key=account_id, get_account_id=True
+        )
         DatabaseManager().run()
         callback.assert_called_once_with(False, DatabaseAccount())
 
@@ -139,7 +143,9 @@ class TestDatabaseManager(unittest.TestCase):
         DatabaseManager().run()
         callback.assert_called_once_with(True)
         callback.reset_mock()
-        DatabaseManager().get_account(callback=callback, key="username", get_account_id=True)
+        DatabaseManager().get_account(
+            callback=callback, key="username", get_account_id=True
+        )
         DatabaseManager().run()
         account_id: int = callback.call_args[0][1].account_id
 
