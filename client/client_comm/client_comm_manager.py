@@ -38,7 +38,7 @@ class ClientCommManager:
     def send(
         self,
         message: Dict[str, Any],
-        response_protocol_typ: str,
+        response_protocol_type: str,
         callback: Callable[[], Any],
     ) -> None:
         """
@@ -47,14 +47,16 @@ class ClientCommManager:
 
         :param message: the message to be sent to the server in dictionary; it should at least have 'protocol_type'
                         specified
-        :param response_protocol_typ: expected protocol type from the server to identify which callback to use
+        :param response_protocol_type: expected protocol type from the server to identify which callback to use
         :param callback: the function to call when you receive a message of a certain 'protocol_type'
         :raise ValueError: if the passed in message does not contain a 'protocol_type'
         """
         # check if the message have specified protocol type and throw ValueError if
-        if not response_protocol_typ or not message["protocol_type"]:
+        if not response_protocol_type or not message["protocol_type"]:
             raise ValueError("Message must have a protocol_type.")
-        self._callback_map[response_protocol_typ].append(
+        if response_protocol_type not in self._callback_map:
+            self._callback_map[response_protocol_type] = []
+        self._callback_map[response_protocol_type].append(
             callback
         )  # append the callback to the _callback_map
         # put '$$' to signify end of message and encapsulate the message
