@@ -33,13 +33,13 @@ class ClientCommManager:
         self.client: socket = socket.socket()
         address = ConfigReader().get_server_info()
         self.client.connect(address)
-        self._callback_map: Dict[str, List[Callable[[], Any]]] = {}
+        self._callback_map: Dict[str, List[Callable[[Any], None]]] = {}
 
     def send(
         self,
         message: Dict[str, Any],
         response_protocol_type: str,
-        callback: Callable[[], Any],
+        callback: Callable[[Any], None],
     ) -> None:
         """
         Send out the message to the server for communication and the message will be encapsulated before transmission.
@@ -54,6 +54,7 @@ class ClientCommManager:
         # check if the message have specified protocol type and throw ValueError if
         if not response_protocol_type or not message["protocol_type"]:
             raise ValueError("Message must have a protocol_type.")
+        # add a new key to the _callback_map if passed-in response_protocol_type is not a key in the map yet
         if response_protocol_type not in self._callback_map:
             self._callback_map[response_protocol_type] = []
         self._callback_map[response_protocol_type].append(
@@ -99,10 +100,10 @@ class ClientCommManager:
         protocols: List[str] = protocols.split("$$")
         # parse all the protocols if multiple are received
         for str_protocol in protocols[:-1]:
-            protocol: Dict[str, str] = json.loads(str_protocol)
+            protocol: Dict[str, Any] = json.loads(str_protocol)
             self.__deal_with_data(protocol)
 
-    def __deal_with_data(self, protocol: Dict[str, str]) -> None:
+    def __deal_with_data(self, protocol: Dict[str, Any]) -> None:
         """
         Callback the functions with parsed returned protocol.
 
