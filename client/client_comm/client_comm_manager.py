@@ -23,14 +23,15 @@ class ClientCommManager:
         Create a ClientCommManager object. Initialized object will be return if it already exists, otherwise a new one
         will be initialized.
         """
-        with cls._lock:
-            if not cls._singleton:
-                cls._singleton = super(ClientCommManager, cls).__new__(cls)
-                cls._singleton._client = socket.socket()
-                address: Optional[ServerInfo] = ConfigReader().get_server_info()
-                cls._singleton._client.connect(address)
-                cls._singleton._callback_map = {}
-            return cls._singleton
+        if not cls._singleton:
+            with cls._lock:
+                if not cls._singleton:
+                    cls._singleton = super(ClientCommManager, cls).__new__(cls)
+                    cls._singleton._client = socket.socket()
+                    address: Optional[ServerInfo] = ConfigReader().get_server_info()
+                    cls._singleton._client.connect(address)
+                    cls._singleton._callback_map = {}
+        return cls._singleton
 
     def send(
         self,

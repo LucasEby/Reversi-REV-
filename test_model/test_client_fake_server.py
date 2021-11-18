@@ -15,7 +15,7 @@ protocol_map: Dict[str, str] = {
 }
 
 
-def test_run_fake_server() -> None:
+def run_fake_server() -> None:
     """
     The test method imitates a server that listens for clients and puts them onto different threads.
     """
@@ -32,7 +32,8 @@ def test_run_fake_server() -> None:
 
 def threaded_client(client):
     """
-    Handles each client by printing out received messages from the client
+    Handles each client by printing out received messages from the client.
+
     :param client: the client connection created
     """
     while True:
@@ -65,39 +66,4 @@ def threaded_client(client):
 
 
 if __name__ == "__main__":
-    test_run_fake_server()
-
-
-"""SOME ARCHIVES BELOW"""
-
-
-def send_game_match_request(user_id: int):
-    """
-    Send a online matching game request
-    TODO: needs to be put into other file
-    """
-    data = {"protocol_type": "client_match_request", "user_id": user_id}
-    # comm.send(data)
-
-
-def send_move(player: str):
-    """
-    Player's move
-    TODO: needs to be put into other file
-    """
-    data = {
-        "protocol_type": "client_move",
-        "player": player  # for testing
-        # 'x': player.next_move_x,
-        # 'y': player.next_move_y
-    }
-    # comm.send(data)
-
-
-def send_get_elo(user_id: int):
-    """
-    Get elo request
-    TODO: needs to be put into other file
-    """
-    data = {"protocol_type": "client_elo", "user_id": user_id}
-    # comm.send(data)
+    run_fake_server()
