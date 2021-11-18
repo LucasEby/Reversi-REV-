@@ -3,7 +3,7 @@ import socket
 import json
 import threading
 from _thread import start_new_thread
-from typing import List, Optional, Dict, Any
+from typing import List, Dict, Any, Tuple, Callable
 
 """
 --- Message Formats ---
@@ -73,7 +73,7 @@ class ServerCommsManager:
 
     _instance = None
     _lock = threading.Lock()
-    _messages_so_far: str = ""
+    _handle_response_callback: Callable[[Dict[str, Any], socket, str], None]
 
     def __new__(cls):
         """
@@ -84,6 +84,15 @@ class ServerCommsManager:
                 if not cls._instance:
                     cls._instance = super(ServerCommsManager, cls).__new__(cls)
         return cls._instance
+
+    def register_handle_response_callback(
+        self, cb: Callable[[Dict[str, Any], socket, str], None]
+    ) -> None:
+        """
+        Registers a callback for handling data
+        :param cb: Callback to register
+        """
+        self._handle_response_callback = cb
 
     def run(self) -> None:
         """
@@ -106,8 +115,8 @@ class ServerCommsManager:
             finally:
                 break
 
-    def send(self, msg: Dict[str, str], s: socket, addr) -> None:
-        """ "
+    def send(self, msg: Dict[str, Any], s: socket, addr: str) -> None:
+        """
         Send the given dict message to the given client connection.
         """
         # check if the message have specified protocol type and throw ValueError if
@@ -120,38 +129,39 @@ class ServerCommsManager:
         except socket.error as e:
             print(e)
 
-    def __threaded_client(self, conn, addr) -> None:
+    def __threaded_client(self, conn: socket, addr: str) -> None:
         """
         Create a client handler within this thread.
         """
         print("client thread created")
+        unparsed_messages: str = ""
         while True:
             try:
                 data = conn.recv(2048)
                 if not data:
                     break
-                self.__parse_data(data, conn, addr)
+                unparsed_messages = self.__parse_data(
+                    data, conn, addr, unparsed_messages
+                )
             finally:
                 break
         print("Lost connection")
         conn.close()
 
-    def __parse_data(self, data, conn, addr) -> None:
+    def __parse_data(
+        self, data: bytes, conn: socket, addr: str, unparsed_messages: str
+    ) -> str:
         """
         Parse JSON data and then handle it accordingly.
         """
         package: str = data.decode()
-        package = self._messages_so_far + package
-        self._messages_so_far = ""
+        package = unparsed_messages + package
         package: List[str] = package.split("$$")
-        if len(package) > 2:
-            for p in range(len(package) - 1):
-                if p == 0:
-                    continue
-                self._messages_so_far += p
-        msg: Dict[str, Any] = json.loads(package[0])
-        # self.__handle_data(msg, conn, addr)
-        # TODO create and use message classes to handle the data
+        # Loop through all messages before last message end symbol
+        for p in range(len(package) - 1):
+            msg: Dict[str, Any] = json.loads(package[p])
+            self._handle_response_callback(msg, conn, addr)
+        return package[-1]
 
     """
     def __handle_data(self, data, conn, addr) -> None:
