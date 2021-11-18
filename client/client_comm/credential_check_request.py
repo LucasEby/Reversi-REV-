@@ -20,7 +20,7 @@ class CredentialCheckRequest:
             "username": username,
             "password": password,
         }
-        self.client_manager.send(data, self.print_method_to_test)
+        self.client_manager.send(data, "server_login", self.print_method_to_test)
 
     def print_method_to_test(self, success: bool, protocol: Dict[str, str]) -> None:
         """

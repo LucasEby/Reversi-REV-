@@ -5,12 +5,6 @@ import traceback
 import socket
 from client.config.config_reader import ConfigReader
 
-# ADDRESS = (
-#     "127.0.0.1",
-#     7777,
-# )  # the address to connect to the server (the one right now is just for testing)
-ADDRESS = ConfigReader().get_server_info()
-
 
 class ClientCommManager:
     """
@@ -21,14 +15,6 @@ class ClientCommManager:
     # initialize singleton as None if ClientCommManager class has not been constructed ever
     _singleton: "ClientCommManager" = None
     _lock: Lock = Lock()
-    __protocol_map: Dict[str, str] = {
-        "client_login": "server_login",
-        "client_create_account": "server_create_account",
-        "client_get_account": "server_get_account",
-        "client_update_elo": "server_update_elo",
-        "client_save_game": "server_save_game",
-        "client_get_game": "server_get_game",
-    }
 
     def __new__(cls) -> "ClientCommManager":
         """
@@ -45,30 +31,30 @@ class ClientCommManager:
         Initialize the class which serves as the client side of the network connection.
         """
         self.client: socket = socket.socket()
-        self.client.connect(ADDRESS)
-        self._callback_map: Dict[str, List[Callable[[], Any]]] = {
-            "server_login": [],
-            "server_create_account": [],
-            "server_get_account": [],
-            "server_update_elo": [],
-            "server_save_game": [],
-            "server_get_game": [],
-        }
+        address = ConfigReader().get_server_info()
+        self.client.connect(address)
+        self._callback_map: Dict[str, List[Callable[[], Any]]] = {}
 
-    def send(self, message: Dict[str, str], callback: Callable[[], Any]) -> None:
+    def send(
+        self,
+        message: Dict[str, Any],
+        response_protocol_typ: str,
+        callback: Callable[[], Any],
+    ) -> None:
         """
         Send out the message to the server for communication and the message will be encapsulated before transmission.
         After message is sent out, it will wait for response and handle it.
 
         :param message: the message to be sent to the server in dictionary; it should at least have 'protocol_type'
                         specified
+        :param response_protocol_typ: expected protocol type from the server to identify which callback to use
         :param callback: the function to call when you receive a message of a certain 'protocol_type'
         :raise ValueError: if the passed in message does not contain a 'protocol_type'
         """
         # check if the message have specified protocol type and throw ValueError if
-        if not message["protocol_type"]:
+        if not response_protocol_typ or not message["protocol_type"]:
             raise ValueError("Message must have a protocol_type.")
-        self._callback_map[self.__protocol_map[message["protocol_type"]]].append(
+        self._callback_map[response_protocol_typ].append(
             callback
         )  # append the callback to the _callback_map
         # put '$$' to signify end of message and encapsulate the message
