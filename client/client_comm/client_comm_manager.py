@@ -1,9 +1,9 @@
 from threading import Lock
-from typing import List, Dict, Callable, Any
+from typing import List, Dict, Callable, Any, Optional
 import json
 import traceback
 import socket
-from client.config.config_reader import ConfigReader
+from client.config.config_reader import ConfigReader, ServerInfo
 
 
 class ClientCommManager:
@@ -15,6 +15,8 @@ class ClientCommManager:
     # initialize singleton as None if ClientCommManager class has not been constructed ever
     _singleton: "ClientCommManager" = None
     _lock: Lock = Lock()
+    _client: socket
+    _callback_map: Dict[str, List[Callable[[Any], None]]]
 
     def __new__(cls) -> "ClientCommManager":
         """
@@ -24,16 +26,11 @@ class ClientCommManager:
         with cls._lock:
             if not cls._singleton:
                 cls._singleton = super(ClientCommManager, cls).__new__(cls)
+                cls._singleton._client = socket.socket()
+                address: Optional[ServerInfo] = ConfigReader().get_server_info()
+                cls._singleton._client.connect(address)
+                cls._singleton._callback_map = {}
             return cls._singleton
-
-    def __init__(self) -> None:
-        """
-        Initialize the class which serves as the client side of the network connection.
-        """
-        self.client: socket = socket.socket()
-        address = ConfigReader().get_server_info()
-        self.client.connect(address)
-        self._callback_map: Dict[str, List[Callable[[Any], None]]] = {}
 
     def send(
         self,
@@ -64,7 +61,7 @@ class ClientCommManager:
         json_msg: str = json.dumps(message, ensure_ascii=False) + "$$"
         # send the json message to server
         try:
-            self.client.send(json_msg.encode())
+            self._client.send(json_msg.encode())
         except socket.error as e:
             print(e)
 
@@ -79,10 +76,10 @@ class ClientCommManager:
         """
         This method gets back the message from the server and handles it.
         """
-        pcg: bytes = self.client.recv(2048)
+        pcg: bytes = self._client.recv(2048)
         # if the received package is empty, connection lost should be handled
         if len(pcg) == 0:
-            self.client.close()
+            self._client.close()
             # TODO: deal with connection lost
             traceback.print_exc()
             pass
@@ -123,5 +120,5 @@ class ClientCommManager:
         """
         Closing the socket.
         """
-        self.client.close()
+        self._client.close()
         print("Connection on the client side is closed.")
