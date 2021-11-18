@@ -1,1 +1,3 @@
 black
+mysql-connector-python
+pyyaml

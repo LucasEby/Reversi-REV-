@@ -1,6 +1,7 @@
 import datetime
 import sys
 from queue import Queue
+from threading import Lock
 from typing import Optional, Dict, Tuple, Callable, Any, NamedTuple, Union, List
 
 import mysql.connector
@@ -48,35 +49,36 @@ class DatabaseGame(NamedTuple):
 class DatabaseManager:
 
     _singleton = None
+    _lock: Lock = Lock()
 
-    def __init__(self) -> None:
-        """
-        Database Manager for communication with a mySQL database
-        """
-        self._db_connection: Optional[MySQLConnection] = None
-        self._db_cursor: Optional[MySQLCursor] = None
-        self._queue: Queue = Queue()
-        self._cmd_dict: Dict[str, Callable[[DatabaseRequestInfo], None]] = {
-            "create_account": self._create_account,
-            "delete_account": self._delete_account,
-            "get_account": self._get_account,
-            "update_account": self._update_account,
-            "create_game": self._create_game,
-            "delete_game": self._delete_game,
-            "get_game": self._get_game,
-            "update_game": self._update_game,
-        }
+    _db_connection: Optional[MySQLConnection] = None
+    _db_cursor: Optional[MySQLCursor] = None
+    _queue: Queue = Queue()
+    _cmd_dict: Dict[str, Callable[[DatabaseRequestInfo], None]] = {}
 
-    @classmethod
-    def get_instance(cls):
-        if cls._singleton is None:
-            cls._singleton = DatabaseManager()
+    def __new__(cls, *args, **kwargs):
+        if not cls._singleton:
+            with cls._lock:
+                if not cls._singleton:
+                    cls._singleton = super(DatabaseManager, cls).__new__(cls)
+                    cls._singleton._cmd_dict = {
+                        "create_account": cls._singleton._create_account,
+                        "delete_account": cls._singleton._delete_account,
+                        "get_account": cls._singleton._get_account,
+                        "update_account": cls._singleton._update_account,
+                        "create_game": cls._singleton._create_game,
+                        "delete_game": cls._singleton._delete_game,
+                        "get_game": cls._singleton._get_game,
+                        "update_game": cls._singleton._update_game,
+                    }
         return cls._singleton
 
     def run(self) -> None:
         """
         Take the next command out of the queue and execute
         """
+        next_cmd: str
+        next_task_info: DatabaseRequestInfo
         next_cmd, next_task_info = self._queue.get()
         if next_cmd in self._cmd_dict:
             self._cmd_dict[next_cmd](next_task_info)
