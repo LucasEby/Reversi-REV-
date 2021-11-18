@@ -1,4 +1,5 @@
 import os
+from threading import Lock
 from typing import Dict, Any, Optional, NamedTuple
 
 from yaml import load, Loader
@@ -14,15 +15,15 @@ class ConfigReader:
 
     _FILE = "server_config.yaml"
     _singleton = None
+    _lock: Lock = Lock()
+    _database_access_info: Optional[DatabaseAccessInfo] = None
 
-    def __init__(self):
-        self._database_access_info: Optional[DatabaseAccessInfo] = None
-        self._parse_yaml()
-
-    @classmethod
-    def get_instance(cls):
-        if cls._singleton is None:
-            cls._singleton = ConfigReader()
+    def __new__(cls, *args, **kwargs):
+        if not cls._singleton:
+            with cls._lock:
+                if not cls._singleton:
+                    cls._singleton = super(ConfigReader, cls).__new__(cls)
+                    cls._singleton._parse_yaml()
         return cls._singleton
 
     def get_database_access_info(self) -> Optional[DatabaseAccessInfo]:
