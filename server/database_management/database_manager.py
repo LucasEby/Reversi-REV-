@@ -92,9 +92,7 @@ class DatabaseManager:
         """
 
         # First, get database info from config reader
-        access_info: DatabaseAccessInfo = (
-            ConfigReader().get_database_access_info()
-        )
+        access_info: DatabaseAccessInfo = ConfigReader().get_database_access_info()
         if access_info is None:
             raise DatabaseConnectionException(f"Unknown database access info")
 
