@@ -12,14 +12,12 @@ class ServerInfo(NamedTuple):
 class ConfigReader:
     _FILE = "server_config.yaml"
     _singleton = None
-
-    def __init__(self):
-        self._server_info: Optional[ServerInfo] = None
-        self._parse_yaml()
+    _server_info: Optional[ServerInfo] = None
 
     def __new__(cls):
         if cls._singleton is None:
             cls._singleton = super(ConfigReader, cls).__new__(cls)
+            cls._singleton._parse_yaml()
         return cls._singleton
 
     def get_server_info(self) -> Optional[ServerInfo]:
