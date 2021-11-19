@@ -11,7 +11,7 @@ except ImportError:
 
 
 class PickGamePageView(BasePageView):
-    def __init__(self, pgc: PickGamePageController) -> None:
+    def __init__(self, pgc: PickGamePageController, window) -> None:
         """
         Creates the button window with the 3 buttons: a local single player button, a local multiplayer button,
         and an online multiplayer button. When a button is clicked, a "loading game" message is displayed and the
@@ -22,12 +22,9 @@ class PickGamePageView(BasePageView):
         super().__init__()
         self.__pgc = pgc
 
-        # Set up window:
-        self.__window = tk.Tk()
-
         # Make the main window buttons
         self.__btn_local_single_player = tk.Button(
-            self.__window,
+            self._window,
             text="Play local single player game",
             padx=50,
             pady=50,
@@ -36,7 +33,7 @@ class PickGamePageView(BasePageView):
             command=self.__local_single_clicked,
         )
         self.__btn_local_multiplayer_game = tk.Button(
-            self.__window,
+            self._window,
             text="Play local multiplayer game",
             padx=50,
             pady=50,
@@ -45,7 +42,7 @@ class PickGamePageView(BasePageView):
             command=self.__local_multi_clicked,
         )
         self.__btn_online_game = tk.Button(
-            self.__window,
+            self._window,
             text="Play online multiplayer game",
             padx=50,
             pady=50,
@@ -54,7 +51,7 @@ class PickGamePageView(BasePageView):
             command=self.__online_clicked,
         )
         self.__btn_change_pref = tk.Button(
-            self.__window,
+            self._window,
             text="Change preferences",
             padx=50,
             pady=50,
@@ -69,12 +66,12 @@ class PickGamePageView(BasePageView):
 
         :return: None
         """
-        self.__window.attributes("-topmost", 1)
+        self._window.attributes("-topmost", 1)
 
-        self.__window.title("")
+        self._window.title("")
 
         # Make it so the window is not resizable
-        self.__window.resizable(False, False)
+        self._window.resizable(False, False)
 
         # Stick the buttons on the window
         self.__btn_local_single_player.pack()
@@ -82,7 +79,7 @@ class PickGamePageView(BasePageView):
         self.__btn_online_game.pack()
 
         # Start window loop
-        self.__window.mainloop()
+        self._window.mainloop()
 
     def __destroy_buttons_and_load(self, load_message) -> None:
         """
@@ -95,7 +92,7 @@ class PickGamePageView(BasePageView):
         self.__btn_local_single_player.destroy()
         self.__btn_local_multiplayer_game.destroy()
         self.__btn_online_game.destroy()
-        L = tk.Label(self.__window, text=load_message)
+        L = tk.Label(self._window, text=load_message)
         L.pack()
 
     def __local_single_clicked(self) -> None:
