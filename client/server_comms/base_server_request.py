@@ -1,6 +1,7 @@
 from abc import ABC
 from typing import Dict, Any, Optional
-import jsonschema
+
+from schema import Schema
 
 
 class BaseServerRequest(ABC):
@@ -12,6 +13,7 @@ class BaseServerRequest(ABC):
         self._send_message: Dict[str, Any] = {}
         self._response_message: Dict[str, Any] = {}
         self._response_success: Optional[bool] = None
+        self._response_schema: Schema = Schema({})
 
     def send(self) -> None:
         """
@@ -35,4 +37,8 @@ class BaseServerRequest(ABC):
         :param response: Actual response from the server
         """
         self._response_success = success
-        self._response_message = response
+        if self._response_success:
+            if self._response_schema.is_valid(self._response_message):
+                self._response_message = response
+            else:
+                self._response_success = success

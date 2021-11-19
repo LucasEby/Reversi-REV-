@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 from client.model.abstract_rule import AbstractRule
 from client.model.board import Board
@@ -168,5 +168,26 @@ class Game:
         return self.board.get_num_type(CellState.player1), self.board.get_num_type(
             CellState.player2
         )
+
+    def get_rules(self) -> AbstractRule:
+        """
+        Get the current rules of the game
+        :return: Rule that is being played in the game
+        """
+        return self._rules
+
+    def get_player1(self) -> Optional[Player]:
+        """
+        Get information about player 1
+        :return: Player 1
+        """
+        return self._player1
+
+    def get_player2(self) -> Optional[Player]:
+        """
+        Get information about player 2
+        :return: Player 2
+        """
+        return self._player2
 
     # def forfeit(self):

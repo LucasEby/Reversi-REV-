@@ -1,3 +1,4 @@
 black
 mysql-connector-python
 pyyaml
+schema
