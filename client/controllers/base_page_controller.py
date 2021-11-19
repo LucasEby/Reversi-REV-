@@ -25,10 +25,17 @@ class BasePageController(ABC):
         next_task, next_task_info = self._queue.get()
         # Execute task if known
         if next_task in self._task_execute_dict:
+            # do we need this if/else statement here? Couldn't it just be:
+            # self._task_execute_dict[next_task](next_task_info)?
             if next_task_info is None:
                 self._task_execute_dict[next_task]()
+                # I think this should also delete the empty task right?
+                # so I think we should also add:
+                # del self._task_execute_dict[next_task]
             else:
                 self._task_execute_dict[next_task](next_task_info)
+                # I think we should also add:
+                # del self._task_execute_dict[next_task](next_task_info)
 
     def queue(self, task_name: str, task_info: Any = None) -> None:
         """

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import tkinter as tk
 
 
 class BasePageView(ABC):
@@ -6,7 +7,8 @@ class BasePageView(ABC):
         """
         Abstract page view for all others to build off of
         """
-        self.display()
+        # self.display()
+        self._window = tk.Tk()
 
     @abstractmethod
     def display(self) -> None:
