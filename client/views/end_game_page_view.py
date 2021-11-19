@@ -9,14 +9,13 @@ from client.views.base_page_view import BasePageView
 
 class EndGamePageView(BasePageView):
 
-    __ABC_ARRAY = list(string.ascii_lowercase)
-
     def __init__(
         self,
+        go_home_cb: Callable([],None),
         game_obj: Game,
-        rematch_cb: Callable[[int], None],
-        play_again_cb: Callable[[int], None],
-        play_different_mode_cb: Callable[[int], None],
+        rematch_cb: Callable(Game),
+        play_again_cb: Callable[[Game], None],
+        play_different_mode_cb: Callable[[Game], None],
     ) -> None:
         """
 
@@ -24,8 +23,11 @@ class EndGamePageView(BasePageView):
         :param rematch_cb: Callback function for playing the same game mode against the same opponent
         :param play_again_cb: Callback function for playing the same mode again
         :param play_different_mode_cb: Callback function for changing the game mode
+        
+        :param go_home_callback: Callback to call when user requested going to the home screen
         """
         self._game_obj: Game = game_obj
+        self._go_home_callback = go_home_cb
         self._rematch_callback = rematch_cb
         self._play_again_callback = play_again_cb
         self._play_different_mode_callback = play_different_mode_cb
@@ -41,8 +43,7 @@ class EndGamePageView(BasePageView):
         self.__play_again_button().pack()
         self.__rematch_button().pack()
         self.__play_different_mode_button().pack()
-
-        window.mainloop()
+      
 
     def __rematch_button(self) -> tk.Button:
         """
