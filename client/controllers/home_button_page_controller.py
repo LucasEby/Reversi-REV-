@@ -14,11 +14,16 @@ class HomeButtonPageController(BasePageController):
         self._task_execute_dict["home_button"] = self.__execute_task_home_button
         self._go_home_callback: Callable[[], None] = go_home_callback
 
+    def run(self):
+        pass
+
     def __handle_home_button(self) -> None:
         """
         Handles home button action from the user by queueing task
         """
         self.queue(task_name="home_button")
+        # TODO:
+        # self._go_home_callback: Callable[[], None] =
 
     def __execute_task_home_button(self) -> None:
         """
