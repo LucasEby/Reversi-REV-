@@ -25,7 +25,7 @@ class PageControllerMachine:
             play_online_game_callback=self.play_online_game_callback,
             manage_preferences_callback=self.manage_preferences_callback,
             main_user=main_user,
-            window=self.__window
+            window=self.__window,
         )
 
     def run(self) -> None:
@@ -57,7 +57,9 @@ class PageControllerMachine:
         :return:
         """
         # print("play local single player game")
-        self.current_page_controller = PlayGamePageController(self.go_home_callback, self.end_game_callback, game)
+        self.current_page_controller = PlayGamePageController(
+            self.go_home_callback, self.end_game_callback, game
+        )
         # These should not be pass
 
     def play_local_multiplayer_game_callback(self, game: Game) -> None:

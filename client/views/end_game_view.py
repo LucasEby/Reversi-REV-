@@ -8,15 +8,14 @@ from client.views.base_page_view import BasePageView
 
 
 class EndGamePageView(BasePageView):
-
     def __init__(
-            self,
-            go_home_cb: Callable[[], None],
-            game_obj: Game,
-            rematch_cb: Callable[[Game], None],
-            play_again_cb: Callable[[Game], None],
-            play_different_mode_cb: Callable[[Game], None],
-            window
+        self,
+        go_home_cb: Callable[[], None],
+        game_obj: Game,
+        rematch_cb: Callable[[Game], None],
+        play_again_cb: Callable[[Game], None],
+        play_different_mode_cb: Callable[[Game], None],
+        window,
     ) -> None:
         """
         :param game_obj: A specific game object who's attributes will be accessed and displayed.

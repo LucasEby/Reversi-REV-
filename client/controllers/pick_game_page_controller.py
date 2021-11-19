@@ -15,7 +15,7 @@ class PickGamePageController(HomeButtonPageController):
         play_online_game_callback: Callable[[Game], None],
         manage_preferences_callback: Callable[[Game], None],
         main_user: User,
-        window
+        window,
     ) -> None:
         """
         Page controller used for handling and responding to user inputs that occur in the "pick game"
