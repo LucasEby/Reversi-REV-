@@ -4,7 +4,7 @@ from client.controllers.base_page_controller import BasePageController
 from client.views.end_game_page_view import EndGamePageView
 
 
-class EndGameController(BasePageController):
+class EndGamePageController(BasePageController):
     def __init__(
         self,
         go_home_callback: Callable[[], None],
