@@ -4,7 +4,7 @@ from client.controllers.base_page_controller import BasePageController
 from client.views.end_game_page_view import EndGamePageView
 
 
-class EndGameController(BasePageController):
+class EndGamePageController(BasePageController):
     def __init__(
         self,
         go_home_callback: Callable[[], None],
@@ -31,7 +31,10 @@ class EndGameController(BasePageController):
         self._task_execute_dict[
             "play_different_mode_button"
         ] = self.__execute_task_play_different_mode_button
-        self._view = EndGamePageView()
+        self.__view = EndGamePageView()
+
+    def run(self):
+        self.__view.start_gui()
 
     def __handle_rematch_button(self) -> None:
         """

@@ -26,6 +26,7 @@ class PlayGamePageView(BasePageView):
         :param place_tile_cb: Callback function to call when a tile is placed
         :param forfeit_cb: Callback function to call when a player forfeits
         """
+        super().__init__(window=window)
         self._game_obj: Game = game_obj
         self._size: int = game_obj.board.size
         self._place_tile_cb = place_tile_cb
@@ -33,7 +34,9 @@ class PlayGamePageView(BasePageView):
         self.window = window
         self.play_game_frame = tk.Frame(self.window, padding=10)
         self.play_game_frame.grid()
-        super().__init__()
+
+    def start_gui(self):
+        self.__display_board()
 
     def __display_board(self) -> None:
         """

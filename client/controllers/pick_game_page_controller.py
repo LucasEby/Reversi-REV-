@@ -15,6 +15,7 @@ class PickGamePageController(HomeButtonPageController):
         play_online_game_callback: Callable[[Game], None],
         manage_preferences_callback: Callable[[Game], None],
         main_user: User,
+        window,
     ) -> None:
         """
         Page controller used for handling and responding to user inputs that occur in the "pick game"
@@ -34,11 +35,10 @@ class PickGamePageController(HomeButtonPageController):
         ] = play_online_game_callback
         self._manage_preferences_callback = manage_preferences_callback
         self._main_user = main_user
-        self.__view = PickGamePageView(pgc=self)
-        self.__view.display()
+        self.__view = PickGamePageView(pgc=self, window=window)
 
     def run(self) -> None:
-        print("Fish")
+        self.__view.start_gui()
 
     def handle_change_preferences(self) -> None:
         """
@@ -72,6 +72,8 @@ class PickGamePageController(HomeButtonPageController):
         self._play_local_multiplayer_game_callback(
             Game(self._main_user, User(2, "Guest"))
         )
+        # TODO:
+        # play locally callback = self. play locally
 
     def handle_online_game(self) -> None:
         """

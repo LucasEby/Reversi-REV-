@@ -40,6 +40,9 @@ class ManagePreferencesPageController(HomeButtonPageController):
         self.__view: ManagePreferencesPageView = ManagePreferencesPageView(user)
         self.__preference: Preference = user.get_preference()
 
+    def run(self):
+        pass
+
     def pref_go(self) -> None:
         """
         Run the controller to print out instruction menu, ask for input, and make changes to the preference setting

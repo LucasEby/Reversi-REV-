@@ -23,11 +23,14 @@ class PlayGamePageController(HomeButtonPageController):
         self._task_execute_dict["forfeit"] = self.__execute_task_forfeit
         self._end_game_callback: Callable[[], None] = end_game_callback
         self._game = game
-        self._view = PlayGamePageView(
+        self.__view = PlayGamePageView(
             game_obj=self._game,
             place_tile_cb=self.__handle_place_tile,
             forfeit_cb=self.__handle_forfeit,
         )
+
+    def run(self):
+        self.__view.start_gui()
 
     def __handle_place_tile(self, coordinate: Tuple[int, int]) -> None:
         """
@@ -74,3 +77,11 @@ class PlayGamePageController(HomeButtonPageController):
         # Notify model who forfeited and notify parent game is over
         # self._game.forfeit(player_num)
         # self._end_game_callback(self._game)
+
+
+# play game controller calls end game callback
+# in page machine:
+# self.currentPageController.run()
+#
+# play game page view in the main branch
+# instead of calling playgamecontroller.callback

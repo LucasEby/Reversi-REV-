@@ -7,14 +7,16 @@ from client.controllers.pick_game_page_controller import PickGamePageController
 from client.views.pick_game_page_view import PickGamePageView
 from client.model.game import Game
 from client.model.user import User
+import tkinter as tk
 
 
-class PageMachine:
+class PageControllerMachine:
     def __init__(self) -> None:
         """
         Class that controls which page controller is currently active.
         Based on callbacks from the various page controllers, the next page controller can be determined.
         """
+        self.__window = tk.Tk()
         main_user: User = User(id_num=1, username="P1")
         self.current_page_controller: BasePageController = PickGamePageController(
             go_home_callback=self.go_home_callback,
@@ -23,6 +25,7 @@ class PageMachine:
             play_online_game_callback=self.play_online_game_callback,
             manage_preferences_callback=self.manage_preferences_callback,
             main_user=main_user,
+            window=self.__window,
         )
 
     def run(self) -> None:
@@ -37,12 +40,15 @@ class PageMachine:
         Update current page controller to welcome page when user wants to go to home screen
         """
         pass
+        # These should not be pass
 
     def end_game_callback(self, game: Game) -> None:
         """
         Update current page controller to end game page when gameplay has completed
         """
-        pass
+        # TODO:
+        # self.current_page_controller =
+        # These should not be pass
 
     def play_local_single_player_game_callback(self, game: Game) -> None:
         """
@@ -51,8 +57,10 @@ class PageMachine:
         :return:
         """
         # print("play local single player game")
-        # self.current_page_controller = PlayGamePageController(self.go_home_callback, self.end_game_callback, game)
-        pass
+        self.current_page_controller = PlayGamePageController(
+            self.go_home_callback, self.end_game_callback, game
+        )
+        # These should not be pass
 
     def play_local_multiplayer_game_callback(self, game: Game) -> None:
         """
@@ -64,7 +72,6 @@ class PageMachine:
         self.current_page_controller = PlayGamePageController(
             self.go_home_callback, self.end_game_callback, game
         )
-        pass
 
     def play_online_game_callback(self, game: Game) -> None:
         """
@@ -75,6 +82,7 @@ class PageMachine:
         """
         # self.current_page_controller = PlayGamePageController(self.go_home_callback, self.end_game_callback, game)
         pass
+        # These should not be pass
 
     def manage_preferences_callback(self, game: Game) -> None:
         """
@@ -86,6 +94,7 @@ class PageMachine:
         # self.current_page_controller = ManagePreferencesPageController(self.go_home_callback,
         # self.end_game_callback, User(id_num=1, username="P1"))
         pass
+        # These should not be pass
 
 
 # main_user.get_preference().set_board_size(4)
