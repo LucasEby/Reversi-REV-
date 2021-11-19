@@ -1,7 +1,9 @@
 from client.controllers.base_page_controller import BasePageController
 from client.controllers.play_game_page_controller import PlayGamePageController
+from client.model.account import Account
 from client.model.game import Game
 from client.model.user import User
+from client.server_comms.create_game_server_request import CreateGameServerRequest
 
 
 class PageMachine:
@@ -10,13 +12,13 @@ class PageMachine:
         Class that controls which page controller is currently active.
         Based on callbacks from the various page controllers, the next page controller can be determined.
         """
-        main_user: User = User(id_num=1, username="P1")
+        main_user: User = User(username="P1")
         main_user.get_preference().set_board_size(8)
         self.current_page_controller: BasePageController = PlayGamePageController(
             go_home_callback=self.go_home_callback,
             end_game_callback=self.end_game_callback,
             game=Game(
-                user1=User(id_num=2, username="P2"),
+                user1=User(username="P2"),
                 user2=main_user,
                 p1_first_move=False,
             ),
@@ -26,6 +28,14 @@ class PageMachine:
         """
         Forever runs the active page controller
         """
+        req = CreateGameServerRequest(game=Game(
+            user1=Account(username="player 1", elo=1000, account_id=137), user2=User(username="player 2")
+        ))
+        req.send()
+        while req.is_response_success() is not True:
+            continue
+        print("Yay!!!")
+
         while True:
             self.current_page_controller.run()
 

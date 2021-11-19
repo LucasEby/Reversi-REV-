@@ -73,15 +73,18 @@ class DatabaseManager:
                     }
         return cls._singleton
 
-    def run(self) -> None:
+    def run(self, run_once: bool = False) -> None:
         """
         Take the next command out of the queue and execute
         """
-        next_cmd: str
-        next_task_info: DatabaseRequestInfo
-        next_cmd, next_task_info = self._queue.get()
-        if next_cmd in self._cmd_dict:
-            self._cmd_dict[next_cmd](next_task_info)
+        while True:
+            next_cmd: str
+            next_task_info: DatabaseRequestInfo
+            next_cmd, next_task_info = self._queue.get()
+            if next_cmd in self._cmd_dict:
+                self._cmd_dict[next_cmd](next_task_info)
+            if run_once:
+                break
 
     def connect_database(self) -> None:
         """

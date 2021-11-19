@@ -3,7 +3,7 @@ import unittest
 from _thread import *
 from typing import Dict
 
-from client.client_comm.client_comm_manager import ClientCommManager
+from client.server_comms.client_comms_manager import ClientCommsManager
 
 
 class MyTestCase(unittest.TestCase):
@@ -18,7 +18,7 @@ class MyTestCase(unittest.TestCase):
         """
         This method initializes a ClientCommManager.
         """
-        self.comm: ClientCommManager = ClientCommManager()
+        self.comm: ClientCommsManager = ClientCommsManager()
         print(self.comm)
 
     def test_client_manager_singleton(self) -> None:
@@ -27,7 +27,7 @@ class MyTestCase(unittest.TestCase):
         constructed more than once.
         """
         self.initialize_manager()
-        s = ClientCommManager()
+        s = ClientCommsManager()
         print(s)
         self.assertEqual(self.comm, s)
 
@@ -48,7 +48,7 @@ class MyTestCase(unittest.TestCase):
         """
         This method represent a thread for the test method 'test_client_singleton_thread_initialize_outside_threads'.
         """
-        s = ClientCommManager()
+        s = ClientCommsManager()
         print(s)
         self.assertEqual(self.comm, s)
 
@@ -95,7 +95,7 @@ class MyTestCase(unittest.TestCase):
         self._password: str = "password"
         self.send_login(self._username, self._password)
         # start_new_thread(self.comm.run, ())
-        communication = ClientCommManager()
+        communication = ClientCommsManager()
         start_new_thread(communication.run, ())
 
     def send_login(self, username: str, password: str) -> None:

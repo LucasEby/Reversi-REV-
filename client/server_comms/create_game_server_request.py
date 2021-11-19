@@ -4,7 +4,7 @@ from client.model.account import Account
 from client.model.ai import AI
 from client.model.game import Game
 from client.server_comms.base_server_request import BaseServerRequest
-from common.client_server_protocols import create_game_server_schema
+from common.client_server_protocols import create_game_server_schema, create_game_client_schema
 
 
 class CreateGameServerRequest(BaseServerRequest):
@@ -15,6 +15,7 @@ class CreateGameServerRequest(BaseServerRequest):
         """
         super().__init__()
         self._response_schema = create_game_server_schema
+        self._send_message["protocol_type"] = self._response_schema.schema["protocol_type"]
         self._send_message["rules"] = str(game.get_rules())
         self._send_message["board_state"] = [[cell.value for cell in row] for row in game.board.get_state()]
         if game.get_player1() is not None and isinstance(game.get_player1().get_user(), Account):

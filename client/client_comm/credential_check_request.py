@@ -1,7 +1,5 @@
 from typing import Dict
 
-from client.client_comm.client_comm_manager import ClientCommManager
-
 
 class CredentialCheckRequest:
     def __init__(self) -> None:

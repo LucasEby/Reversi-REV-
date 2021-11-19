@@ -1,13 +1,13 @@
-import socket
 from abc import ABC, abstractmethod
-from typing import Dict, Any, Callable
+from socket import socket
+from typing import Dict, Any, Callable, Tuple
 
 
 class BaseClientResponse(ABC):
 
     _respond_callback: Callable[[Any], None] = None
 
-    def __init__(self, message: Dict[Any], connection: socket, addr: str):
+    def __init__(self, message: Dict[str, Any], connection: socket, addr: Tuple[int, int]):
         """
         Base client response for all other client responses to build off
         Constructor ensures client response has a message
@@ -19,7 +19,7 @@ class BaseClientResponse(ABC):
         self._response_message: Dict[str, Any] = {}
         self._client_connection: socket = connection
         self._client_address = addr
-        self._handled = False
+        self._handled: bool = False
 
     @classmethod
     def register_respond_callback(cls, callback: Callable[[Any], None]) -> None:
@@ -33,7 +33,7 @@ class BaseClientResponse(ABC):
         """
         Return whether the client request has been handled
         """
-        return self._handled
+        return self._handled is True
 
     @abstractmethod
     def handle_request(self) -> None:

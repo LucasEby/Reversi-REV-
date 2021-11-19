@@ -3,7 +3,7 @@ import socket
 import json
 import threading
 from _thread import start_new_thread
-from typing import List, Dict, Any, Callable
+from typing import List, Dict, Any, Callable, Tuple
 
 """
 --- Message Formats ---
@@ -65,15 +65,15 @@ Respond to an unrecognized client request:
     'unrecognized_protocol_type': client_request_type
 """
 
-HOST = "localhost"
-PORT = 5050
+HOST = "127.0.0.1"
+PORT = 7777
 
 
 class ServerCommsManager:
 
     _instance = None
     _lock = threading.Lock()
-    _handle_response_callback: Callable[[Dict[str, Any], socket, str], None]
+    _handle_response_callback: Callable[[Dict[str, Any], socket.socket, Tuple[int, int]], None]
 
     def __new__(cls):
         """
@@ -86,7 +86,7 @@ class ServerCommsManager:
         return cls._instance
 
     def register_handle_response_callback(
-        self, cb: Callable[[Dict[str, Any], socket, str], None]
+        self, cb: Callable[[Dict[str, Any], socket.socket, Tuple[int, int]], None]
     ) -> None:
         """
         Registers a callback for handling data
@@ -105,17 +105,17 @@ class ServerCommsManager:
             print(str(e))
             return
         s.listen(2)
-        print("server started, waiting for connections")
+        print("Server started, waiting for connections")
         while True:
             try:
                 conn, addr = s.accept()
-                conn.settimeout(20)  # set connection timeout to 20 seconds
+                conn.settimeout(20.0)  # Set client
                 print("Connected to: ", addr)
                 start_new_thread(self.__threaded_client, (conn, addr))
-            finally:
-                break
+            except Exception as e:
+                print(e)
 
-    def send(self, msg: Dict[str, Any], s: socket, addr: str) -> None:
+    def send(self, msg: Dict[str, Any], s: socket.socket, addr: Tuple[int, int]) -> None:
         """
         Send the given dict message to the given client connection.
         """
@@ -125,15 +125,14 @@ class ServerCommsManager:
         # put '$$' to signify end of message and encapsulate the message
         message: str = json.dumps(msg, ensure_ascii=False) + "$$"
         try:
-            s.sendto(message.encode, addr)
+            s.sendto(message.encode(), addr)
         except socket.error as e:
             print(e)
 
-    def __threaded_client(self, conn: socket, addr: str) -> None:
+    def __threaded_client(self, conn: socket.socket, addr: Tuple[int, int]) -> None:
         """
         Create a client handler within this thread.
         """
-        print("client thread created")
         unparsed_messages: str = ""
         while True:
             try:
@@ -145,11 +144,11 @@ class ServerCommsManager:
                 )
             finally:
                 break
-        print("Lost connection")
+        print(f"Lost connection to: {addr}")
         conn.close()
 
     def __parse_data(
-        self, data: bytes, conn: socket, addr: str, unparsed_messages: str
+        self, data: bytes, conn: socket.socket, addr: Tuple[int, int], unparsed_messages: str
     ) -> str:
         """
         Parse JSON data and then handle it accordingly.

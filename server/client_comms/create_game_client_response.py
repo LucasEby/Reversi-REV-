@@ -1,6 +1,6 @@
 from datetime import datetime
 from socket import socket
-from typing import Dict, Any
+from typing import Dict, Any, Tuple
 
 from common.client_server_protocols import create_game_server_schema
 from server.client_comms.base_client_response import BaseClientResponse
@@ -10,7 +10,7 @@ from server.database_management.database_manager import DatabaseManager, Databas
 
 class CreateGameClientResponse(BaseClientResponse):
 
-    def __init__(self, message: Dict[Any], connection: socket, addr: str) -> None:
+    def __init__(self, message: Dict[str, Any], connection: socket, addr: Tuple[int, int]) -> None:
         """
         C'tor for response handler that creates a new game in the database manager
         :param message: Message info from client
@@ -35,7 +35,6 @@ class CreateGameClientResponse(BaseClientResponse):
             last_save=datetime.now(),
         )
         DatabaseManager().create_game(callback=self.__game_created_callback, database_game=dbg)
-        self._handled = True
 
     def respond(self) -> None:
         """
@@ -43,7 +42,7 @@ class CreateGameClientResponse(BaseClientResponse):
         """
         self._response_message.update(
             {
-                "protocol_type": create_game_server_schema["protocol_type"],
+                "protocol_type": create_game_server_schema.schema["protocol_type"],
                 "success": self._db_success,
                 # TODO: Set other fields of _response_message correctly
                 "game_id": 0,
@@ -60,5 +59,6 @@ class CreateGameClientResponse(BaseClientResponse):
         :param success: Whether game was created successfully
         """
         self._db_success = success
+        self._handled = True
         self._respond_callback(self)
 

@@ -3,6 +3,8 @@ from typing import Dict, Any, Optional
 
 from schema import Schema
 
+from client.server_comms.client_comms_manager import ClientCommsManager
+
 
 class BaseServerRequest(ABC):
     def __init__(self) -> None:
@@ -19,14 +21,11 @@ class BaseServerRequest(ABC):
         """
         Sends the current message through the client comms manager, registering response callback in the process
         """
-        if (
-            "protocol_type" in self._send_message
-            and "protocol_type" in self._response_message
-        ):
+        if "protocol_type" in self._send_message:
             self._response_success = None
             ClientCommsManager().send(
                 message=self._send_message,
-                response_protocol_type=self._response_message["protocol_type"],
+                response_protocol_type=self._response_schema.schema["protocol_type"],
                 callback=self._response_callback,
             )
 

@@ -1,3 +1,4 @@
+from queue import Queue
 from threading import Lock
 from typing import List, Dict, Callable, Any, Optional
 import json
@@ -6,19 +7,21 @@ import socket
 from client.config.config_reader import ConfigReader, ServerInfo
 
 
-class ClientCommManager:
+class ClientCommsManager:
     """
     This ClientCommManager class initializes connection to the server and provides methods that send message to the
     server or handle the received message.
     """
 
     # initialize singleton as None if ClientCommManager class has not been constructed ever
-    _singleton: "ClientCommManager" = None
+    _singleton = None
     _lock: Lock = Lock()
-    _client: socket
-    _callback_map: Dict[str, List[Callable[[Any], None]]]
+    _client: socket = socket.socket()
+    _callback_map: Dict[str, List[Callable[[bool, Any], None]]] = {}
+    _send_queue: Queue = Queue(maxsize=1)
+    _connected_to_server: bool = False
 
-    def __new__(cls) -> "ClientCommManager":
+    def __new__(cls):
         """
         Create a ClientCommManager object. Initialized object will be return if it already exists, otherwise a new one
         will be initialized.
@@ -26,12 +29,19 @@ class ClientCommManager:
         if not cls._singleton:
             with cls._lock:
                 if not cls._singleton:
-                    cls._singleton = super(ClientCommManager, cls).__new__(cls)
-                    cls._singleton._client = socket.socket()
-                    address: Optional[ServerInfo] = ConfigReader().get_server_info()
-                    cls._singleton._client.connect(address)
-                    cls._singleton._callback_map = {}
+                    cls._singleton = super(ClientCommsManager, cls).__new__(cls)
         return cls._singleton
+
+    def __connect_to_server(self) -> None:
+        """
+        Tries to connect to server. Putting in own function allows chance to re-connect if failed
+        """
+        address: Optional[ServerInfo] = ConfigReader().get_server_info()
+        try:
+            self._client.connect(address)
+            self._connected_to_server = True
+        except Exception:
+            self._connected_to_server = False
 
     def send(
         self,
@@ -49,43 +59,66 @@ class ClientCommManager:
         :param callback: the function to call when you receive a message of a certain 'protocol_type'
         :raise ValueError: if the passed in message does not contain a 'protocol_type'
         """
-        # check if the message have specified protocol type and throw ValueError if
-        if not response_protocol_type or not message["protocol_type"]:
+        # check if the message have specified protocol type and throw ValueError if not
+        if "protocol_type" not in message:
             raise ValueError("Message must have a protocol_type.")
-        # add a new key to the _callback_map if passed-in response_protocol_type is not a key in the map yet
+        # Add sending info to the queue
+        self._send_queue.put((message, response_protocol_type, callback))
+
+    def run(self):
+        """
+        Call the __send __handle_receive method in a forever loop
+        so that it will keep sending then listening for the message to/from server.
+        """
+        self._client.settimeout(None)
+        while True:
+            if self._connected_to_server:
+                self.__send()
+                self.__handle_receive()
+            else:
+                print("Got to connect")
+                self.__connect_to_server()
+
+    def __send(self) -> None:
+        """
+        Takes any messages dropped off to send and sends them.
+        This is in own function so all socket operations occur in one thread.
+        """
+        # Get info from queue
+        message, response_protocol_type, callback = self._send_queue.get()
+        print("Got here!")
+        # Add a new key to the _callback_map if passed-in response_protocol_type is not a key in the map yet
         if response_protocol_type not in self._callback_map:
             self._callback_map[response_protocol_type] = []
         self._callback_map[response_protocol_type].append(
             callback
         )  # append the callback to the _callback_map
-        # put '$$' to signify end of message and encapsulate the message
+        # Put '$$' to signify end of message and encapsulate the message
         json_msg: str = json.dumps(message, ensure_ascii=False) + "$$"
-        # send the json message to server
+        # Send the json message to server (let comms manager do its thing with the dropped-off message)
         try:
             self._client.send(json_msg.encode())
         except socket.error as e:
+            self._callback_map[response_protocol_type][0](False, response_protocol_type)
+            self._callback_map[response_protocol_type].pop(0)
             print(e)
-
-    def run(self):
-        """
-        Call the __handle_receive method in a forever loop so that it will keep listening for the message from server.
-        """
-        while True:
-            self.__handle_receive()
 
     def __handle_receive(self) -> None:
         """
         This method gets back the message from the server and handles it.
         """
-        pcg: bytes = self._client.recv(2048)
-        # if the received package is empty, connection lost should be handled
-        if len(pcg) == 0:
-            self._client.close()
-            # TODO: deal with connection lost
-            traceback.print_exc()
-            pass
-        # parse and deal with the data
-        self.__parse_data(pcg)
+        try:
+            pcg: bytes = self._client.recv(2048)
+            # if the received package is empty, connection lost should be handled
+            if len(pcg) == 0:
+                self._client.close()
+                # TODO: deal with connection lost
+                traceback.print_exc()
+                pass
+            # parse and deal with the data
+            self.__parse_data(pcg)
+        except socket.error as e:
+            print(e)
 
     def __parse_data(self, pcg: bytes) -> None:
         """

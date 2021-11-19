@@ -1,7 +1,7 @@
 import socket
 from queue import Queue
 from threading import Lock
-from typing import Dict, Any
+from typing import Dict, Any, Tuple
 
 from common.client_server_protocols import create_game_client_schema
 from server.client_comms.base_client_response import BaseClientResponse
@@ -14,8 +14,8 @@ class ResponseManager:
     _instance = None
     _lock: Lock = Lock()
     _queue: Queue = Queue()
-    _protocol_type_response_dict: Dict[str, BaseClientResponse] = {
-        create_game_client_schema.schema["protocol_type"]: CreateGameClientResponse
+    _protocol_type_response_dict: Dict[str, str] = {
+        create_game_client_schema.schema["protocol_type"]: CreateGameClientResponse.__name__
     }
 
     def __new__(cls, *args, **kwargs):
@@ -31,21 +31,22 @@ class ResponseManager:
                         cls._instance._handle_response
                     )
                     # Register callback in base client response to queue a response back to the client
-                    BaseClientResponse.register_respond_callback(cls._instance._queue.put)
+                    BaseClientResponse.register_respond_callback(cls._instance._respond)
         return cls._instance
 
     def run(self) -> None:
         """
         Keep running client responses from the queue
         """
-        response: BaseClientResponse = self._queue.get()
-        if not response.is_handled():
-            response.handle_request()
-        else:
-            response.respond()
+        while True:
+            response: BaseClientResponse = self._queue.get()
+            if not response.is_handled():
+                response.handle_request()
+            else:
+                response.respond()
 
     def _handle_response(
-        self, message: Dict[str, Any], connection: socket, addr: str
+        self, message: Dict[str, Any], connection: socket, addr: Tuple[int, int]
     ) -> None:
         """
         Adds a response to the queue for future execution based on the protocol type of the given message
@@ -57,7 +58,12 @@ class ResponseManager:
         if message["protocol_type"] not in self._protocol_type_response_dict:
             return
         # Queue response based on protocol type of incoming message
-        new_response: BaseClientResponse = globals()[
-            type(self._protocol_type_response_dict[message["protocol_type"]]).__name__
-        ](message, connection, addr)
+        new_response: BaseClientResponse = globals()[self._protocol_type_response_dict[message["protocol_type"]]](message, connection, addr)
         self._queue.put(new_response)
+
+    def _respond(self, response: BaseClientResponse) -> None:
+        """
+        Respond to client by adding response back into the queue
+        :param response: Response that has been initially handled
+        """
+        self._queue.put(response)
