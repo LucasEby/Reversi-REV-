@@ -10,7 +10,7 @@ from client.model.user import User
 import tkinter as tk
 
 
-class PageControllerMachine:
+class PageMachine:
     def __init__(self) -> None:
         """
         Class that controls which page controller is currently active.
