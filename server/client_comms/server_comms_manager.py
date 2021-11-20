@@ -3,7 +3,9 @@ import socket
 import json
 import threading
 from _thread import start_new_thread
-from typing import List, Dict, Any, Callable, Tuple
+from typing import List, Dict, Any, Tuple, Optional
+
+from server.client_comms.response_manager import ResponseManager
 
 """
 --- Message Formats ---
@@ -65,7 +67,7 @@ Respond to an unrecognized client request:
     'unrecognized_protocol_type': client_request_type
 """
 
-HOST = "127.0.0.1"
+HOST = "localhost"
 PORT = 7777
 
 
@@ -73,7 +75,6 @@ class ServerCommsManager:
 
     _instance = None
     _lock = threading.Lock()
-    _handle_response_callback: Callable[[Dict[str, Any], socket.socket, Tuple[int, int]], None]
 
     def __new__(cls):
         """
@@ -85,15 +86,6 @@ class ServerCommsManager:
                     cls._instance = super(ServerCommsManager, cls).__new__(cls)
         return cls._instance
 
-    def register_handle_response_callback(
-        self, cb: Callable[[Dict[str, Any], socket.socket, Tuple[int, int]], None]
-    ) -> None:
-        """
-        Registers a callback for handling data
-        :param cb: Callback to register
-        """
-        self._handle_response_callback = cb
-
     def run(self) -> None:
         """
         Start the server and listen for client connections and requests. Handle those requests accordingly.
@@ -102,20 +94,20 @@ class ServerCommsManager:
         try:
             s.bind((HOST, PORT))
         except socket.error as e:
-            print(str(e))
+            print(e)
             return
         s.listen(2)
         print("Server started, waiting for connections")
         while True:
             try:
                 conn, addr = s.accept()
-                conn.settimeout(20.0)  # Set client
+                conn.settimeout(60.0)  # Set timeout to hear from client to 1 minute
                 print("Connected to: ", addr)
                 start_new_thread(self.__threaded_client, (conn, addr))
             except Exception as e:
                 print(e)
 
-    def send(self, msg: Dict[str, Any], s: socket.socket, addr: Tuple[int, int]) -> None:
+    def __send(self, msg: Dict[str, Any], conn: socket.socket, addr: Tuple[int, int]) -> None:
         """
         Send the given dict message to the given client connection.
         """
@@ -125,7 +117,7 @@ class ServerCommsManager:
         # put '$$' to signify end of message and encapsulate the message
         message: str = json.dumps(msg, ensure_ascii=False) + "$$"
         try:
-            s.sendto(message.encode(), addr)
+            conn.sendto(message.encode(), addr)
         except socket.error as e:
             print(e)
 
@@ -142,7 +134,7 @@ class ServerCommsManager:
                 unparsed_messages = self.__parse_data(
                     data, conn, addr, unparsed_messages
                 )
-            finally:
+            except socket.error:
                 break
         print(f"Lost connection to: {addr}")
         conn.close()
@@ -159,7 +151,9 @@ class ServerCommsManager:
         # Loop through all messages before last message end symbol
         for p in range(len(package) - 1):
             msg: Dict[str, Any] = json.loads(package[p])
-            self._handle_response_callback(msg, conn, addr)
+            # Handle response then send response message back to client
+            response_msg: Optional[Dict[str, Any]] = ResponseManager().handle_response(msg)
+            self.__send(msg=response_msg, conn=conn, addr=addr)
         return package[-1]
 
     """

@@ -38,6 +38,8 @@ class ClientCommsManager:
         """
         address: Optional[ServerInfo] = ConfigReader().get_server_info()
         try:
+            # Create a new socket (if old failed, we need a new one)
+            self._client = socket.socket()
             self._client.connect(address)
             self._connected_to_server = True
         except Exception:
@@ -76,7 +78,6 @@ class ClientCommsManager:
                 self.__send()
                 self.__handle_receive()
             else:
-                print("Got to connect")
                 self.__connect_to_server()
 
     def __send(self) -> None:
@@ -86,7 +87,6 @@ class ClientCommsManager:
         """
         # Get info from queue
         message, response_protocol_type, callback = self._send_queue.get()
-        print("Got here!")
         # Add a new key to the _callback_map if passed-in response_protocol_type is not a key in the map yet
         if response_protocol_type not in self._callback_map:
             self._callback_map[response_protocol_type] = []
@@ -101,6 +101,8 @@ class ClientCommsManager:
         except socket.error as e:
             self._callback_map[response_protocol_type][0](False, response_protocol_type)
             self._callback_map[response_protocol_type].pop(0)
+            self._client.close()
+            self._connected_to_server = False
             print(e)
 
     def __handle_receive(self) -> None:
@@ -109,15 +111,11 @@ class ClientCommsManager:
         """
         try:
             pcg: bytes = self._client.recv(2048)
-            # if the received package is empty, connection lost should be handled
-            if len(pcg) == 0:
-                self._client.close()
-                # TODO: deal with connection lost
-                traceback.print_exc()
-                pass
-            # parse and deal with the data
+            # Parse and deal with the data
             self.__parse_data(pcg)
         except socket.error as e:
+            self._client.close()
+            self._connected_to_server = False
             print(e)
 
     def __parse_data(self, pcg: bytes) -> None:

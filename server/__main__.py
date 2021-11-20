@@ -8,9 +8,6 @@ if __name__ == "__main__":
     server: ServerCommsManager = ServerCommsManager()
     start_new_thread(server.run, ())
 
-    response_manager: ResponseManager = ResponseManager()
-    start_new_thread(response_manager.run, ())
-
     database_manager: DatabaseManager = DatabaseManager()
     start_new_thread(database_manager.run, ())
 

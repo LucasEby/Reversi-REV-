@@ -28,14 +28,6 @@ class PageMachine:
         """
         Forever runs the active page controller
         """
-        req = CreateGameServerRequest(game=Game(
-            user1=Account(username="player 1", elo=1000, account_id=137), user2=User(username="player 2")
-        ))
-        req.send()
-        while req.is_response_success() is not True:
-            continue
-        print("Yay!!!")
-
         while True:
             self.current_page_controller.run()
 
