@@ -3,7 +3,6 @@ from typing import Dict, Any
 
 
 class BaseClientResponse(ABC):
-
     def __init__(self, message: Dict[str, Any]):
         """
         Base client response for all other client responses to build off
@@ -19,5 +18,3 @@ class BaseClientResponse(ABC):
         Respond to the client once all server-related tasks have completed
         """
         pass
-
-

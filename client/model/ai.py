@@ -3,7 +3,6 @@ from client.model.user import User
 
 
 class AI(Player):
-
     def __init__(self, user: User, player_num: int) -> None:
         """
         Create an AI that can play as a player

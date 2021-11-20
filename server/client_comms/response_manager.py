@@ -11,7 +11,9 @@ class ResponseManager:
     _instance = None
     _lock: Lock = Lock()
     _protocol_type_response_dict: Dict[str, str] = {
-        create_game_client_schema.schema["protocol_type"]: CreateGameClientResponse.__name__
+        create_game_client_schema.schema[
+            "protocol_type"
+        ]: CreateGameClientResponse.__name__
     }
 
     def __new__(cls, *args, **kwargs):
@@ -24,9 +26,7 @@ class ResponseManager:
                     cls._instance = super(ResponseManager, cls).__new__(cls)
         return cls._instance
 
-    def handle_response(
-        self, message: Dict[str, Any]
-    ) -> Optional[Dict[str, Any]]:
+    def handle_response(self, message: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """
         Adds a response to the queue for future execution based on the protocol type of the given message
         :param message: Message passed from the server comms manager
@@ -37,5 +37,7 @@ class ResponseManager:
         if message["protocol_type"] not in self._protocol_type_response_dict:
             return None
         # Queue response based on protocol type of incoming message
-        new_response: BaseClientResponse = globals()[self._protocol_type_response_dict[message["protocol_type"]]](message)
+        new_response: BaseClientResponse = globals()[
+            self._protocol_type_response_dict[message["protocol_type"]]
+        ](message)
         return new_response.respond()

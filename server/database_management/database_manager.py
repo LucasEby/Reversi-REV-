@@ -71,6 +71,7 @@ class DatabaseManager:
                         "get_game": cls._singleton._get_game,
                         "update_game": cls._singleton._update_game,
                     }
+                    cls._singleton.connect_database()
         return cls._singleton
 
     def run(self, run_once: bool = False) -> None:

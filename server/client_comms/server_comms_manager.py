@@ -107,7 +107,9 @@ class ServerCommsManager:
             except Exception as e:
                 print(e)
 
-    def __send(self, msg: Dict[str, Any], conn: socket.socket, addr: Tuple[int, int]) -> None:
+    def __send(
+        self, msg: Dict[str, Any], conn: socket.socket, addr: Tuple[int, int]
+    ) -> None:
         """
         Send the given dict message to the given client connection.
         """
@@ -140,7 +142,11 @@ class ServerCommsManager:
         conn.close()
 
     def __parse_data(
-        self, data: bytes, conn: socket.socket, addr: Tuple[int, int], unparsed_messages: str
+        self,
+        data: bytes,
+        conn: socket.socket,
+        addr: Tuple[int, int],
+        unparsed_messages: str,
     ) -> str:
         """
         Parse JSON data and then handle it accordingly.
@@ -152,7 +158,9 @@ class ServerCommsManager:
         for p in range(len(package) - 1):
             msg: Dict[str, Any] = json.loads(package[p])
             # Handle response then send response message back to client
-            response_msg: Optional[Dict[str, Any]] = ResponseManager().handle_response(msg)
+            response_msg: Optional[Dict[str, Any]] = ResponseManager().handle_response(
+                msg
+            )
             self.__send(msg=response_msg, conn=conn, addr=addr)
         return package[-1]
 

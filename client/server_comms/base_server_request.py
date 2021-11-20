@@ -35,9 +35,8 @@ class BaseServerRequest(ABC):
         :param success: Whether server successfully responded. False would indicate a problem accessing the server
         :param response: Actual response from the server
         """
-        self._response_success = success
-        if self._response_success:
-            if self._response_schema.is_valid(self._response_message):
-                self._response_message = response
-            else:
-                self._response_success = success
+        if success is True and self._response_schema.is_valid(response):
+            self._response_message = response
+            self._response_success = True
+        else:
+            self._response_success = False

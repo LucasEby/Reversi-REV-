@@ -1,9 +1,7 @@
 from client.controllers.base_page_controller import BasePageController
 from client.controllers.play_game_page_controller import PlayGamePageController
-from client.model.account import Account
 from client.model.game import Game
 from client.model.user import User
-from client.server_comms.create_game_server_request import CreateGameServerRequest
 
 
 class PageMachine:

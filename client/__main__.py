@@ -12,6 +12,5 @@ if __name__ == "__main__":
 
     # Create page machine running in its own thread. Once it has stopped, program is over
     page_machine: PageMachine = PageMachine()
-    #start_new_thread(page_machine.run, ())
+    # start_new_thread(page_machine.run, ())
     page_machine.run()
-
