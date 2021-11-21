@@ -14,7 +14,6 @@ class EndGamePageView(BasePageView):
         game_obj: Game,
         rematch_cb: Callable[[Game], None],
         play_again_cb: Callable[[Game], None],
-        play_different_mode_cb: Callable[[Game], None],
         window,
     ) -> None:
         """
@@ -29,23 +28,22 @@ class EndGamePageView(BasePageView):
         self._go_home_callback = go_home_cb
         self._rematch_callback = rematch_cb
         self._play_again_callback = play_again_cb
-        self._play_different_mode_callback = play_different_mode_cb
         super().__init__(window=window)
 
-    def start_gui(self) -> None:
+    def __display(self) -> None:
         """
-        draws the End Game windows and its 5 elements
+        Packs the End Game frame and its 5 elements
         """
-        # window = tk.Tk()
         self.__score_label().pack()
         self.__winner_label().pack()
         self.__play_again_button().pack()
         self.__rematch_button().pack()
-        self.__play_different_mode_button().pack()
+        self._frame.lift()
 
     def __rematch_button(self) -> tk.Button:
         """
         Builds the rematch button
+        :return: Button labled rematch
         """
         return tk.Button(
             self._frame,
@@ -59,6 +57,7 @@ class EndGamePageView(BasePageView):
     def __play_again_button(self) -> tk.Button:
         """
         Builds the play again button
+        :return: Button labled Play Again
         """
         return tk.Button(
             self._frame,
@@ -69,27 +68,21 @@ class EndGamePageView(BasePageView):
             command=self._play_again_callback,
         )
 
-    def __play_different_mode_button(self) -> tk.Button:
-        """
-        Builds the play different mode button
-        """
-        return tk.Button(
-            self._frame,
-            text="Play Diiffernt Mode",
-            width=25,
-            height=5,
-            # bg="blue",fg="yellow",
-            command=self._play_different_mode_callback,
-        )
-
     def __score_label(self) -> tk.Label:
         """
-        Prints out the game's score.
+        returns the label stating the game's score.
+        :return: label "Score"
         """
-        return tk.Label(str(self._game_obj.get_score()))
+        return tk.Label(self._frame, text = ("Score: " + str(self._game_obj.get_score())))
 
     def __winner_label(self) -> tk.Label:
         """
-        Prints out the winner of the game.
+        returns the label containing winner of the game.
+        :return: lable "Winner"
         """
-        return tk.Label(str(self._game_obj.get_score()))
+        return tk.Label(self._frame, text = ("Winner: " + str(self._game_obj.get_winner())))
+"""
+windows = tk.tk()
+thing = EndGamePageView(None, None, None, None, windows)
+windows.mainloop()
+"""

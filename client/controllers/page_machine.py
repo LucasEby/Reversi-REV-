@@ -1,4 +1,5 @@
 from client.controllers.base_page_controller import BasePageController
+from client.controllers.end_game_page_controller import EndGamePageController
 from client.controllers.play_game_page_controller import PlayGamePageController
 from client.controllers.manage_preferences_page_controller import (
     ManagePreferencesPageController,
@@ -47,8 +48,11 @@ class PageMachine:
         Update current page controller to end game page when gameplay has completed
         """
         # TODO:
-        # self.current_page_controller =
-        # These should not be pass
+        self.current_page_controller = EndGamePageController(self, self.go_home_callback,
+        self.rematch_callback,
+        self.play_again_callback,
+        game,
+        self.__window)
 
     def play_local_single_player_game_callback(self, game: Game) -> None:
         """
@@ -95,6 +99,20 @@ class PageMachine:
         # self.end_game_callback, User(id_num=1, username="P1"))
         pass
         # These should not be pass
+    
+    def play_again_callback(self) -> None:
+        """
+        :param self:
+        """
+        self.current_page_controller = self.pick
+
+    def rematch_callback(self) -> None:
+        """
+        :param self:
+        """
+        #TODO: Need actual reamtch capabilites 
+
+        #self.current_page_controller = PickGamePageController()
 
 
 # main_user.get_preference().set_board_size(4)

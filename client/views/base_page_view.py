@@ -1,4 +1,4 @@
-from abc import ABC  # , abstractmethod
+from abc import ABC, abstractmethod
 import tkinter as tk
 
 
@@ -7,10 +7,16 @@ class BasePageView(ABC):
         """
         Abstract page view for all others to build off of
         """
+        self._frame = None
         self.__build_frame(window, title)
+        self.__display()
 
     def __build_frame(self, window, title) -> None:
         self._frame = tk.Frame(window, padding=10)
         self._frame.tk.title(title)
         # Make it so the window is not resizable
         self._frame.tk.resizable(False, False)
+    
+    @abstractmethod
+    def __display(self) -> None:
+        pass
