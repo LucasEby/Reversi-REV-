@@ -15,9 +15,10 @@ from server.client_comms.save_game_client_response import SaveGameClientResponse
 from server.client_comms.save_preferences_client_response import (
     SavePreferencesClientResponse,
 )
+from common.client_server_protocols import create_game_client_schema, get_game_client_schema
+from server.client_comms.base_client_response import BaseClientResponse
+from server.client_comms.create_game_client_response import CreateGameClientResponse
 from server.client_comms.get_game_client_response import GetGameClientResponse
-from server.client_comms.get_top_elos_client_response import GetTopELOsClientResponse
-from server.client_comms.update_elo_client_response import UpdateELOClientResponse
 
 
 class ResponseManager:
@@ -40,9 +41,6 @@ class ResponseManager:
         get_top_elos_client_schema.schema[
             "protocol_type"
         ]: GetTopELOsClientResponse.__name__,
-        save_game_client_schema.schema[
-            "protocol_type"
-        ]: SaveGameClientResponse.__name__,
     }
 
     def __new__(cls, *args, **kwargs):
