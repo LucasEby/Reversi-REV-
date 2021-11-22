@@ -54,3 +54,20 @@ save_preferences_client_schema = Schema(
 save_preferences_server_schema = Schema(
     {"protocol_type": "save_preferences", "success": bool}
 )
+get_game_client_schema = Schema(
+    {
+        "protocol_type": "get_game",
+        "game_id": int,
+    }
+)
+
+get_game_server_schema = Schema(
+    {
+        "protocol_type": "get_game",
+        "success": bool,
+        "board_state": [[int]],
+        "rules": str,
+        Or("p1_account_id", "p2_account_id", only_one=True): int,
+        Optional("ai_difficulty"): int,
+    }
+)
