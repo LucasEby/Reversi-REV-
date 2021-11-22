@@ -1,5 +1,7 @@
 from typing import Optional
 
+from schema import Schema
+
 from client.model.account import Account
 from client.model.ai import AI
 from client.model.game import Game
@@ -11,9 +13,10 @@ class CreateGameServerRequest(BaseServerRequest):
     def __init__(self, game: Game) -> None:
         """
         Creates server request for creating a game
+        :game: Game with info for creation
         """
         super().__init__()
-        self._response_schema = create_game_server_schema
+        self._response_schema: Schema = create_game_server_schema
         self._send_message["protocol_type"] = self._response_schema.schema[
             "protocol_type"
         ]

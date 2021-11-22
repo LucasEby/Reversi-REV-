@@ -18,7 +18,7 @@ class Game:
         :param p1_first_move: True if user1 has first move, false if user2 has first move
         :param save: Whether to save game after every turn
         """
-        self._id: int = id(self)
+        self._id: Optional[int] = None
         self._player1: Player = Player(user1, 1)
         self._player2: Player = Player(user2, 2)
         active_user: User = user1 if p1_first_move else user2
@@ -27,9 +27,6 @@ class Game:
         self._rules: AbstractRule = active_user.get_preference().get_rule()
         self.save: bool = save
         self.curr_player: int = 1
-
-    # TODO: implement another constructor for playing vs AI (one user provided)
-    # def __init__(self, user: User):
 
     def is_game_over(self) -> bool:
         """
@@ -61,8 +58,10 @@ class Game:
         if not self._rules.is_valid_move(self.curr_player, posn, self.board):
             return False
         self.board.cells[posn[0]][posn[1]].fill(self.curr_player)
-        # flip all Cells that are between this posn and any other curr_player disks
+
+        # Flip all Cells that are between this posn and any other curr_player disks
         self.__flip_opponents_tiles(posn)
+
         # Set next player if they have a valid move
         self.curr_player = 2 if self.curr_player == 1 else 1
         if not self.valid_moves_exist():
@@ -189,5 +188,19 @@ class Game:
         :return: Player 2
         """
         return self._player2
+
+    def get_id(self) -> Optional[int]:
+        """
+        Returns ID of game
+        : return: ID of game
+        """
+        return self._id
+
+    def get_curr_player(self) -> int:
+        """
+        Returns the current player (next to play)
+        :return: Next player as an integer
+        """
+        return self.curr_player
 
     # def forfeit(self):

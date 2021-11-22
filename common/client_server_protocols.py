@@ -19,3 +19,20 @@ create_game_server_schema = Schema(
         "game_id": int,
     }
 )
+
+save_game_client_schema = Schema(
+    {
+        "protocol_type": "save_game",
+        "game_id": int,
+        "complete": bool,
+        "board_state": [[int]],
+        "next_turn": int,
+    }
+)
+
+save_game_server_schema = Schema(
+    {
+        "protocol_type": "save_game",
+        "success": bool,
+    }
+)

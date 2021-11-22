@@ -19,6 +19,7 @@ class PageMachine:
                 user1=User(username="P2"),
                 user2=main_user,
                 p1_first_move=False,
+                save=True,
             ),
         )
 

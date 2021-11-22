@@ -1,11 +1,16 @@
+import time
 from typing import Tuple, Callable
 
 from client.controllers.home_button_page_controller import HomeButtonPageController
 from client.model.game import Game
+from client.server_comms.save_game_server_request import SaveGameServerRequest
 from client.views.play_game_page_view import PlayGamePageView
 
 
 class PlayGamePageController(HomeButtonPageController):
+
+    _SAVE_GAME_TIMEOUT_SEC: float = 5
+
     def __init__(
         self,
         go_home_callback: Callable[[], None],
@@ -53,6 +58,23 @@ class PlayGamePageController(HomeButtonPageController):
         # Having no action occur on a click is enough feedback to user that their click is invalid
         try:
             valid_placement = self._game.place_tile(posn=coordinate)
+            # Save game if it should be saved, waiting for save to be successful with a timeout
+            if self._game.save is True:
+                server_request: SaveGameServerRequest = SaveGameServerRequest(
+                    self._game
+                )
+                server_request.send()
+                start_time: float = time.time()
+                while server_request.is_response_success() is None:
+                    if time.time() - start_time > self._SAVE_GAME_TIMEOUT_SEC:
+                        raise ConnectionError(
+                            "Server unresponsive. Game could not be saved"
+                        )
+                if server_request.is_response_success() is False:
+                    raise ConnectionError("Server could not properly save game")
+        except ConnectionError:
+            # TODO: Notify view of server error
+            valid_placement = True
         except Exception:
             valid_placement = False
         # If game is over, notify parent via callback

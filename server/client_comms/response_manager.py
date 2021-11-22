@@ -1,9 +1,13 @@
 from threading import Lock
 from typing import Dict, Any, Optional
 
-from common.client_server_protocols import create_game_client_schema
+from common.client_server_protocols import (
+    create_game_client_schema,
+    save_game_client_schema,
+)
 from server.client_comms.base_client_response import BaseClientResponse
 from server.client_comms.create_game_client_response import CreateGameClientResponse
+from server.client_comms.save_game_client_response import SaveGameClientResponse
 
 
 class ResponseManager:
@@ -13,7 +17,10 @@ class ResponseManager:
     _protocol_type_response_dict: Dict[str, str] = {
         create_game_client_schema.schema[
             "protocol_type"
-        ]: CreateGameClientResponse.__name__
+        ]: CreateGameClientResponse.__name__,
+        save_game_client_schema.schema[
+            "protocol_type"
+        ]: SaveGameClientResponse.__name__,
     }
 
     def __new__(cls, *args, **kwargs):
