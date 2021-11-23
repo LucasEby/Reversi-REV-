@@ -196,6 +196,13 @@ class Game:
         """
         return self._id
 
+    def set_id(self, id: int) -> None:
+        """
+        Sets the ID of the game
+        :param id: ID of the game
+        """
+        self._id = id
+
     def get_curr_player(self) -> int:
         """
         Returns the current player (next to play)

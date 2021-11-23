@@ -511,7 +511,7 @@ class DatabaseManager:
             query_str += f"pref_rules = '{dba.pref_rules}',"
         if dba.pref_tile_move_confirmation is not None:
             query_str += (
-                f"pref_tile_move_confirmation = {int(dba.pref_tile_move_confirmation)}"
+                f"pref_tile_move_confirmation = {int(dba.pref_tile_move_confirmation)},"
             )
         query_str = query_str[:-1]  # Remove last comma
         query_str += f" where account_id = {account_id}"
