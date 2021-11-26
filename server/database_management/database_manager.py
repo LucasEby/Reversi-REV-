@@ -70,6 +70,7 @@ class DatabaseManager:
                         "delete_game": cls._singleton._delete_game,
                         "get_game": cls._singleton._get_game,
                         "update_game": cls._singleton._update_game,
+                        "get_top_elos": cls._singleton._get_top_elos,
                     }
                     cls._singleton.connect_database()
         return cls._singleton
@@ -315,6 +316,30 @@ class DatabaseManager:
         data: Tuple[int, DatabaseGame] = (game_id, database_game)
         self._enqueue(
             cmd="update_game", info=DatabaseRequestInfo(data=data, callback=callback)
+        )
+
+    def get_top_elos(
+        self,
+        callback: Callable[[bool, List[Tuple[str, int]]], None],
+        get_username: bool = False,
+        get_elo: bool = False,
+        num_elos: int = 10,
+    ) -> None:
+        """
+                Queues request to get top ELOs and corresponding usernames from the database
+
+                :param callback: Callback to call on completion of ELO retrieval. True is success, false is failure.
+                :param get_username: Whether to retrieve the username
+                :param get_elo: Whether to retrieve the ELO
+                :param num_elos: How many of the top ELOs to retrieve
+                """
+        data: Tuple[Any, ...] = (
+            get_username,
+            get_elo,
+            num_elos,
+        )
+        self._enqueue(
+            cmd="get_top_elos", info=DatabaseRequestInfo(data=data, callback=callback)
         )
 
     def _create_account(self, request_info: DatabaseRequestInfo) -> None:
@@ -737,6 +762,60 @@ class DatabaseManager:
             success = False
         # Callback called with correct success boolean and database account
         request_info.callback(success)
+
+    def _get_top_elos(self, request_info: DatabaseRequestInfo) -> None:
+        """
+        Create query to get top ELOs from database
+
+        :param request_info: Additional info about request
+        """
+        # Extract data from request info
+        get_username: bool
+        get_elo: bool
+        num_elos: int
+        (
+            get_username,
+            get_elo,
+            num_elos,
+        ) = request_info.data
+
+        # Check at least something is retrieved
+        requested_fields: List[bool, ...] = [get for get in request_info.data[1:]]
+        if not any(requested_fields):
+            request_info.callback(False, DatabaseAccount())
+            return
+
+        # Run query to get account info
+        success: bool = True
+        query_str: str = (
+            f"select "
+            f"{'username,' if get_username else ''}"
+            f"{'elo,' if get_elo else ''}"
+        )[
+            :-1
+        ]  # Remove last comma
+        # Sort by elo and take top 10 (or specified number)
+        query_str += f" from account order by elo desc limit '{num_elos}'"
+        top_elos: List[Tuple[str, int]] = List[Tuple[str, int]]()
+        try:
+            self._db_cursor.execute(query_str)
+            # Grab result from query, make sure at most num_elos returned
+            raw_result: List[Tuple[Any, ...]] = self._db_cursor.fetchall()
+            if len(raw_result) > num_elos:
+                success = False
+            else:
+                # Transform query results to List of usernames and corresponding ELOs
+                result: Tuple[Any] = raw_result[0]
+                result_cnt: int = 0
+                temp_list: List[Any] = [None, None] * num_elos
+                for i in range(num_elos):
+                    temp_list[i] = result[result_cnt]
+                    result_cnt += 1
+                top_elos = temp_list
+        except Exception:
+            success = False
+        # Callback called with correct success boolean and database account
+        request_info.callback(success, top_elos)
 
     def _enqueue(self, cmd: str, info: DatabaseRequestInfo) -> None:
         """
