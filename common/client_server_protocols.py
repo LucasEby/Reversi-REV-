@@ -65,9 +65,12 @@ get_game_server_schema = Schema(
     {
         "protocol_type": "get_game",
         "success": bool,
+        "game_id": int,
         "board_state": [[int]],
         "rules": str,
-        Or("p1_account_id", "p2_account_id", only_one=True): int,
+        "next_turn": int,
+        "p1_account_id": int,
+        "p2_account_id": int,
         Optional("ai_difficulty"): int,
     }
 )
