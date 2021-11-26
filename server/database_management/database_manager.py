@@ -323,16 +323,16 @@ class DatabaseManager:
         callback: Callable[[bool, List[Tuple[str, int]]], None],
         get_username: bool = False,
         get_elo: bool = False,
-        num_elos: int = 10,
+        num_elos: int = 1,
     ) -> None:
         """
-                Queues request to get top ELOs and corresponding usernames from the database
+        Queues request to get top ELOs and corresponding usernames from the database
 
-                :param callback: Callback to call on completion of ELO retrieval. True is success, false is failure.
-                :param get_username: Whether to retrieve the username
-                :param get_elo: Whether to retrieve the ELO
-                :param num_elos: How many of the top ELOs to retrieve
-                """
+        :param callback: Callback to call on completion of ELO retrieval. True is success, false is failure.
+        :param get_username: Whether to retrieve the username
+        :param get_elo: Whether to retrieve the ELO
+        :param num_elos: How many of the top ELOs to retrieve
+        """
         data: Tuple[Any, ...] = (
             get_username,
             get_elo,

@@ -38,9 +38,7 @@ class UpdateELOClientResponse(BaseClientResponse):
 
         # Wait for database to complete tasks
         with self._db_complete_cv:
-            while (
-                self._db_update_elo_success is None
-            ):
+            while self._db_update_elo_success is None:
                 self._db_complete_cv.wait()
 
         # Return the response message

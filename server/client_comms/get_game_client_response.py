@@ -29,14 +29,12 @@ class GetGameClientResponse(BaseClientResponse):
             get_next_turn=True,
             get_p1_account_id=True,
             get_p2_account_id=True,
-            get_ai_difficulty=True
+            get_ai_difficulty=True,
         )
 
         # Wait for database to complete task
         with self._db_complete_cv:
-            while (
-                self._db_get_game_success is None
-            ):
+            while self._db_get_game_success is None:
                 self._db_complete_cv.wait()
 
         # Return the response message
@@ -64,7 +62,7 @@ class GetGameClientResponse(BaseClientResponse):
                 else self._retrieved_dbg.p2_account_id,
                 "ai_difficulty": 0
                 if self._retrieved_dbg is None
-                else self._retrieved_dbg.ai_difficulty
+                else self._retrieved_dbg.ai_difficulty,
             }
         )
         return self._response_message

@@ -25,14 +25,12 @@ class GetTopELOsClientResponse(BaseClientResponse):
             callback=self.__elos_retrieved_callback,
             get_username=True,
             get_elo=True,
-            num_elos=self._sent_message["num_elos"]
+            num_elos=self._sent_message["num_elos"],
         )
 
         # Wait for database to complete task
         with self._db_complete_cv:
-            while (
-                self._db_get_top_elos_success is None
-            ):
+            while self._db_get_top_elos_success is None:
                 self._db_complete_cv.wait()
 
         # Return the response message
@@ -45,7 +43,9 @@ class GetTopELOsClientResponse(BaseClientResponse):
         )
         return self._response_message
 
-    def __elos_retrieved_callback(self, success: bool, elos: List[Tuple[str, int]]) -> None:
+    def __elos_retrieved_callback(
+        self, success: bool, elos: List[Tuple[str, int]]
+    ) -> None:
         """
         Callback for when the ELOs have finished being received from the Database Manager
         :param success: Whether retrieval was successful or not
