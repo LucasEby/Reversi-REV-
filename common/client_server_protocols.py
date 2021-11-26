@@ -74,3 +74,19 @@ get_game_server_schema = Schema(
         Optional("ai_difficulty"): int,
     }
 )
+
+update_elo_client_schema = Schema(
+    {
+        "protocol_type": "update_elo",
+        "account_id": int,
+        "new_elo": int,
+    }
+)
+
+update_elo_server_schema = Schema(
+    {
+        "protocol_type": "update_elo",
+        "success": bool,
+        "new_elo": int,
+    }
+)
