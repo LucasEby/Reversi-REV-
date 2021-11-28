@@ -3,13 +3,12 @@ from client.model.user import User
 
 
 class AI(Player):
-    def __init__(self, user: User, player_num: int) -> None:
+    def __init__(self, player_num: int) -> None:
         """
         Create an AI that can play as a player
-        :param user: User info that the AI should inherit
         :param player_num: Play order of AI
         """
-        super().__init__(user=user, player_num=player_num)
+        super().__init__(user=None, player_num=player_num)
         self._difficulty = 0
 
     def set_difficulty(self, difficulty: int) -> None:

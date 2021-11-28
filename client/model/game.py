@@ -19,8 +19,8 @@ class Game:
         :param save: Whether to save game after every turn
         """
         self._id: Optional[int] = None
-        self._player1: Player = Player(user1, 1)
-        self._player2: Player = Player(user2, 2)
+        self._player1: Player = Player(1, user1)
+        self._player2: Player = Player(2, user2)
         active_user: User = user1 if p1_first_move else user2
         # Use the size and rule preference of active user, since both users must use the same size and rules
         self.board: Board = Board(active_user.get_preference().get_board_size(), 1)
