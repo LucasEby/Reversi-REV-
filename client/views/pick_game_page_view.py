@@ -87,6 +87,7 @@ class PickGamePageView(BasePageView):
         self.__btn_local_single_player.destroy()
         self.__btn_local_multiplayer_game.destroy()
         self.__btn_online_game.destroy()
+        self.__btn_change_pref.destroy()
         L = tk.Label(self._frame, text=load_message)
         L.pack()
 

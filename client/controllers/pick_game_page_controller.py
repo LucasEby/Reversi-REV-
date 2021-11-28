@@ -30,14 +30,14 @@ class PickGamePageController(HomeButtonPageController):
         self._manage_preferences_callback = manage_preferences_callback
         self._main_user = main_user
         self.__view = PickGamePageView(
-            self._local_single_callback,
-            self._local_multi_callback,
-            self._online_callback,
-            self._manage_preferences_callback,
+            self._handle_local_single_player_game,
+            self._handle_local_multiplayer_game,
+            self._handle_online_game,
+            self._handle_change_preferences,
             window=window,
         )
 
-    def handle_change_preferences(self) -> None:
+    def _handle_change_preferences(self) -> None:
         """
         Handles local user selection from user by creating a local game with a user and a guest
 
@@ -46,7 +46,7 @@ class PickGamePageController(HomeButtonPageController):
         self.queue(task_name="change_preferences")
         # self._manage_preferences_callback(self._game)
 
-    def handle_local_single_player_game(self) -> None:
+    def _handle_local_single_player_game(self) -> None:
         """
         Handles local AI selection from user by creating a local game with an AI
         Sets up the game with AI components
@@ -61,7 +61,7 @@ class PickGamePageController(HomeButtonPageController):
         # We need to incorporate the AI functionality here.
         # We need to also change "User(2, Guest) to be an AI
 
-    def handle_local_multiplayer_game(self) -> None:
+    def _handle_local_multiplayer_game(self) -> None:
         """
         Handles local user selection from user by creating a local game with a user and a guest
 
@@ -70,12 +70,11 @@ class PickGamePageController(HomeButtonPageController):
         self.__view.display_local_multiplayer_game_chosen()
         player2_id = 2
         player2_username = "Guest"
-        self.queue(
-            task_name="local_game_multi",
-            task_info=Game(self._main_user, User(player2_id, player2_username)),
-        )
+        game_obj = Game(self._main_user, User(player2_id, player2_username))
+        self.queue(task_name="local_game_multi", task_info=game_obj)
+        self._local_multi_callback(game_obj)
 
-    def handle_online_game(self) -> None:
+    def _handle_online_game(self) -> None:
         """
         Handles online user selection from user by creating an online game with another user
 

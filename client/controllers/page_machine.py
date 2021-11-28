@@ -8,6 +8,7 @@ from client.views.pick_game_page_view import PickGamePageView
 
 from client.model.game import Game
 from client.model.user import User
+from client.model.preference import Preference
 import tkinter as tk
 
 
@@ -20,6 +21,7 @@ class PageMachine:
         self.__window = tk.Tk()
         # self.__window.mainloop()
         self.main_user: User = User(id_num=1, username="P1")
+        self.preferences = Preference()
         self.current_page_controller: BasePageController = PickGamePageController(
             go_home_callback=self.go_home_callback,
             local_single_callback=self.local_single_callback,
@@ -69,7 +71,11 @@ class PageMachine:
         """
         # print("play local single player game")
         self.current_page_controller = PlayGamePageController(
-            self.go_home_callback, self.end_game_callback, game
+            self.go_home_callback,
+            self.end_game_callback,
+            game,
+            self.preferences,
+            self.__window,
         )
         # These should not be pass
 
@@ -80,8 +86,13 @@ class PageMachine:
         :param game:
         :return:
         """
+        print("local multi callback called")
         self.current_page_controller = PlayGamePageController(
-            self.go_home_callback, self.end_game_callback, game
+            self.go_home_callback,
+            self.end_game_callback,
+            game,
+            self.preferences,
+            self.__window,
         )
 
     def online_callback(self, game: Game) -> None:
@@ -108,6 +119,7 @@ class PageMachine:
         # self.end_game_callback, User(id_num=1, username="P1"))
         pass
         # These should not be pass
+
     def play_again_callback(self) -> None:
         """
         :param self:
@@ -131,7 +143,7 @@ class PageMachine:
         # self.current_page_controller = PickGamePageController()
 
 
-PageMachine()
+# PageMachine()
 
 # main_user.get_preference().set_board_size(4)
 # main_user: User = User(id_num=1, username="P1")

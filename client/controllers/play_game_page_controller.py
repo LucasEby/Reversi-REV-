@@ -2,6 +2,7 @@ from typing import Tuple, Optional, Callable
 
 from client.controllers.home_button_page_controller import HomeButtonPageController
 from client.model.game import Game
+from client.model.preference import Preference
 from client.views.play_game_page_view import PlayGamePageView
 
 
@@ -11,6 +12,8 @@ class PlayGamePageController(HomeButtonPageController):
         go_home_callback: Callable[[], None],
         end_game_callback: Callable[[Game], None],
         game: Game,
+        preferences: Preference,
+        window,
     ) -> None:
         """
         Page controller used for handling and responding to user inputs that occur in-game
@@ -27,6 +30,9 @@ class PlayGamePageController(HomeButtonPageController):
             game_obj=self._game,
             place_tile_cb=self.__handle_place_tile,
             forfeit_cb=self.__handle_forfeit,
+            preferences=preferences,
+            end_game_callback=end_game_callback,
+            window=window,
         )
 
     def __handle_place_tile(self, coordinate: Tuple[int, int]) -> None:
