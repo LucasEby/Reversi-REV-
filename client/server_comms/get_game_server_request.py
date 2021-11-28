@@ -1,9 +1,5 @@
-from typing import Optional
+from typing import Optional, List
 
-from client.model.account import Account
-from client.model.ai import AI
-from client.model.game import Game
-from client.model.user import User
 from client.server_comms.base_server_request import BaseServerRequest
 from common.client_server_protocols import get_game_server_schema
 
@@ -32,16 +28,16 @@ class GetGameServerRequest(BaseServerRequest):
         else:
             return self._response_message["success"]
 
-    def get_game_id(self) -> Optional[int]:
+    def get_game(self) -> Optional[List[int, List[List[int]], int]]:
         """
-        Retrieves game from the server response if available
-        :return: Game if available, None otherwise
+        Retrieves changed game from the server response if available
+        :return: New states of board and next_turn if available, None otherwise
         """
         if self.is_response_success() is True:
             game_id: int = self._response_message["game_id"]
-            # TODO how do we go from account id to user/player in a game?
-            # TODO how do we create a new Game object from the retrieved data?
-            saved_game: Game = Game()
-            return saved_game
+            board_state: [[int]] = self._response_message["board_state"]
+            next_turn: int = self._response_message["next_turn"]
+            info: List[int, List[List[int]], int] = [game_id, board_state, next_turn]
+            return info
         else:
             return None

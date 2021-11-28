@@ -19,14 +19,29 @@ class Game:
         :param save: Whether to save game after every turn
         """
         self._id: Optional[int] = None
-        self._player1: Player = Player(1, user1)
-        self._player2: Player = Player(2, user2)
+        self._player1: Player = Player(user1, 1)
+        # TODO make user2 Optional
+        """
+        if user2 is None: 
+            self._player2: Player = Player(2)
+        else:
+        """
+        self._player2: Player = Player(user2, 2)
         active_user: User = user1 if p1_first_move else user2
-        # Use the size and rule preference of active user, since both users must use the same size and rules
-        self.board: Board = Board(active_user.get_preference().get_board_size(), 1)
+        # Use the size and rule preference of active user, since both users must use the same size
+        self.board: Board = Board(active_user.get_preference().get_board_size())
         self._rules: AbstractRule = active_user.get_preference().get_rule()
         self.save: bool = save
         self.curr_player: int = 1
+
+    def update_online_game(self, saved_board: Board, next_turn: int):
+        """
+        Update the board and curr_player of this game after the other player has made a move.
+        :param saved_board: the new state of the board
+        :param next_turn: the new current_player
+        """
+        self.board = saved_board
+        self.curr_player = next_turn
 
     def is_game_over(self) -> bool:
         """

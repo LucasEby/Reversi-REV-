@@ -1,4 +1,4 @@
-from schema import Schema, Optional, Or  # type: ignore
+from schema import Schema, Optional, Or # type: ignore
 
 # https://github.com/keleshev/schema
 
@@ -67,11 +67,7 @@ get_game_server_schema = Schema(
         "success": bool,
         "game_id": int,
         "board_state": [[int]],
-        "rules": str,
         "next_turn": int,
-        "p1_account_id": int,
-        "p2_account_id": int,
-        Optional("ai_difficulty"): int,
     }
 )
 
@@ -102,6 +98,6 @@ get_top_elos_server_schema = Schema(
     {
         "protocol_type": "get_top_elos",
         "success": bool,
-        "top_elos": [[str, int]],
+        "top_elos": List[Tuple[str, int]],
     }
 )

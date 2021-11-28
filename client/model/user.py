@@ -28,4 +28,9 @@ class User:
         """
         return self.__preference
 
-    # def set_preferences(preference: Preference) -> None:
+    def set_preference(self, preference: Preference) -> None:
+        """
+        Set the preference settings for the user.
+        :param preference: the preference to set for the user
+        """
+        self.__preference = preference

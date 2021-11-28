@@ -25,11 +25,7 @@ class GetGameClientResponse(BaseClientResponse):
             callback=self.__game_retrieved_callback,
             key=self._sent_message["game_id"],
             get_board_state=True,
-            get_rules=True,
             get_next_turn=True,
-            get_p1_account_id=True,
-            get_p2_account_id=True,
-            get_ai_difficulty=True,
         )
 
         # Wait for database to complete task
@@ -48,21 +44,9 @@ class GetGameClientResponse(BaseClientResponse):
                 "board_state": [[0]]
                 if self._retrieved_dbg is None
                 else self._retrieved_dbg.board_state,
-                "rules": ""
-                if self._retrieved_dbg is None
-                else self._retrieved_dbg.rules,
                 "next_turn": 0
                 if self._retrieved_dbg is None
                 else self._retrieved_dbg.next_turn,
-                "p1_account_id": 0
-                if self._retrieved_dbg is None
-                else self._retrieved_dbg.p1_account_id,
-                "p2_account_id": 0
-                if self._retrieved_dbg is None
-                else self._retrieved_dbg.p2_account_id,
-                "ai_difficulty": 0
-                if self._retrieved_dbg is None
-                else self._retrieved_dbg.ai_difficulty,
             }
         )
         return self._response_message
