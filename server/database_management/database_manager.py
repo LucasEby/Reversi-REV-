@@ -71,17 +71,21 @@ class DatabaseManager:
                         "get_game": cls._singleton._get_game,
                         "update_game": cls._singleton._update_game,
                     }
+                    cls._singleton.connect_database()
         return cls._singleton
 
-    def run(self) -> None:
+    def run(self, run_once: bool = False) -> None:
         """
         Take the next command out of the queue and execute
         """
-        next_cmd: str
-        next_task_info: DatabaseRequestInfo
-        next_cmd, next_task_info = self._queue.get()
-        if next_cmd in self._cmd_dict:
-            self._cmd_dict[next_cmd](next_task_info)
+        while True:
+            next_cmd: str
+            next_task_info: DatabaseRequestInfo
+            next_cmd, next_task_info = self._queue.get()
+            if next_cmd in self._cmd_dict:
+                self._cmd_dict[next_cmd](next_task_info)
+            if run_once:
+                break
 
     def connect_database(self) -> None:
         """
@@ -507,7 +511,7 @@ class DatabaseManager:
             query_str += f"pref_rules = '{dba.pref_rules}',"
         if dba.pref_tile_move_confirmation is not None:
             query_str += (
-                f"pref_tile_move_confirmation = {int(dba.pref_tile_move_confirmation)}"
+                f"pref_tile_move_confirmation = {int(dba.pref_tile_move_confirmation)},"
             )
         query_str = query_str[:-1]  # Remove last comma
         query_str += f" where account_id = {account_id}"

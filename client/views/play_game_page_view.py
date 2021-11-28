@@ -79,7 +79,7 @@ class PlayGamePageView(BasePageView):
         valid_input: bool = False
         row: int = 0
         col: int = 0
-        print(f"\nPlayer {self._game_obj.curr_player}'s turn")
+        print(f"\nPlayer {self._game_obj.get_curr_player()}'s turn")
         while not valid_input:
             row_str: str = input("Enter row for disk: ")
             col_str = input("Enter col for disk: ")

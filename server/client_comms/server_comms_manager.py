@@ -3,7 +3,9 @@ import socket
 import json
 import threading
 from _thread import start_new_thread
-from typing import List, Optional, Dict, Any
+from typing import List, Dict, Any, Tuple, Optional
+
+from server.client_comms.response_manager import ResponseManager
 
 """
 --- Message Formats ---
@@ -66,14 +68,13 @@ Respond to an unrecognized client request:
 """
 
 HOST = "localhost"
-PORT = 5050
+PORT = 7777
 
 
 class ServerCommsManager:
 
     _instance = None
     _lock = threading.Lock()
-    _messages_so_far: str = ""
 
     def __new__(cls):
         """
@@ -93,21 +94,23 @@ class ServerCommsManager:
         try:
             s.bind((HOST, PORT))
         except socket.error as e:
-            print(str(e))
+            print(e)
             return
         s.listen(2)
-        print("server started, waiting for connections")
+        print("Server started, waiting for connections")
         while True:
             try:
                 conn, addr = s.accept()
-                conn.settimeout(20)  # set connection timeout to 20 seconds
+                conn.settimeout(60.0)  # Set timeout to hear from client to 1 minute
                 print("Connected to: ", addr)
                 start_new_thread(self.__threaded_client, (conn, addr))
-            finally:
-                break
+            except Exception as e:
+                print(e)
 
-    def send(self, msg: Dict[str, str], s: socket, addr) -> None:
-        """ "
+    def __send(
+        self, msg: Dict[str, Any], conn: socket.socket, addr: Tuple[int, int]
+    ) -> None:
+        """
         Send the given dict message to the given client connection.
         """
         # check if the message have specified protocol type and throw ValueError if
@@ -116,42 +119,50 @@ class ServerCommsManager:
         # put '$$' to signify end of message and encapsulate the message
         message: str = json.dumps(msg, ensure_ascii=False) + "$$"
         try:
-            s.sendto(message.encode, addr)
+            conn.sendto(message.encode(), addr)
         except socket.error as e:
             print(e)
 
-    def __threaded_client(self, conn, addr) -> None:
+    def __threaded_client(self, conn: socket.socket, addr: Tuple[int, int]) -> None:
         """
         Create a client handler within this thread.
         """
-        print("client thread created")
+        unparsed_messages: str = ""
         while True:
             try:
                 data = conn.recv(2048)
                 if not data:
                     break
-                self.__parse_data(data, conn, addr)
-            finally:
+                unparsed_messages = self.__parse_data(
+                    data, conn, addr, unparsed_messages
+                )
+            except socket.error:
                 break
-        print("Lost connection")
+        print(f"Lost connection to: {addr}")
         conn.close()
 
-    def __parse_data(self, data, conn, addr) -> None:
+    def __parse_data(
+        self,
+        data: bytes,
+        conn: socket.socket,
+        addr: Tuple[int, int],
+        unparsed_messages: str,
+    ) -> str:
         """
         Parse JSON data and then handle it accordingly.
         """
         package: str = data.decode()
-        package = self._messages_so_far + package
-        self._messages_so_far = ""
+        package = unparsed_messages + package
         package: List[str] = package.split("$$")
-        if len(package) > 2:
-            for p in range(len(package) - 1):
-                if p == 0:
-                    continue
-                self._messages_so_far += p
-        msg: Dict[str, Any] = json.loads(package[0])
-        # self.__handle_data(msg, conn, addr)
-        # TODO create and use message classes to handle the data
+        # Loop through all messages before last message end symbol
+        for p in range(len(package) - 1):
+            msg: Dict[str, Any] = json.loads(package[p])
+            # Handle response then send response message back to client
+            response_msg: Optional[Dict[str, Any]] = ResponseManager().handle_response(
+                msg
+            )
+            self.__send(msg=response_msg, conn=conn, addr=addr)
+        return package[-1]
 
     """
     def __handle_data(self, data, conn, addr) -> None:

@@ -38,7 +38,7 @@ class TestDatabaseManager(unittest.TestCase):
         )
         callback = MagicMock()
         DatabaseManager().create_account(callback, create_account_request_data)
-        DatabaseManager().run()
+        DatabaseManager().run(run_once=True)
         callback.assert_called_once_with(True)
 
         # Get account info and test it is all correct
@@ -57,7 +57,7 @@ class TestDatabaseManager(unittest.TestCase):
         )
         callback.reset_mock()
         DatabaseManager().get_account(callback, "username", *get_account_request_data)
-        DatabaseManager().run()
+        DatabaseManager().run(run_once=True)
         callback.assert_called_once_with(
             True, DatabaseAccount(*create_account_request_data)
         )
@@ -67,13 +67,13 @@ class TestDatabaseManager(unittest.TestCase):
         DatabaseManager().get_account(
             callback=callback, key="username", get_account_id=True
         )
-        DatabaseManager().run()
+        DatabaseManager().run(run_once=True)
         account_id: int = callback.call_args[0][1].account_id
 
         # Get account info via account ID and verify it is all correct
         callback.reset_mock()
         DatabaseManager().get_account(callback, account_id, *get_account_request_data)
-        DatabaseManager().run()
+        DatabaseManager().run(run_once=True)
         callback.assert_called_once_with(
             True, DatabaseAccount(*create_account_request_data)
         )
@@ -87,7 +87,7 @@ class TestDatabaseManager(unittest.TestCase):
                 password="password2", pref_rules="weird_rules"
             ),
         )
-        DatabaseManager().run()
+        DatabaseManager().run(run_once=True)
         callback.assert_called_once_with(True)
 
         callback.reset_mock()
@@ -98,7 +98,7 @@ class TestDatabaseManager(unittest.TestCase):
             get_password=True,
             get_pref_rules=True,
         )
-        DatabaseManager().run()
+        DatabaseManager().run(run_once=True)
         dba: DatabaseAccount = callback.call_args[0][1]
         self.assertEqual("username", dba.username)
         self.assertEqual("password2", dba.password)
@@ -107,14 +107,14 @@ class TestDatabaseManager(unittest.TestCase):
         # Delete account and ensure it can no longer be retrieved
         callback.reset_mock()
         DatabaseManager().delete_account(callback=callback, account_id=account_id)
-        DatabaseManager().run()
+        DatabaseManager().run(run_once=True)
         callback.assert_called_once_with(True)
 
         callback.reset_mock()
         DatabaseManager().get_account(
             callback=callback, key=account_id, get_account_id=True
         )
-        DatabaseManager().run()
+        DatabaseManager().run(run_once=True)
         callback.assert_called_once_with(False, DatabaseAccount())
 
         # Disconnect from database
@@ -140,13 +140,13 @@ class TestDatabaseManager(unittest.TestCase):
         )
         callback = MagicMock()
         DatabaseManager().create_account(callback, create_account_request_data)
-        DatabaseManager().run()
+        DatabaseManager().run(run_once=True)
         callback.assert_called_once_with(True)
         callback.reset_mock()
         DatabaseManager().get_account(
             callback=callback, key="username", get_account_id=True
         )
-        DatabaseManager().run()
+        DatabaseManager().run(run_once=True)
         account_id: int = callback.call_args[0][1].account_id
 
         # Create game function with no errors
@@ -163,7 +163,7 @@ class TestDatabaseManager(unittest.TestCase):
         )
         callback.reset_mock()
         DatabaseManager().create_game(callback=callback, database_game=dbg)
-        DatabaseManager().run()
+        DatabaseManager().run(run_once=True)
         callback.assert_called_once_with(True)
 
         # Create second (more recent) game with same account as P2
@@ -180,7 +180,7 @@ class TestDatabaseManager(unittest.TestCase):
         )
         callback.reset_mock()
         DatabaseManager().create_game(callback=callback, database_game=dbg2)
-        DatabaseManager().run()
+        DatabaseManager().run(run_once=True)
         callback.assert_called_once_with(True)
 
         # Get last game and ensure it matches second game
@@ -197,7 +197,7 @@ class TestDatabaseManager(unittest.TestCase):
         )
         callback.reset_mock()
         DatabaseManager().get_game(callback, account_id, True, *get_game_request_data)
-        DatabaseManager().run()
+        DatabaseManager().run(run_once=True)
         game_id: int = callback.call_args[0][1].game_id
         dbg_check = dbg2._replace(game_id=game_id)
         callback.assert_called_once_with(True, dbg_check)
@@ -205,7 +205,7 @@ class TestDatabaseManager(unittest.TestCase):
         # Get second-to-last game and ensure it matches first game
         callback.reset_mock()
         DatabaseManager().get_game(callback, game_id - 1, False, *get_game_request_data)
-        DatabaseManager().run()
+        DatabaseManager().run(run_once=True)
         dbg_check = dbg._replace(game_id=game_id - 1)
         callback.assert_called_once_with(True, dbg_check)
 
@@ -216,7 +216,7 @@ class TestDatabaseManager(unittest.TestCase):
             game_id=game_id,
             database_game=DatabaseGame(complete=True, next_turn=2),
         )
-        DatabaseManager().run()
+        DatabaseManager().run(run_once=True)
         callback.assert_called_once_with(True)
 
         callback.reset_mock()
@@ -228,7 +228,7 @@ class TestDatabaseManager(unittest.TestCase):
             get_complete=True,
             get_next_turn=True,
         )
-        DatabaseManager().run()
+        DatabaseManager().run(run_once=True)
         dbg: DatabaseGame = callback.call_args[0][1]
         self.assertEqual(game_id, dbg.game_id)
         self.assertEqual(True, dbg.complete)
@@ -237,17 +237,17 @@ class TestDatabaseManager(unittest.TestCase):
         # Delete games
         callback.reset_mock()
         DatabaseManager().delete_game(callback=callback, game_id=game_id)
-        DatabaseManager().run()
+        DatabaseManager().run(run_once=True)
         callback.assert_called_once_with(True)
         callback.reset_mock()
         DatabaseManager().delete_game(callback=callback, game_id=game_id - 1)
-        DatabaseManager().run()
+        DatabaseManager().run(run_once=True)
         callback.assert_called_once_with(True)
 
         # Delete account
         callback.reset_mock()
         DatabaseManager().delete_account(callback=callback, account_id=account_id)
-        DatabaseManager().run()
+        DatabaseManager().run(run_once=True)
         callback.assert_called_once_with(True)
 
         # Disconnect from database
