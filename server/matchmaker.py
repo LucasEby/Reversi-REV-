@@ -36,11 +36,21 @@ class Matchmaker:
         :return: account ID of match if match made, None if no match available
         """
         with self._match_lock:
-            compatible_users: List[Tuple[int, MatchmakingUser]] = [(i, user) for i, user in enumerate(self._users) if user.pref_rules == rules and user.pref_board_size == board_size]
+            compatible_users: List[Tuple[int, MatchmakingUser]] = [
+                (i, user)
+                for i, user in enumerate(self._users)
+                if user.pref_rules == rules and user.pref_board_size == board_size
+            ]
 
             # If no users to match, add this user to list and return that no matches currently exist
             if len(compatible_users) == 0:
-                self._users.append(MatchmakingUser(account_id=account_id, pref_rules=rules, pref_board_size=board_size))
+                self._users.append(
+                    MatchmakingUser(
+                        account_id=account_id,
+                        pref_rules=rules,
+                        pref_board_size=board_size,
+                    )
+                )
                 return None
 
             # If there are users to match, return the first one's account ID and remove from list of eligible matches

@@ -24,5 +24,5 @@ class TestMatchmaker(unittest.TestCase):
         self.assertEqual(match, None)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
