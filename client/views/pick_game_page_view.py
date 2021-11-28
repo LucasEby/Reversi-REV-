@@ -1,27 +1,28 @@
 from client.views.base_page_view import BasePageView
 import tkinter as tk
-
-try:
-    from client.controllers.pick_game_page_controller import PickGamePageController
-except ImportError:
-    import sys
-
-    PickGamePageController = sys.modules["client.controllers.pick_game_page_controller"]
-    # __package__ + '.PickGamePageController']
+from typing import Callable
 
 
 class PickGamePageView(BasePageView):
-    def __init__(self, pgc: PickGamePageController, window) -> None:
+    def __init__(
+        self,
+        local_single_callback: Callable[[], None],
+        local_multi_callback: Callable[[], None],
+        online_callback: Callable[[], None],
+        change_preferences_callback: Callable[[], None],
+        window,
+    ) -> None:
         """
         Creates the button window with the 3 buttons: a local single player button, a local multiplayer button,
         and an online multiplayer button. When a button is clicked, a "loading game" message is displayed and the
         controller is notified.
-
-        :param pgc: the pick game page controller object.
         """
         super().__init__(window=window)
-        self.__pgc = pgc
-
+        self._local_single_callback = local_single_callback
+        self._local_multi_callback = local_multi_callback
+        self._online_callback = online_callback
+        self._change_preferences_callback = change_preferences_callback
+        # self._window = window
         # Make the main window buttons
         self.__btn_local_single_player = tk.Button(
             self._frame,
@@ -30,7 +31,7 @@ class PickGamePageView(BasePageView):
             pady=50,
             fg="black",
             bg="purple",
-            command=self.__local_single_clicked,
+            command=self._local_single_callback,
         )
         self.__btn_local_multiplayer_game = tk.Button(
             self._frame,
@@ -39,7 +40,7 @@ class PickGamePageView(BasePageView):
             pady=50,
             fg="black",
             bg="purple",
-            command=self.__local_multi_clicked,
+            command=self._local_multi_callback,
         )
         self.__btn_online_game = tk.Button(
             self._frame,
@@ -48,7 +49,7 @@ class PickGamePageView(BasePageView):
             pady=50,
             fg="black",
             bg="purple",
-            command=self.__online_clicked,
+            command=self._online_callback,
         )
         self.__btn_change_pref = tk.Button(
             self._frame,
@@ -57,10 +58,10 @@ class PickGamePageView(BasePageView):
             pady=50,
             fg="black",
             bg="purple",
-            command=pgc.handle_change_preferences,
+            command=self._change_preferences_callback,
         )
 
-    def start_gui(self) -> None:
+    def display(self) -> None:
         """
         Sets the window attributes and adds the buttons to it.
 
@@ -70,12 +71,10 @@ class PickGamePageView(BasePageView):
         self.__btn_local_single_player.pack()
         self.__btn_local_multiplayer_game.pack()
         self.__btn_online_game.pack()
-
-        # self._frame.attributes("-topmost", 1)
+        self.__btn_change_pref.pack()
         self._frame.lift()
-
         # Start window loop
-        # self._frame.mainloop()
+        self._frame.mainloop()
 
     def __destroy_buttons_and_load(self, load_message) -> None:
         """
@@ -90,15 +89,6 @@ class PickGamePageView(BasePageView):
         self.__btn_online_game.destroy()
         L = tk.Label(self._frame, text=load_message)
         L.pack()
-
-    def __local_single_clicked(self) -> None:
-        self.__pgc.handle_local_single_player_game()
-
-    def __local_multi_clicked(self) -> None:
-        self.__pgc.handle_local_multiplayer_game()
-
-    def __online_clicked(self) -> None:
-        self.__pgc.handle_online_game()
 
     def display_local_single_player_game_chosen(self) -> None:
         """

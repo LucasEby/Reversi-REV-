@@ -10,7 +10,12 @@ class EndGamePageController(BasePageController):
         go_home_callback: Callable[[], None],
         rematch_callback: Callable[[], None],
         play_again_callback: Callable[[], None],
+<<<<<<< Updated upstream
         play_different_mode_callback: Callable[[], None],
+=======
+        Game,
+        window,
+>>>>>>> Stashed changes
     ) -> None:
         """
         Specific type of page controller with a home button already handled.
@@ -18,6 +23,11 @@ class EndGamePageController(BasePageController):
         :param go_home_callback: Callback to call when going to the home screen
         """
         super().__init__()
+<<<<<<< Updated upstream
+=======
+
+        self.__go_home_callback: Callable[[], None] = go_home_callback
+>>>>>>> Stashed changes
         self._rematch_callback: Callable[[], None] = rematch_callback
         self._play_again_callback: Callable[[], None] = play_again_callback
         self._play_different_mode_callback: Callable[
@@ -28,6 +38,7 @@ class EndGamePageController(BasePageController):
         self._task_execute_dict[
             "play_again_button"
         ] = self.__execute_task_play_again_button
+<<<<<<< Updated upstream
         self._task_execute_dict[
             "play_different_mode_button"
         ] = self.__execute_task_play_different_mode_button
@@ -35,11 +46,28 @@ class EndGamePageController(BasePageController):
 
     def run(self):
         self.__view.start_gui()
+=======
+        self._window = window
+        self._game = Game
+
+        self.__view = EndGamePageView(
+            self,
+            self.__go_home_callback,
+            Game,
+            self._rematch_callback,
+            self._play_again_callback,
+            window,
+        )
+>>>>>>> Stashed changes
 
     def __handle_rematch_button(self) -> None:
         """
         Handles rematch button action from the user by queueing task
         """
+<<<<<<< Updated upstream
+=======
+        # TODO: Rematch builds a new game functioanlity
+>>>>>>> Stashed changes
         self.queue(task_name="rematch_button")
 
     def __execute_task_rematch_button(self) -> None:
@@ -50,6 +78,13 @@ class EndGamePageController(BasePageController):
         Handles play again button action from the user by queueing task
         """
         self.queue(task_name="play_again")
+<<<<<<< Updated upstream
+=======
+
+    def __execute_task_rematch_button(self) -> None:
+        self._rematch_callback()
+        # TODO: Rematch builds a new game functioanlity
+>>>>>>> Stashed changes
 
     def __execute_task_play_again_button(self) -> None:
         """
@@ -57,6 +92,7 @@ class EndGamePageController(BasePageController):
         """
         self._play_again_callback()
 
+<<<<<<< Updated upstream
     def __handle_play_different_mode(self) -> None:
         """
         Handles play different mode button action from the user by queueing task
@@ -68,3 +104,7 @@ class EndGamePageController(BasePageController):
         Handles rematch button action from the user by queueing task
         """
         self._play_different_mode_callback()
+=======
+    def run(self):
+        pass
+>>>>>>> Stashed changes

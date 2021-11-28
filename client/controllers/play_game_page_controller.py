@@ -29,9 +29,6 @@ class PlayGamePageController(HomeButtonPageController):
             forfeit_cb=self.__handle_forfeit,
         )
 
-    def run(self):
-        self.__view.start_gui()
-
     def __handle_place_tile(self, coordinate: Tuple[int, int]) -> None:
         """
         Handles tile placement action from the user by queueing task
@@ -51,22 +48,23 @@ class PlayGamePageController(HomeButtonPageController):
         Takes action on tile placement by communicating with model and updating view
         :param task_info: coordinate (see __handle_place_tile)
         """
-        coordinate = task_info
-        # Try placing tile. If tile placement doesn't work, don't do anything.
-        # Having no action occur on a click is enough feedback to user that their click is invalid
-        valid_placement: bool = False
-        try:
-            valid_placement = self._game.place_tile(posn=coordinate)
-        except Exception:
-            valid_placement = False
-        # If game is over, notify parent via callback
-        if self._game.is_game_over():
-            self._end_game_callback(self._game)
-            return
-        # Update view
-        if valid_placement:
-            self._view.update_game(game=self._game)
-        self._view.display()
+        self.queue(task_name="place_tile", task_info=task_info)
+        # coordinate = task_info
+        # # Try placing tile. If tile placement doesn't work, don't do anything.
+        # # Having no action occur on a click is enough feedback to user that their click is invalid
+        # valid_placement: bool = False
+        # try:
+        #     valid_placement = self._game.place_tile(posn=coordinate)
+        # except Exception:
+        #     valid_placement = False
+        # # If game is over, notify parent via callback
+        # if self._game.is_game_over():
+        #     self._end_game_callback(self._game)
+        #     return
+        # # Update view
+        # if valid_placement:
+        #     self._view.update_game(game=self._game)
+        # self._view.display()
 
     def __execute_task_forfeit(self, task_info: int) -> None:
         """
@@ -74,9 +72,18 @@ class PlayGamePageController(HomeButtonPageController):
         :param task_info: player_num (see __handle_forfeit)
         """
         player_num = task_info
+        self.__view.display_player_forfeit(player_num)
+        self.queue(task_name="place_tile", task_info=player_num)
         # Notify model who forfeited and notify parent game is over
         # self._game.forfeit(player_num)
         # self._end_game_callback(self._game)
+
+    def run(self):
+        self.__view.display()
+
+
+# def run(self):
+#     self.__view.start_gui()
 
 
 # play game controller calls end game callback
