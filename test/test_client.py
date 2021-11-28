@@ -19,7 +19,6 @@ class MyTestCase(unittest.TestCase):
         This method initializes a ClientCommManager.
         """
         self.comm: ClientCommsManager = ClientCommsManager()
-        print(self.comm)
 
     def test_client_manager_singleton(self) -> None:
         """
@@ -28,7 +27,6 @@ class MyTestCase(unittest.TestCase):
         """
         self.initialize_manager()
         s = ClientCommsManager()
-        print(s)
         self.assertEqual(self.comm, s)
 
     def test_client_singleton_thread_initialize_outside_threads(self) -> None:
@@ -49,7 +47,6 @@ class MyTestCase(unittest.TestCase):
         This method represent a thread for the test method 'test_client_singleton_thread_initialize_outside_threads'.
         """
         s = ClientCommsManager()
-        print(s)
         self.assertEqual(self.comm, s)
 
     # def test_client_singleton_thread(self) -> None:

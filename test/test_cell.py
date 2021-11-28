@@ -6,9 +6,7 @@ from client.model.cell import Cell, CellState
 class TestCell(unittest.TestCase):
     def test_flip(self):
         cell_1: Cell = Cell(CellState.player1)
-        print(cell_1.state.value)
         cell_1.flip()
-        print(cell_1.state.value)
         self.assertEqual(cell_1.state.value, 2)
         cell_2: Cell = Cell(CellState.player2)
         cell_2.flip()
