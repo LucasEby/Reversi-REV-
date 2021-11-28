@@ -4,13 +4,10 @@ from client.model.cell import Cell, CellState
 
 
 class Board:
-    def __init__(self, size: int, next_turn: int) -> None:
+    def __init__(self, size: int) -> None:
         if size % 2 != 0:
             raise Exception("Board size must be an even number")
-        if (next_turn != 1) and (next_turn != 2):
-            raise Exception("Next turn must be a valid player (1 or 2)")
         self.size: int = size
-        self.next_turn: int = next_turn
         self.cells: List[List[Cell]] = [
             [Cell(CellState.empty) for _ in range(size)] for _ in range(size)
         ]
