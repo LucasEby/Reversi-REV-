@@ -37,7 +37,6 @@ class GetGameClientResponse(BaseClientResponse):
             get_game_id=True,
             get_complete=True,
             get_board_state=True,
-            get_rules=True,
             get_next_turn=True,
             get_p1_account_id=False
             if "resume_game" not in self._sent_message
@@ -100,9 +99,6 @@ class GetGameClientResponse(BaseClientResponse):
                 "board_state": [[0]]
                 if self._retrieved_dbg is None
                 else self._retrieved_dbg.board_state,
-                "rules": ""
-                if self._retrieved_dbg is None
-                else self._retrieved_dbg.rules,
                 "next_turn": 0
                 if self._retrieved_dbg is None
                 else self._retrieved_dbg.next_turn,

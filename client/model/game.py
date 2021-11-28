@@ -46,6 +46,15 @@ class Game:
         self.save: bool = save
         self.curr_player: int = next_turn
 
+    def update_online_game(self, saved_board: Board, next_turn: int):
+        """
+        Update the board and curr_player of this game after the other player has made a move.
+        :param saved_board: the new state of the board
+        :param next_turn: the new current_player
+        """
+        self.board = saved_board
+        self.curr_player = next_turn
+
     def is_game_over(self) -> bool:
         """
         Check if the board has no empty spaces, no player1 disks, no player2 disks, or current player has no valid moves
