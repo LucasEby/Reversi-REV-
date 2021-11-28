@@ -32,11 +32,7 @@ class EndGamePageView(BasePageView):
         self._play_different_mode_callback = play_different_mode_cb
         super().__init__(window=window)
 
-<<<<<<< Updated upstream
-    def start_gui(self) -> None:
-=======
     def display(self) -> None:
->>>>>>> Stashed changes
         """
         draws the End Game windows and its 5 elements
         """
@@ -90,19 +86,14 @@ class EndGamePageView(BasePageView):
         """
         Prints out the game's score.
         """
-<<<<<<< Updated upstream
-        return tk.Label(str(self._game_obj.get_score()))
-=======
+        # return tk.Label(str(self._game_obj.get_score()))
         return tk.Label(self._frame, text=("Score: " + str(self._game_obj.get_score())))
->>>>>>> Stashed changes
 
     def __winner_label(self) -> tk.Label:
         """
         Prints out the winner of the game.
         """
-<<<<<<< Updated upstream
-        return tk.Label(str(self._game_obj.get_score()))
-=======
+        # return tk.Label(str(self._game_obj.get_score()))
         return tk.Label(
             self._frame, text=("Winner: " + str(self._game_obj.get_winner()))
         )
@@ -113,4 +104,3 @@ windows = tk.tk()
 thing = EndGamePageView(None, None, None, None, windows)
 windows.mainloop()
 """
->>>>>>> Stashed changes

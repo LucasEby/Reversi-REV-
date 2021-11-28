@@ -11,7 +11,7 @@ from client.model.user import User
 import tkinter as tk
 
 
-class PageControllerMachine:
+class PageMachine:
     def __init__(self) -> None:
         """
         Class that controls which page controller is currently active.
@@ -50,10 +50,8 @@ class PageControllerMachine:
         Update current page controller to end game page when gameplay has completed
         """
         # TODO:
-<<<<<<< Updated upstream:client/controllers/page_controller_machine.py
         # self.current_page_controller =
         # These should not be pass
-=======
         self.current_page_controller = EndGamePageController(
             self,
             self.go_home_callback,
@@ -62,7 +60,6 @@ class PageControllerMachine:
             game,
             self.__window,
         )
->>>>>>> Stashed changes:client/controllers/page_machine.py
 
     def local_single_callback(self, game: Game) -> None:
         """
@@ -111,9 +108,6 @@ class PageControllerMachine:
         # self.end_game_callback, User(id_num=1, username="P1"))
         pass
         # These should not be pass
-<<<<<<< Updated upstream:client/controllers/page_controller_machine.py
-=======
-
     def play_again_callback(self) -> None:
         """
         :param self:
@@ -136,7 +130,6 @@ class PageControllerMachine:
 
         # self.current_page_controller = PickGamePageController()
 
->>>>>>> Stashed changes:client/controllers/page_machine.py
 
 PageMachine()
 
