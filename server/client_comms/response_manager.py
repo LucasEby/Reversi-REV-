@@ -3,6 +3,9 @@ from typing import Dict, Any
 
 from common.client_server_protocols import (
     create_game_client_schema,
+    get_game_client_schema,
+    update_elo_client_schema,
+    get_top_elos_client_schema,
     save_game_client_schema,
     save_preferences_client_schema,
 )
@@ -12,29 +15,12 @@ from server.client_comms.save_game_client_response import SaveGameClientResponse
 from server.client_comms.save_preferences_client_response import (
     SavePreferencesClientResponse,
 )
-from common.client_server_protocols import create_game_client_schema, get_game_client_schema
-    get_game_client_schema,
-    update_elo_client_schema,
-    get_top_elos_client_schema,
-    save_game_client_schema,
-)
-from server.client_comms.base_client_response import BaseClientResponse
-from server.client_comms.create_game_client_response import CreateGameClientResponse
 from server.client_comms.get_game_client_response import GetGameClientResponse
 from server.client_comms.get_top_elos_client_response import GetTopELOsClientResponse
 from server.client_comms.update_elo_client_response import UpdateELOClientResponse
 
-from common.client_server_protocols import (
-    create_game_client_schema,
-    get_game_client_schema,
-)
-from server.client_comms.base_client_response import BaseClientResponse
-from server.client_comms.create_game_client_response import CreateGameClientResponse
-from server.client_comms.get_game_client_response import GetGameClientResponse
-
 
 class ResponseManager:
-
     _instance = None
     _lock: Lock = Lock()
     _protocol_type_response_dict: Dict[str, str] = {
