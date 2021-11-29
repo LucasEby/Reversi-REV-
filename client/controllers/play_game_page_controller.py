@@ -41,6 +41,7 @@ class PlayGamePageController(HomeButtonPageController):
         :param coordinate: Coordinate on board (down, right) where tile placement was attempted
         """
         self.queue(task_name="place_tile", task_info=coordinate)
+        # self._local_multi_callback(game_obj)
 
     def __handle_forfeit(self, player_num: int) -> None:
         """

@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from client.controllers.base_page_controller import BasePageController
 from client.controllers.play_game_page_controller import PlayGamePageController
 from client.controllers.manage_preferences_page_controller import (
@@ -38,7 +40,9 @@ class PageMachine:
         Forever runs the active page controller
         """
         while True:
+            # print("page machine run called")
             self.current_page_controller.run()
+            print("stuck here")
 
     def go_home_callback(self) -> None:
         """
@@ -94,6 +98,7 @@ class PageMachine:
             self.preferences,
             self.__window,
         )
+        print("got initialized")
 
     def online_callback(self, game: Game) -> None:
         """
@@ -107,6 +112,24 @@ class PageMachine:
         )
         # self.current_page_controller = PlayGamePageController(self.go_home_callback, self.end_game_callback, game)
         # These should not be pass
+
+# def place_tile_callback(self, coordinate: Tuple[int, int]):
+#     valid_input: bool = False
+#     row: int = 0
+#     col: int = 0
+#     print(f"\nPlayer {self._game_obj.curr_player}'s turn")
+#     while not valid_input:
+#         row_str: str = input("Enter row for disk: ")
+#         col_str = input("Enter col for disk: ")
+#         try:
+#             row = int(row_str) - 1
+#             col = ord(col_str.lower()) - 97
+#         except ValueError:
+#             print("Invalid row or col. Please try again.")
+#             continue
+#         valid_input = True
+#     self._place_tile_cb((row, col))
+
 
     def manage_preferences_callback(self, game: Game) -> None:
         """
@@ -143,7 +166,7 @@ class PageMachine:
         # self.current_page_controller = PickGamePageController()
 
 
-# PageMachine()
+PageMachine()
 
 # main_user.get_preference().set_board_size(4)
 # main_user: User = User(id_num=1, username="P1")
@@ -173,3 +196,26 @@ class PageMachine:
 # play_online_game_callback: Callable[[Game], None],
 # manage_preferences_callback: Callable[[Game], None],
 # self.current_page_controller: BasePageController =
+
+# def __tile_clicked(self, row: int, col: int) -> None:
+#
+#     print("fish")
+#     # def __display_tile_placement(self) -> None:
+#     #     """
+#     #     Displays graphic for user to enter tile placement info
+#     #     """
+#     #     valid_input: bool = False
+#     #     row: int = 0
+#     #     col: int = 0
+#     #     print(f"\nPlayer {self._game_obj.curr_player}'s turn")
+#     #     while not valid_input:
+#     #         row_str: str = input("Enter row for disk: ")
+#     #         col_str = input("Enter col for disk: ")
+#     #         try:
+#     #             row = int(row_str) - 1
+#     #             col = ord(col_str.lower()) - 97
+#     #         except ValueError:
+#     #             print("Invalid row or col. Please try again.")
+#     #             continue
+#     #         valid_input = True
+#     #     self._place_tile_cb((row, col))

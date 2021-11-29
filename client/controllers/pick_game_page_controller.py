@@ -36,6 +36,7 @@ class PickGamePageController(HomeButtonPageController):
             self._handle_change_preferences,
             window=window,
         )
+        # self.run()
 
     def _handle_change_preferences(self) -> None:
         """
@@ -89,4 +90,5 @@ class PickGamePageController(HomeButtonPageController):
         # "Handles online user selection from user by creating an online game with an AI"
 
     def run(self) -> None:
+        # print("pick game controller run called.")
         self.__view.display()

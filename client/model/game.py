@@ -4,6 +4,8 @@ from client.model.board import Board
 from client.model.cell import CellState
 from client.model.player import Player
 from client.model.user import User
+#from client.model.rule import Rule
+from client.model.standard_rule import StandardRule
 
 
 class Game:
@@ -24,7 +26,8 @@ class Game:
         self._player2: Player = Player(user2, 2)
         active_user: User = user1 if p1_first_move else user2
         self.board: Board = Board(active_user.get_preference().get_board_size(), 1)
-        self._rules: ARules = active_user.get_preference().get_rule()
+        #self._rules: ARules = active_user.get_preference().get_rule()
+        self._rules: StandardRule = active_user.get_preference().get_rule_obj()
         self.save: bool = save
         self.curr_player: int = 1
 
@@ -127,12 +130,21 @@ class Game:
 
         :return: a 2-D array of booleans representing the locations of valid moves for the current player
         """
-        valid_moves: List[List[bool]]
+        valid_moves: List[List[bool]] = [[]]
+        temp_array: List[bool] = []
+        for a in range(self.board.size):
+            for b in range(self.board.size):
+                temp_array.append(True)
+            valid_moves.append(temp_array)
+
         for i in range(self.board.size):
             for j in range(self.board.size):
-                valid_moves[i][j] = self._rules.isValidMove(
+                # valid_moves[i][j] = self._rules.is_valid_move(
+                #     self.curr_player, (i, j), self.board
+                # )
+                valid_moves[i].insert(j, self._rules.is_valid_move(
                     self.curr_player, (i, j), self.board
-                )
+                ))
         return valid_moves
 
     def get_winner(self) -> int:

@@ -9,17 +9,16 @@ import tkinter as tk
 
 
 class PlayGamePageView(BasePageView):
-
     __ABC_ARRAY = list(string.ascii_lowercase)
 
     def __init__(
-        self,
-        game_obj: Game,
-        place_tile_cb: Callable[[Tuple[int, int]], None],
-        forfeit_cb: Callable[[int], None],
-        preferences: Preference,
-        end_game_callback,
-        window,
+            self,
+            game_obj: Game,
+            place_tile_cb: Callable[[Tuple[int, int]], None],
+            forfeit_cb: Callable[[int], None],
+            preferences: Preference,
+            end_game_callback,
+            window,
     ) -> None:
         """
         Fills in the needed board variables and initializes the current state of the board
@@ -28,6 +27,7 @@ class PlayGamePageView(BasePageView):
         :param forfeit_cb: Callback function to call when a player forfeits
         """
         super().__init__(window=window)
+        self._frame.pack()
         self.__game_obj: Game = game_obj
         self.__size: int = game_obj.board.size
         self.__place_tile_cb = place_tile_cb
@@ -35,21 +35,27 @@ class PlayGamePageView(BasePageView):
         self.__preferences = preferences
         self.__end_game_callback = end_game_callback
         self.__window = window
-        # self.play_game_frame = tk.Frame(self.window, padding=10)
-        self._frame.grid()
+
+        self.__btn_size: int = int(45 / (self.__size + 1))
         self.__btn_forfeit = tk.Button(
             self._frame,
             text="forfeit",
-            padx=50,
-            pady=50,
+            height=self.__btn_size,
+            width=self.__btn_size,
             fg="black",
             bg="purple",
             command=self.__forfeit_cb,
         )
 
+    def run(self):
+        self.display()
+
     def display(self):
         self.__display_board()
+        self.__display_score()
+        self.__btn_forfeit.grid(column=0, row=self.__size)
         self._frame.lift()
+        self._frame.mainloop()
 
     def __display_board(self) -> None:
         """
@@ -60,22 +66,42 @@ class PlayGamePageView(BasePageView):
         and column letters:
         """
         board_state: List[List[Cell]] = self.__game_obj.board.get_state()
-        player1_color = self.__preferences.get_my_disk_color()
-        player2_color = self.__preferences.get_opp_disk_color()
+        player_num = self.__game_obj.curr_player
+        valid_moves: List[List[bool]] = self.__game_obj.get_valid_moves()  #row, col
+        # plyr_num: int, posn: Tuple[int, int], brd: Board) -> bool:
+        player1_color: string = str(self.__preferences.get_my_disk_color()).lower()
+        player2_color: string = str(self.__preferences.get_opp_disk_color()).lower()
         # line_color = self.__preferences.get_line_color() # not supported with grid()
-        game_color = self.__preferences.get_board_color()
+        game_color: string = str(self.__preferences.get_board_color()).lower()
 
-        for row in range(0, self.__size + 1):
-            for col in range(0, self.__size + 1):
+        for row in range(0, self.__size):
+            for col in range(0, self.__size):
                 if board_state[row][col].state == CellState.player1:
-                    tk.Label(self._frame, fg=player1_color).grid(column=col, row=row)
+                    tk.Button(self._frame, text="Player 1", fg=player1_color, bg=player1_color, height=self.__btn_size,
+                              width=self.__btn_size, state=tk.DISABLED).grid(column=col, row=row)
                 elif board_state[row][col].state == CellState.player2:
-                    tk.Label(self._frame, fg=player2_color).grid(column=col, row=row)
-                elif board_state[row][col].state == CellState.empty:
+                    tk.Button(self._frame, text="Player 2", fg=player2_color, bg=player2_color, height=self.__btn_size,
+                              width=self.__btn_size, state=tk.DISABLED).grid(column=col, row=row)
+                elif (board_state[row][col].state == CellState.empty) and valid_moves[row][col]:
+                   tk.Button(
+                       self._frame,
+                       bg="green",
+                       fg=game_color,
+                       height=self.__btn_size,
+                       width=self.__btn_size,
+                       state=tk.NORMAL,
+                       command=self.__place_tile_cb(tuple[row: int, col: int]),
+                   ).grid(column=col, row=row)
+                else:
+                    # board_state[row][col].state == CellState.empty:
                     tk.Button(
                         self._frame,
+                        bg="green",
                         fg=game_color,
-                        command=self.__place_tile_cb((row, col)),
+                        height=self.__btn_size,
+                        width=self.__btn_size,
+                        state=tk.DISABLED,
+                        command=self.__place_tile_cb(tuple[row: int, col: int]),
                     ).grid(column=col, row=row)
 
     def __destroy_buttons_and_load(self, load_message) -> None:
@@ -98,8 +124,8 @@ class PlayGamePageView(BasePageView):
         temp_tuple: tuple = self.__game_obj.get_score()
         player1_string: string = "Player 1's score: " + str(temp_tuple[0])
         player2_string: string = "Player 2's score: " + str(temp_tuple[1])
-        tk.Label(self._frame, fg="white", title=player1_string).pack()
-        tk.Label(self._frame, fg="white", title=player2_string).pack()
+        tk.Label(self._frame, fg="orange", text=player1_string).grid(column=self.__size, row=self.__size)
+        tk.Label(self._frame, fg="purple", text=player2_string).grid(column=self.__size, row=(self.__size + 1))
 
     # TODO: move display_winner into the end game view
     def display_winner(self) -> None:
@@ -118,33 +144,9 @@ class PlayGamePageView(BasePageView):
     def display_player_forfeit(self, player_num):
         if player_num == 1:
             forfeit_message = (
-                "Player " + player_num + " forfeited the game! Player 2 wins!"
+                    "Player " + player_num + " forfeited the game! Player 2 wins!"
             )
         else:
             forfeit_message = (
-                "Player " + player_num + " forfeited the game! Player 1 wins!"
+                    "Player " + player_num + " forfeited the game! Player 1 wins!"
             )
-
-
-# def __tile_clicked(self, row: int, col: int) -> None:
-#
-#     print("fish")
-#     # def __display_tile_placement(self) -> None:
-#     #     """
-#     #     Displays graphic for user to enter tile placement info
-#     #     """
-#     #     valid_input: bool = False
-#     #     row: int = 0
-#     #     col: int = 0
-#     #     print(f"\nPlayer {self._game_obj.curr_player}'s turn")
-#     #     while not valid_input:
-#     #         row_str: str = input("Enter row for disk: ")
-#     #         col_str = input("Enter col for disk: ")
-#     #         try:
-#     #             row = int(row_str) - 1
-#     #             col = ord(col_str.lower()) - 97
-#     #         except ValueError:
-#     #             print("Invalid row or col. Please try again.")
-#     #             continue
-#     #         valid_input = True
-#     #     self._place_tile_cb((row, col))

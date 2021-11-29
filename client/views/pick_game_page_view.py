@@ -18,6 +18,7 @@ class PickGamePageView(BasePageView):
         controller is notified.
         """
         super().__init__(window=window)
+        self._frame.pack()
         self._local_single_callback = local_single_callback
         self._local_multi_callback = local_multi_callback
         self._online_callback = online_callback
@@ -72,7 +73,7 @@ class PickGamePageView(BasePageView):
         self.__btn_local_multiplayer_game.pack()
         self.__btn_online_game.pack()
         self.__btn_change_pref.pack()
-        self._frame.lift()
+        self._frame.place()  # lift()
         # Start window loop
         self._frame.mainloop()
 
@@ -100,6 +101,7 @@ class PickGamePageView(BasePageView):
         :return: None
         """
         self.__destroy_buttons_and_load("Loading local single player game...")
+        self._exit()
 
     def display_local_multiplayer_game_chosen(self) -> None:
         """
@@ -110,6 +112,7 @@ class PickGamePageView(BasePageView):
         :return: None
         """
         self.__destroy_buttons_and_load("Loading local multi player game...")
+        self._exit()
 
     def display_online_game_chosen(self) -> None:
         """
@@ -120,3 +123,4 @@ class PickGamePageView(BasePageView):
         :return: None
         """
         self.__destroy_buttons_and_load("Loading online multi player game...")
+        self._exit()

@@ -1,5 +1,6 @@
 from client.model.colors import Color
 from client.model.rule import Rule
+from client.model.standard_rule import StandardRule
 
 
 class Preference:
@@ -15,6 +16,7 @@ class Preference:
         self.__opp_disk_color: Color = Color.BLACK
         self.__line_color: Color = Color.BLACK
         self.__rule: Rule = Rule.STANDARD  # Rule should be ARule or StandardRule
+        # self.__rule = Rule.STANDARD
         self.__tile_move_confirmation: bool = True
 
     # setters and getters
@@ -144,6 +146,18 @@ class Preference:
         :return:    the name of the rule in preference
         """
         return str(self.__rule.value)
+
+    def get_rule_obj(self):
+        """
+        Get the name of the rule that is set in the preference right now.
+        :return:    the name of the rule in preference
+        """
+        if self.get_rule() == "standard":
+            return StandardRule()
+
+        else:  # self.get_rule() == "a":
+            print("preference rule did not work")
+            return "fishy"
 
     def set_tile_move_confirmation(self, prompt: bool) -> None:
         """

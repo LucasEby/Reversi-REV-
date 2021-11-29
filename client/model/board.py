@@ -41,3 +41,13 @@ class Board:
                 if self.cells[i][j].state == cell_state:
                     count += 1
         return count
+
+    def is_valid_posn(self, x: int, y: int) -> bool:
+        """
+        Checks if the given x,y coordinate is within the board of Cells.
+
+        :param x: the x coordinate
+        :param y: the y coordinate
+        :return: True if the x,y coordinate is on the board, else False
+        """
+        return (x in range(self.size)) and (y in range(self.size))
