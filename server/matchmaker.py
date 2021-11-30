@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from threading import Lock
-from typing import Optional, List, Tuple
+from typing import List, Tuple, Callable
 
 
 @dataclass
@@ -8,6 +8,7 @@ class MatchmakingUser:
     account_id: int
     pref_rules: str
     pref_board_size: int
+    callback: Callable[[int], None]
 
 
 class Matchmaker:
@@ -26,14 +27,20 @@ class Matchmaker:
                 cls._singleton = super(Matchmaker, cls).__new__(cls)
         return cls._singleton
 
-    def match_user(self, account_id: int, rules: str, board_size: int) -> Optional[int]:
+    def match_user(
+        self,
+        account_id: int,
+        rules: str,
+        board_size: int,
+        callback: Callable[[int], None],
+    ) -> None:
         """
         Matches a user with another user with the same preference for rules and board size.
         If no match available immediately, user will be added to list of users looking for game so other users can match.
         :param account_id: ID of user who wants a match
         :param rules: Preferred game rules of user
         :param board_size: Preferred board size of user
-        :return: account ID of match if match made, None if no match available
+        :param callback: Callback to call when match is successfully made
         """
         with self._match_lock:
             compatible_users: List[Tuple[int, MatchmakingUser]] = [
@@ -49,14 +56,17 @@ class Matchmaker:
                         account_id=account_id,
                         pref_rules=rules,
                         pref_board_size=board_size,
+                        callback=callback,
                     )
                 )
                 return None
 
-            # If there are users to match, return the first one's account ID and remove from list of eligible matches
+            # If there are users to match, notify their callbacks
             pop_index, match_user = compatible_users[0]
+            match_user.callback(account_id)
+            callback(match_user.account_id)
+            # Remove matched user from users list
             self._users.pop(pop_index)
-            return match_user.account_id
 
     def remove_user(self, account_id: int) -> None:
         """
