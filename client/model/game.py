@@ -46,14 +46,13 @@ class Game:
         self.save: bool = save
         self.curr_player: int = next_turn
 
-    def update_online_game(self, saved_board: Board, next_turn: int):
+    def update_online_game(self, updated_info: UpdatedGameInfo):
         """
         Update the board and curr_player of this game after the other player has made a move.
-        :param saved_board: the new state of the board
-        :param next_turn: the new current_player
+        :param updated_info: the new state of the board and next turn
         """
-        self.board = saved_board
-        self.curr_player = next_turn
+        self.board = updated_info.board
+        self.curr_player = updated_info.next_turn
 
     def is_game_over(self) -> bool:
         """

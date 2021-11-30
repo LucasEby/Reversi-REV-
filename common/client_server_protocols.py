@@ -70,6 +70,7 @@ get_game_server_schema = Schema(
         "game_id": int,
         "complete": bool,
         "board_state": [[int]],
+        "rules": str,
         "next_turn": int,
         Optional("account1"): {
             "p1_account_id": int,
@@ -112,20 +113,5 @@ get_top_elos_server_schema = Schema(
         "protocol_type": "get_top_elos",
         "success": bool,
         "top_elos": [[str, int]],
-    }
-)
-
-get_top_elos_client_schema = Schema(
-    {
-        "protocol_type": "get_top_elos",
-        "num_elos": int,
-    }
-)
-
-get_top_elos_server_schema = Schema(
-    {
-        "protocol_type": "get_top_elos",
-        "success": bool,
-        "top_elos": List[Tuple[str, int]],
     }
 )
