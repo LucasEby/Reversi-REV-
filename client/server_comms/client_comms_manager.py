@@ -17,7 +17,7 @@ class ClientCommsManager:
     _lock: Lock = Lock()
     _client: socket.socket = socket.socket()
     _callback_map: Dict[str, List[Callable[[bool, Any], None]]] = {}
-    _send_queue: Queue = Queue(maxsize=1)
+    _send_queue: Queue = Queue()
     _connected_to_server: bool = False
 
     def __new__(cls):

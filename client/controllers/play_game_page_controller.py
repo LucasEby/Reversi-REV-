@@ -58,25 +58,29 @@ class PlayGamePageController(HomeButtonPageController):
         # Having no action occur on a click is enough feedback to user that their click is invalid
         try:
             valid_placement = self._game.place_tile(posn=coordinate)
-            # Save game if it should be saved, waiting for save to be successful with a timeout
-            if self._game.save is True:
-                server_request: SaveGameServerRequest = SaveGameServerRequest(
-                    self._game
-                )
-                server_request.send()
-                start_time: float = time.time()
-                while server_request.is_response_success() is None:
-                    if time.time() - start_time > self._SAVE_GAME_TIMEOUT_SEC:
-                        raise ConnectionError(
-                            "Server unresponsive. Game could not be saved"
-                        )
-                if server_request.is_response_success() is False:
-                    raise ConnectionError("Server could not properly save game")
-        except ConnectionError:
-            # TODO: Notify view of server error
-            valid_placement = True
         except Exception:
             valid_placement = False
+
+        # Save game if it should be saved, waiting for save to be successful with a timeout
+        if valid_placement is True:
+            try:
+                if self._game.save is True:
+                    server_request: SaveGameServerRequest = SaveGameServerRequest(
+                        self._game
+                    )
+                    server_request.send()
+                    start_time: float = time.time()
+                    while server_request.is_response_success() is None:
+                        if time.time() - start_time > self._SAVE_GAME_TIMEOUT_SEC:
+                            raise ConnectionError(
+                                "Server unresponsive. Game could not be saved"
+                            )
+                    if server_request.is_response_success() is False:
+                        raise ConnectionError("Server could not properly save game")
+            except ConnectionError:
+                # TODO: Notify view of server error
+                valid_placement = True
+
         # If game is over, notify parent via callback
         if self._game.is_game_over():
             self._end_game_callback(self._game)
