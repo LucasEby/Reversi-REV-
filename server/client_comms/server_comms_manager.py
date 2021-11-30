@@ -151,16 +151,12 @@ class ServerCommsManager:
         """
         Parse JSON data and then handle it accordingly.
         """
-        package: str = data.decode()
-        package = unparsed_messages + package
-        package: List[str] = package.split("$$")
+        package: List[str] = (unparsed_messages + data.decode()).split("$$")
         # Loop through all messages before last message end symbol
         for p in range(len(package) - 1):
             msg: Dict[str, Any] = json.loads(package[p])
             # Handle response then send response message back to client
-            response_msg: Optional[Dict[str, Any]] = ResponseManager().handle_response(
-                msg
-            )
+            response_msg: Dict[str, Any] = ResponseManager().handle_response(msg)
             self.__send(msg=response_msg, conn=conn, addr=addr)
         return package[-1]
 

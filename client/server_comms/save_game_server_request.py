@@ -1,6 +1,6 @@
 from typing import Optional
 
-from schema import Schema
+from schema import Schema  # type: ignore
 
 from client.model.game import Game
 from client.server_comms.base_server_request import BaseServerRequest

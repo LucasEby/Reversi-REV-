@@ -2,7 +2,7 @@ from datetime import datetime
 from threading import Condition
 from typing import Dict, Any, Optional
 
-from schema import Schema
+from schema import Schema  # type: ignore
 
 from common.client_server_protocols import (
     save_game_client_schema,

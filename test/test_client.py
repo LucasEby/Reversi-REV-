@@ -12,7 +12,7 @@ class MyTestCase(unittest.TestCase):
     such as sending, receiving and parsing messages.
     """
 
-    comm = None
+    comm = ClientCommsManager()
 
     def initialize_manager(self):
         """

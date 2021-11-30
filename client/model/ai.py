@@ -9,19 +9,16 @@ class AI(Player):
         :param player_num: Play order of AI
         """
         super().__init__(user=None, player_num=player_num)
-        self._difficulty = 0
+        self._difficulty: int = 0
 
-    def set_difficulty(self, difficulty: int) -> None:
+    @property
+    def difficulty(self) -> int:
+        return self._difficulty
+
+    @difficulty.setter
+    def difficulty(self, difficulty: int) -> None:
         """
         Set the difficulty level of the AI
         :param difficulty: Difficulty level (>0)
         """
-        self._difficulty = difficulty
-        self._difficulty = max(0, self._difficulty)
-
-    def get_difficulty(self) -> int:
-        """
-        Returns the current difficulty level of the AI
-        :return: Difficulty
-        """
-        return self._difficulty
+        self._difficulty = max(0, difficulty)

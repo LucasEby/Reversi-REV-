@@ -26,7 +26,7 @@ class PlayGamePageController(HomeButtonPageController):
         super().__init__(go_home_callback=go_home_callback)
         self._task_execute_dict["place_tile"] = self.__execute_task_place_tile
         self._task_execute_dict["forfeit"] = self.__execute_task_forfeit
-        self._end_game_callback: Callable[[], None] = end_game_callback
+        self._end_game_callback: Callable[[Game], None] = end_game_callback
         self._game = game
         self._view = PlayGamePageView(
             game_obj=self._game,

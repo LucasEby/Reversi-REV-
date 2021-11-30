@@ -175,14 +175,14 @@ class Game:
         """
         return self._rules
 
-    def get_player1(self) -> Optional[Player]:
+    def get_player1(self) -> Player:
         """
         Get information about player 1
         :return: Player 1
         """
         return self._player1
 
-    def get_player2(self) -> Optional[Player]:
+    def get_player2(self) -> Player:
         """
         Get information about player 2
         :return: Player 2

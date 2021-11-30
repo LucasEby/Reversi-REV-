@@ -1,6 +1,6 @@
 from typing import Optional
 
-from schema import Schema
+from schema import Schema  # type: ignore
 
 from client.model.account import Account
 from client.model.ai import AI
@@ -27,15 +27,23 @@ class CreateGameServerRequest(BaseServerRequest):
         if game.get_player1() is not None and isinstance(
             game.get_player1().get_user(), Account
         ):
-            self._send_message["p1_account_id"] = game.get_player1().get_user().id
+            self._send_message["p1_account_id"] = getattr(
+                game.get_player1().get_user(), "id"
+            )
         if game.get_player2() is not None and isinstance(
             game.get_player2().get_user(), Account
         ):
-            self._send_message["p2_account_id"] = game.get_player2().get_user().id
+            self._send_message["p2_account_id"] = getattr(
+                game.get_player2().get_user(), "id"
+            )
         if isinstance(game.get_player1(), AI):
-            self._send_message["ai_difficulty"] = game.get_player1().get_difficulty()
+            self._send_message["ai_difficulty"] = getattr(
+                game.get_player1(), "difficulty"
+            )
         elif isinstance(game.get_player2(), AI):
-            self._send_message["ai_difficulty"] = game.get_player1().get_difficulty()
+            self._send_message["ai_difficulty"] = getattr(
+                game.get_player1(), "difficulty"
+            )
 
     def is_response_success(self) -> Optional[bool]:
         """
