@@ -57,7 +57,8 @@ save_preferences_server_schema = Schema(
 get_game_client_schema = Schema(
     {
         "protocol_type": "get_game",
-        "game_id": int,
+        "account_id": int,
+        "resume_game": bool,
     }
 )
 
@@ -66,8 +67,21 @@ get_game_server_schema = Schema(
         "protocol_type": "get_game",
         "success": bool,
         "game_id": int,
+        "complete": bool,
         "board_state": [[int]],
+        "rules": str,
         "next_turn": int,
+        "accounts": Optional(
+            {
+                "p1_account_id": int,
+                "p1_username": str,
+                "p1_elo": int,
+                "p2_account_id": int,
+                "p2_username": str,
+                "p2_elo": int,
+            }
+        ),
+        Optional("ai_difficulty"): int,
     }
 )
 
@@ -83,7 +97,6 @@ update_elo_server_schema = Schema(
     {
         "protocol_type": "update_elo",
         "success": bool,
-        "new_elo": int,
     }
 )
 
@@ -98,6 +111,6 @@ get_top_elos_server_schema = Schema(
     {
         "protocol_type": "get_top_elos",
         "success": bool,
-        "top_elos": List[Tuple[str, int]],
+        "top_elos": [(str, int)],
     }
 )

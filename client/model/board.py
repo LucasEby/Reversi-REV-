@@ -4,13 +4,16 @@ from client.model.cell import Cell, CellState
 
 
 class Board:
-    def __init__(self, size: int) -> None:
+    def __init__(self, size: int, saved_state: List[List[int]] = None) -> None:
         if size % 2 != 0:
             raise Exception("Board size must be an even number")
         self.size: int = size
-        self.cells: List[List[Cell]] = [
-            [Cell(CellState.empty) for _ in range(size)] for _ in range(size)
-        ]
+        if saved_state is None:
+            self.cells: List[List[Cell]] = [
+                [Cell(CellState.empty) for _ in range(size)] for _ in range(size)
+            ]
+        else:
+            self.cells: List[List[Cell]] = [[Cell(CellState(_)) for _ in saved_state]]
         # initialize the four starting disks at the center of the board
         self.cells[size // 2][size // 2 - 1].state = CellState.player1
         self.cells[size // 2 - 1][size // 2].state = CellState.player1

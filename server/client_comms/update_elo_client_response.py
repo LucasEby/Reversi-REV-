@@ -46,9 +46,6 @@ class UpdateELOClientResponse(BaseClientResponse):
             {
                 "protocol_type": update_elo_server_schema.schema["protocol_type"],
                 "success": self._db_update_elo_success,
-                "new_elo": 0
-                if self._retrieved_dba is None
-                else self._retrieved_dba.elo,
             }
         )
         return self._response_message

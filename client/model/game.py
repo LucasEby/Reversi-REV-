@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import List, Tuple, Optional
 
 from client.model.abstract_rule import AbstractRule
@@ -7,9 +8,21 @@ from client.model.player import Player
 from client.model.user import User
 
 
+@dataclass
+class UpdatedGameInfo:
+    board: Board
+    next_turn: int
+
+
 class Game:
     def __init__(
-        self, user1: User, user2: User, p1_first_move: bool = True, save: bool = False
+        self,
+        user1: User,
+        user2: User,
+        p1_first_move: bool = True,
+        save: bool = False,
+        saved_board: Board = None,
+        next_turn: int = 1,
     ) -> None:
         """
         Initializes a game with the given parameters
@@ -17,31 +30,32 @@ class Game:
         :param user2: User correlating to player 2 (playing second)
         :param p1_first_move: True if user1 has first move, false if user2 has first move
         :param save: Whether to save game after every turn
+        :param saved_board: A board that may already have had moves on it
+        :param next_turn: Which player will make the next move
         """
         self._id: Optional[int] = None
-        self._player1: Player = Player(user1, 1)
-        # TODO make user2 Optional
-        """
-        if user2 is None: 
+        self._player1: Player = Player(1, user1)
+        if user2 is None:
             self._player2: Player = Player(2)
         else:
-        """
-        self._player2: Player = Player(user2, 2)
+            self._player2: Player = Player(2, user2)
         active_user: User = user1 if p1_first_move else user2
         # Use the size and rule preference of active user, since both users must use the same size
-        self.board: Board = Board(active_user.get_preference().get_board_size())
+        if saved_board is None:
+            self.board: Board = Board(active_user.get_preference().get_board_size())
+        else:
+            self.board = saved_board
         self._rules: AbstractRule = active_user.get_preference().get_rule()
         self.save: bool = save
-        self.curr_player: int = 1
+        self.curr_player: int = next_turn
 
-    def update_online_game(self, saved_board: Board, next_turn: int):
+    def update_online_game(self, updated_info: UpdatedGameInfo):
         """
         Update the board and curr_player of this game after the other player has made a move.
-        :param saved_board: the new state of the board
-        :param next_turn: the new current_player
+        :param updated_info: the new state of the board and next turn
         """
-        self.board = saved_board
-        self.curr_player = next_turn
+        self.board = updated_info.board
+        self.curr_player = updated_info.next_turn
 
     def is_game_over(self) -> bool:
         """

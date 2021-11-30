@@ -780,7 +780,7 @@ class DatabaseManager:
         ) = request_info.data
 
         # Check at least something is retrieved
-        requested_fields: List[bool, ...] = [get for get in request_info.data[1:]]
+        requested_fields: List[bool, ...] = [get for get in request_info.data[:2]]
         if not any(requested_fields):
             request_info.callback(False, DatabaseAccount())
             return
@@ -796,21 +796,18 @@ class DatabaseManager:
         ]  # Remove last comma
         # Sort by elo and take top 10 (or specified number)
         query_str += f" from account order by elo desc limit '{num_elos}'"
-        top_elos: List[Tuple[str, int]] = List[Tuple[str, int]]()
+        top_elos: List[Tuple[str, int]] = []
         try:
             self._db_cursor.execute(query_str)
             # Grab result from query, make sure at most num_elos returned
             raw_result: List[Tuple[Any, ...]] = self._db_cursor.fetchall()
-            if len(raw_result) > num_elos:
+            if len(raw_result) > num_elos or len(raw_result) == 0:
                 success = False
             else:
                 # Transform query results to List of usernames and corresponding ELOs
-                result: Tuple[Any] = raw_result[0]
-                result_cnt: int = 0
                 temp_list: List[Any] = [None, None] * num_elos
                 for i in range(num_elos):
-                    temp_list[i] = result[result_cnt]
-                    result_cnt += 1
+                    temp_list[i] = (raw_result[i][0], raw_result[i][1])
                 top_elos = temp_list
         except Exception:
             success = False

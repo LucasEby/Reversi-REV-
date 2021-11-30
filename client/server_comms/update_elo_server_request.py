@@ -27,13 +27,3 @@ class UpdateELOServerRequest(BaseServerRequest):
             return False
         else:
             return self._response_message["success"]
-
-    def get_new_elo(self) -> Optional[int]:
-        """
-        Retrieves new elo from the server response if available (should be the same as elo sent to the server)
-        :return: new elo if available, None otherwise
-        """
-        if self.is_response_success() is True:
-            return self._response_message["new_elo"]
-        else:
-            return None
