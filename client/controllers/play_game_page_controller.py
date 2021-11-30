@@ -1,21 +1,20 @@
-import time
-from typing import Tuple, Callable
+from typing import Tuple, Optional, Callable
 
 from client.controllers.home_button_page_controller import HomeButtonPageController
 from client.model.game import Game
-from client.server_comms.save_game_server_request import SaveGameServerRequest
+from client.model.preference import Preference
 from client.views.play_game_page_view import PlayGamePageView
 
 
 class PlayGamePageController(HomeButtonPageController):
-
-    _SAVE_GAME_TIMEOUT_SEC: float = 5
-
     def __init__(
         self,
         go_home_callback: Callable[[], None],
         end_game_callback: Callable[[Game], None],
+        place_tile_callback: Callable[[int, int], None],
         game: Game,
+        preferences: Preference,
+        window,
     ) -> None:
         """
         Page controller used for handling and responding to user inputs that occur in-game
@@ -28,10 +27,13 @@ class PlayGamePageController(HomeButtonPageController):
         self._task_execute_dict["forfeit"] = self.__execute_task_forfeit
         self._end_game_callback: Callable[[Game], None] = end_game_callback
         self._game = game
-        self._view = PlayGamePageView(
+        self.__view = PlayGamePageView(
             game_obj=self._game,
             place_tile_cb=self.__handle_place_tile,
             forfeit_cb=self.__handle_forfeit,
+            preferences=preferences,
+            end_game_callback=end_game_callback,
+            window=window,
         )
 
     def __handle_place_tile(self, coordinate: Tuple[int, int]) -> None:
@@ -40,6 +42,7 @@ class PlayGamePageController(HomeButtonPageController):
         :param coordinate: Coordinate on board (down, right) where tile placement was attempted
         """
         self.queue(task_name="place_tile", task_info=coordinate)
+        self.__place_tile_callback(coordinate)
 
     def __handle_forfeit(self, player_num: int) -> None:
         """
@@ -53,42 +56,23 @@ class PlayGamePageController(HomeButtonPageController):
         Takes action on tile placement by communicating with model and updating view
         :param task_info: coordinate (see __handle_place_tile)
         """
-        coordinate = task_info
-        # Try placing tile. If tile placement doesn't work, don't do anything.
-        # Having no action occur on a click is enough feedback to user that their click is invalid
-        try:
-            valid_placement = self._game.place_tile(posn=coordinate)
-        except Exception:
-            valid_placement = False
-
-        # Save game if it should be saved, waiting for save to be successful with a timeout
-        if valid_placement is True:
-            try:
-                if self._game.save is True:
-                    server_request: SaveGameServerRequest = SaveGameServerRequest(
-                        self._game
-                    )
-                    server_request.send()
-                    start_time: float = time.time()
-                    while server_request.is_response_success() is None:
-                        if time.time() - start_time > self._SAVE_GAME_TIMEOUT_SEC:
-                            raise ConnectionError(
-                                "Server unresponsive. Game could not be saved"
-                            )
-                    if server_request.is_response_success() is False:
-                        raise ConnectionError("Server could not properly save game")
-            except ConnectionError:
-                # TODO: Notify view of server error
-                valid_placement = True
-
-        # If game is over, notify parent via callback
-        if self._game.is_game_over():
-            self._end_game_callback(self._game)
-            return
-        # Update view
-        if valid_placement:
-            self._view.update_game(game=self._game)
-        self._view.display()
+        self.queue(task_name="place_tile", task_info=task_info)
+        # coordinate = task_info
+        # # Try placing tile. If tile placement doesn't work, don't do anything.
+        # # Having no action occur on a click is enough feedback to user that their click is invalid
+        # valid_placement: bool = False
+        # try:
+        #     valid_placement = self._game.place_tile(posn=coordinate)
+        # except Exception:
+        #     valid_placement = False
+        # # If game is over, notify parent via callback
+        # if self._game.is_game_over():
+        #     self._end_game_callback(self._game)
+        #     return
+        # # Update view
+        # if valid_placement:
+        #     self._view.update_game(game=self._game)
+        # self._view.display()
 
     def __execute_task_forfeit(self, task_info: int) -> None:
         """
@@ -96,6 +80,23 @@ class PlayGamePageController(HomeButtonPageController):
         :param task_info: player_num (see __handle_forfeit)
         """
         player_num = task_info
+        self.__view.display_player_forfeit(player_num)
+        self.queue(task_name="place_tile", task_info=player_num)
         # Notify model who forfeited and notify parent game is over
         # self._game.forfeit(player_num)
         # self._end_game_callback(self._game)
+
+    def run(self):
+        self.__view.display()
+
+
+# def run(self):
+#     self.__view.start_gui()
+
+
+# play game controller calls end game callback
+# in page machine:
+# self.currentPageController.run()
+#
+# play game page view in the main branch
+# instead of calling playgamecontroller.callback

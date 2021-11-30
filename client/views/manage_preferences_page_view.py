@@ -7,15 +7,19 @@ class ManagePreferencesPageView:
     The class represents the view for Manage Preferences Page. It will display the preference choice for the given user.
     """
 
-    def __init__(self, user: User) -> None:
+    def __init__(self, user: User, window) -> None:
         """
         Construct a new ManagePreferencesPageView with given user object.
 
         :param user: the user object
         """
+        super.__init__(window)
         self.__user: User = user
         self.__preference: Preference = self.__user.get_preference()
         self.display()
+
+    def start_gui(self):
+        pass
 
     def display_board_size(self) -> None:
         """
@@ -54,7 +58,7 @@ class ManagePreferencesPageView:
         """
         Display the current rule.
         """
-        print("Current rule: " + str(self.__preference.get_rule()))
+        print("Current rule: " + self.__preference.get_rule())
 
     def display_tile_move_confirmation(self) -> None:
         """
