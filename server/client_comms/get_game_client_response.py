@@ -163,7 +163,7 @@ class GetGameClientResponse(BaseClientResponse):
         """
         # Notify class that database has completed its task
         with self._db_complete_cv:
-            self._db_get_account_success = success
+            self._db_get_p1_success = success
             if success is True:
                 self._retrieved_p1 = dba
             self._db_complete_cv.notify()
@@ -176,7 +176,7 @@ class GetGameClientResponse(BaseClientResponse):
         """
         # Notify class that database has completed its task
         with self._db_complete_cv:
-            self._db_get_account_success = success
+            self._db_get_p2_success = success
             if success is True:
                 self._retrieved_p2 = dba
             self._db_complete_cv.notify()

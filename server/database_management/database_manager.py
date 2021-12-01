@@ -553,8 +553,10 @@ class DatabaseManager:
             if self._db_cursor is None:
                 raise DatabaseConnectionException("Database not connected")
             self._db_cursor.execute(query_str)
-        except Exception:
+            self._db_connection.commit()
+        except Exception as e:
             success = False
+            print(e)
         # Callback called with correct success boolean and database account
         request_info.callback(success)
 
@@ -758,6 +760,7 @@ class DatabaseManager:
             if self._db_cursor is None:
                 raise DatabaseConnectionException("Database not connected")
             self._db_cursor.execute(query_str, query_args)
+            self._db_connection.commit()
         except Exception:
             success = False
         # Callback called with correct success boolean and database account
@@ -778,10 +781,8 @@ class DatabaseManager:
             get_elo,
             num_elos,
         ) = request_info.data
-
         # Check at least something is retrieved
-        requested_fields: List[bool, ...] = [get for get in request_info.data[:2]]
-        if not any(requested_fields):
+        if not (get_username or get_elo):
             request_info.callback(False, DatabaseAccount())
             return
 
@@ -795,7 +796,7 @@ class DatabaseManager:
             :-1
         ]  # Remove last comma
         # Sort by elo and take top 10 (or specified number)
-        query_str += f" from account order by elo desc limit '{num_elos}'"
+        query_str += f" from account order by elo desc limit {num_elos}"
         top_elos: List[Tuple[str, int]] = []
         try:
             self._db_cursor.execute(query_str)
@@ -805,12 +806,13 @@ class DatabaseManager:
                 success = False
             else:
                 # Transform query results to List of usernames and corresponding ELOs
-                temp_list: List[Any] = [None, None] * num_elos
-                for i in range(num_elos):
-                    temp_list[i] = (raw_result[i][0], raw_result[i][1])
+                temp_list: List[Any] = [None] * len(raw_result)
+                for i in range(len(raw_result)):
+                    temp_list[i] = (raw_result[i][0].strip("'"), raw_result[i][1])
                 top_elos = temp_list
-        except Exception:
+        except Exception as e:
             success = False
+            print(e)
         # Callback called with correct success boolean and database account
         request_info.callback(success, top_elos)
 

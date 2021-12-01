@@ -30,7 +30,7 @@ class GetTopELOsServerRequest(BaseServerRequest):
     def get_top_elos(self) -> Optional[List[Tuple[str, int]]]:
         """
         Retrieves top ELOs from the server response if available
-        :return: Game if available, None otherwise
+        :return: Top ELOs if available, None otherwise
         """
         if self.is_response_success() is True:
             top_elos: List[Tuple[str, int]] = self._response_message["top_elos"]

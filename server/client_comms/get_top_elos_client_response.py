@@ -49,7 +49,7 @@ class GetTopELOsClientResponse(BaseClientResponse):
         """
         Callback for when the ELOs have finished being received from the Database Manager
         :param success: Whether retrieval was successful or not
-        :param elos: List of top ELOs retrieved from database
+        :param elos: List of top ELOs and corresponding usernames retrieved from database
         """
         # Notify class that database has completed its task
         with self._db_complete_cv:

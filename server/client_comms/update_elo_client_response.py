@@ -50,7 +50,7 @@ class UpdateELOClientResponse(BaseClientResponse):
         )
         return self._response_message
 
-    def __elo_updated_callback(self, success: bool, dba: DatabaseAccount) -> None:
+    def __elo_updated_callback(self, success: bool) -> None:
         """
         Callback for when the elo has finished being updated in the Database Manager
         :param success: Whether elo was updated successfully
@@ -58,6 +58,4 @@ class UpdateELOClientResponse(BaseClientResponse):
         # Notify class that database has completed its task
         with self._db_complete_cv:
             self._db_update_elo_success = success
-            if success is True:
-                self._retrieved_dba = dba
             self._db_complete_cv.notify()
