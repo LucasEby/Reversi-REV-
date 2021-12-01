@@ -1,6 +1,7 @@
 from schema import Schema, Optional, Or
 
 # https://github.com/keleshev/schema
+from client.model.colors import Color
 
 create_game_client_schema = Schema(
     {
@@ -17,5 +18,64 @@ create_game_server_schema = Schema(
         "protocol_type": "create_game",
         "success": bool,
         "game_id": int,
+    }
+)
+
+credential_check_client_schema = Schema(
+    {
+        "protocol_type": "login",
+        "username": str,
+        "password": str,
+    }
+)
+
+credential_check_server_schema = Schema(
+    {
+        "protocol_type": "login",
+        "success": bool,
+        "credential_check": bool,
+        "account_id": Optional[int],
+    }
+)
+
+create_account_client_schema = Schema(
+    {
+        "protocol_type": "create_account",
+        "username": str,
+        "password": str,
+        "elo": int,
+        "pref_board_length": int,
+        # TODO: need to change the type of followings
+        "pref_board_color": Color,
+        "pref_disk_color": Color,
+        "pref_opp_disk_color": Color,
+        "pref_line_color": Color,
+        "pref_rules": str,
+        "pref_tile_move_confirmation": bool,
+    }
+)
+
+create_account_server_schema = Schema(
+    {
+        "protocol_type": "create_account",
+        "success": bool,
+        "account_id": int,
+    }
+)
+
+matchmaker_client_schema = Schema(
+    {
+        "protocol_type": "matchmaker",
+        "my_account_id": int,
+        "pref_rule": str,
+    }
+)
+
+matchmaker_server_schema = Schema(
+    {
+        "protocol_type": "matchmaker",
+        "success": bool,
+        "game_id": int,
+        "opp_account_id": int,
     }
 )
