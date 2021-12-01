@@ -22,7 +22,9 @@ class CredentialCheckClientResponse(BaseClientResponse):
         self._db_credential_check_success: Optional[bool] = None
         self._db_complete_cv: Condition = Condition()
         self._retrieved_dba: Optional[DatabaseAccount] = None
-        self._sent_message_schema: Schema = credential_check_client_schema  # from client side
+        self._sent_message_schema: Schema = (
+            credential_check_client_schema  # from client side
+        )
         self._response_message_schema: Schema = credential_check_server_schema
         self._response_message["protocol_type"] = self._response_message_schema.schema[
             "protocol_type"
@@ -67,7 +69,9 @@ class CredentialCheckClientResponse(BaseClientResponse):
 
         return self._response_message
 
-    def __credential_retrieved_callback(self, success: bool, dba: DatabaseAccount) -> None:
+    def __credential_retrieved_callback(
+        self, success: bool, dba: DatabaseAccount
+    ) -> None:
         """
         Callback for account information in the database manager has been retrieved
         :param success: Whether game was updated successfully

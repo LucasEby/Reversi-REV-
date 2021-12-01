@@ -23,7 +23,9 @@ class CreateAccountClientResponse(BaseClientResponse):
         self._db_get_account_id_success: Optional[bool] = None
         self._db_complete_cv: Condition = Condition()
         self._retrieved_dba: Optional[DatabaseAccount] = None
-        self._sent_message_schema: Schema = create_account_client_schema  # from client side
+        self._sent_message_schema: Schema = (
+            create_account_client_schema  # from client side
+        )
         self._response_message_schema: Schema = create_account_server_schema
         self._response_message["protocol_type"] = self._response_message_schema.schema[
             "protocol_type"
@@ -48,7 +50,9 @@ class CreateAccountClientResponse(BaseClientResponse):
             pref_opp_disk_color=self._sent_message["pref_opp_disk_color"],
             pref_line_color=self._sent_message["pref_line_color"],
             pref_rules=self._sent_message["pref_rules"],
-            pref_tile_move_confirmation=self._sent_message["pref_tile_move_confirmation"],
+            pref_tile_move_confirmation=self._sent_message[
+                "pref_tile_move_confirmation"
+            ],
         )
         DatabaseManager().create_account(
             callback=self.__account_created_callback,
@@ -63,8 +67,8 @@ class CreateAccountClientResponse(BaseClientResponse):
         # Wait for database manager to complete task
         with self._db_complete_cv:
             while (
-                    self._db_create_account_success is None
-                    or self._db_get_account_id_success is None
+                self._db_create_account_success is None
+                or self._db_get_account_id_success is None
             ):
                 self._db_complete_cv.wait()
 

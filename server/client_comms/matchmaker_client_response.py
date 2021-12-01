@@ -49,7 +49,7 @@ class MatchmakerClientResponse(BaseClientResponse):
             self._sent_message["account_id"],
             self._sent_message["pref_rule"],
             self._sent_message["pref_board_size"],
-            self.__wait_for_match_callback
+            self.__wait_for_match_callback,
         )
 
         # Wait for matchmaker to complete task
@@ -70,9 +70,10 @@ class MatchmakerClientResponse(BaseClientResponse):
             database_game=dbg,
         )
         DatabaseManager().get_game(
-            key=self._sent_message["p1_account_id"],    # TODO: need to coordinate with the assigned player number
+            key=self._sent_message[
+                "p1_account_id"
+            ],  # TODO: need to coordinate with the assigned player number
             callback=self.__matchmaker_game_retrieved_callback,
-
         )
 
         # Wait for database manager to complete task
@@ -86,7 +87,8 @@ class MatchmakerClientResponse(BaseClientResponse):
         # Return the response message
         self._response_message.update(
             {
-                "success": self._db_matchmaker_create_game_success and self._db_matchmaker_retrieve_game_success,
+                "success": self._db_matchmaker_create_game_success
+                and self._db_matchmaker_retrieve_game_success,
                 "game_id": 0
                 if self._retrieved_dbg is None
                 else self._retrieved_dbg.game_id,
@@ -117,7 +119,9 @@ class MatchmakerClientResponse(BaseClientResponse):
             self._db_matchmaker_create_game_success = success
             self._db_complete_cv.notify()
 
-    def __matchmaker_game_retrieved_callback(self, success: bool, dbg: DatabaseGame) -> None:
+    def __matchmaker_game_retrieved_callback(
+        self, success: bool, dbg: DatabaseGame
+    ) -> None:
         """
         Callback for when the game has finished being received from the Database Manager
         :param success: Whether retrieval was successful or not
