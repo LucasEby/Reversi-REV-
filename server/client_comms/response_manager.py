@@ -1,5 +1,5 @@
 from threading import Lock
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 from common.client_server_protocols import (
     create_game_client_schema,
@@ -40,16 +40,16 @@ class ResponseManager:
                     cls._instance = super(ResponseManager, cls).__new__(cls)
         return cls._instance
 
-    def handle_response(self, message: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def handle_response(self, message: Dict[str, Any]) -> Dict[str, Any]:
         """
         Adds a response to the queue for future execution based on the protocol type of the given message
         :param message: Message passed from the server comms manager
         """
         # Check prototype type in message is valid
         if "protocol_type" not in message:
-            return None
+            return {}
         if message["protocol_type"] not in self._protocol_type_response_dict:
-            return None
+            return {}
         # Queue response based on protocol type of incoming message
         new_response: BaseClientResponse = globals()[
             self._protocol_type_response_dict[message["protocol_type"]]

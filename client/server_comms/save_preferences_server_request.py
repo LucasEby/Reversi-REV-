@@ -1,6 +1,6 @@
 from typing import Optional
 
-from schema import Schema
+from schema import Schema  # type: ignore
 
 from client.model.account import Account
 from client.server_comms.base_server_request import BaseServerRequest

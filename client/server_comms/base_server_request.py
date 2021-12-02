@@ -1,7 +1,7 @@
 from abc import ABC
 from typing import Dict, Any, Optional
 
-from schema import Schema
+from schema import Schema  # type: ignore
 
 from client.server_comms.client_comms_manager import ClientCommsManager
 

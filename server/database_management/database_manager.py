@@ -4,9 +4,9 @@ from queue import Queue
 from threading import Lock
 from typing import Optional, Dict, Tuple, Callable, Any, NamedTuple, Union, List
 
-import mysql.connector
-from mysql.connector import MySQLConnection
-from mysql.connector.cursor import MySQLCursor
+import mysql.connector  # type: ignore
+from mysql.connector import MySQLConnection  # type: ignore
+from mysql.connector.cursor import MySQLCursor  # type: ignore
 
 from server.config.config_reader import ConfigReader, DatabaseAccessInfo
 
@@ -96,7 +96,9 @@ class DatabaseManager:
         """
 
         # First, get database info from config reader
-        access_info: DatabaseAccessInfo = ConfigReader().get_database_access_info()
+        access_info: Optional[
+            DatabaseAccessInfo
+        ] = ConfigReader().get_database_access_info()
         if access_info is None:
             raise DatabaseConnectionException(f"Unknown database access info")
 
@@ -363,6 +365,8 @@ class DatabaseManager:
         query_str: str = query_str1 + query_str2
         success: bool = True
         try:
+            if self._db_cursor is None or self._db_connection is None:
+                raise DatabaseConnectionException("Database not connected")
             self._db_cursor.execute(query_str)
             self._db_connection.commit()
         except Exception:
@@ -382,6 +386,8 @@ class DatabaseManager:
         # Run query to delete account
         success: bool = True
         try:
+            if self._db_cursor is None or self._db_connection is None:
+                raise DatabaseConnectionException("Database not connected")
             self._db_cursor.execute(
                 f"delete from account where account_id = {account_id}"
             )
@@ -426,7 +432,7 @@ class DatabaseManager:
         ) = request_info.data
 
         # Check at least something is retrieved
-        requested_fields: List[bool, ...] = [get for get in request_info.data[1:]]
+        requested_fields: List[bool] = [get for get in request_info.data[1:]]
         if not any(requested_fields):
             request_info.callback(False, DatabaseAccount())
             return
@@ -455,6 +461,8 @@ class DatabaseManager:
         )
         dba: DatabaseAccount = DatabaseAccount()
         try:
+            if self._db_cursor is None:
+                raise DatabaseConnectionException("Database not connected")
             self._db_cursor.execute(query_str)
             # Grab result from query, make sure there's only 1 item (unique keys)
             raw_result: List[Tuple[Any, ...]] = self._db_cursor.fetchall()
@@ -462,7 +470,7 @@ class DatabaseManager:
                 success = False
             else:
                 # Transform query results to DatabaseAccount
-                result: Tuple[Any] = raw_result[0]
+                result: Tuple[Any, ...] = raw_result[0]
                 result_cnt: int = 0
                 temp_dba: List[Any] = [None] * len(requested_fields)
                 for i in range(len(requested_fields)):
@@ -517,6 +525,8 @@ class DatabaseManager:
         query_str += f" where account_id = {account_id}"
         success: bool = True
         try:
+            if self._db_cursor is None:
+                raise DatabaseConnectionException("Database not connected")
             self._db_cursor.execute(query_str)
         except Exception:
             success = False
@@ -567,6 +577,8 @@ class DatabaseManager:
         query_str: str = query_str1 + query_str2
         success: bool = True
         try:
+            if self._db_cursor is None or self._db_connection is None:
+                raise DatabaseConnectionException("Database not connected")
             self._db_cursor.execute(query_str, query_args)
             self._db_connection.commit()
         except Exception:
@@ -586,6 +598,8 @@ class DatabaseManager:
         # Run query to delete account
         success: bool = True
         try:
+            if self._db_cursor is None or self._db_connection is None:
+                raise DatabaseConnectionException("Database not connected")
             self._db_cursor.execute(f"delete from game where game_id = {game_id}")
             self._db_connection.commit()
         except Exception:
@@ -626,7 +640,7 @@ class DatabaseManager:
         ) = request_info.data
 
         # Check at least something is retrieved
-        requested_fields: List[bool, ...] = [get for get in request_info.data[2:]]
+        requested_fields: List[bool] = [get for get in request_info.data[2:]]
         if not any(requested_fields):
             request_info.callback(False, DatabaseGame())
             return
@@ -654,6 +668,8 @@ class DatabaseManager:
             query_str += f"where game_id = {key}"
         dbg: DatabaseGame = DatabaseGame()
         try:
+            if self._db_cursor is None:
+                raise DatabaseConnectionException("Database not connected")
             self._db_cursor.execute(query_str)
             # Grab result from query, make sure there's only 1 item (unique keys)
             raw_result: List[Tuple[Any, ...]] = self._db_cursor.fetchall()
@@ -661,7 +677,7 @@ class DatabaseManager:
                 success = False
             else:
                 # Transform query results to DatabaseGame
-                result: Tuple[Any] = raw_result[0]
+                result: Tuple[Any, ...] = raw_result[0]
                 result_cnt: int = 0
                 temp_dbg: List[Any] = [None] * len(requested_fields)
                 for i in range(len(requested_fields)):
@@ -714,6 +730,8 @@ class DatabaseManager:
         query_str += f" where game_id = {game_id}"
         success: bool = True
         try:
+            if self._db_cursor is None:
+                raise DatabaseConnectionException("Database not connected")
             self._db_cursor.execute(query_str, query_args)
         except Exception:
             success = False
@@ -739,13 +757,13 @@ class DatabaseManager:
         board_size: float = len(flat_array) ** 0.5
         if not board_size.is_integer():
             raise ValueError(f"Inferred board length {board_size} not an integer")
-        board_size: int = int(board_size)
+        board_size_int: int = int(board_size)
         board_array: List[List[int]] = [
-            [0 for _ in range(board_size)] for _ in range(board_size)
+            [0 for _ in range(board_size_int)] for _ in range(board_size_int)
         ]
-        for i in range(board_size):
-            for j in range(board_size):
-                board_array[i][j] = flat_array[i * board_size + j]
+        for i in range(board_size_int):
+            for j in range(board_size_int):
+                board_array[i][j] = flat_array[i * board_size_int + j]
         return board_array
 
     @staticmethod

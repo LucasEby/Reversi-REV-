@@ -1,6 +1,6 @@
 from abc import ABC
 from queue import Queue
-from typing import Dict, Callable, Any, Union
+from typing import Dict, Callable, Any
 
 
 class BasePageController(ABC):
@@ -11,9 +11,7 @@ class BasePageController(ABC):
         controllers as simple as possible.
         """
         self._queue: Queue = Queue()
-        self._task_execute_dict: Dict[
-            str, Union[Callable[[Any], None], Callable[[], None]]
-        ] = {}
+        self._task_execute_dict: Dict[str, Callable[..., None]] = {}
 
     def run(self) -> None:
         """
