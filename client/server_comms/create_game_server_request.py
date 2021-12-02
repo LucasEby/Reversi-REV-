@@ -42,7 +42,7 @@ class CreateGameServerRequest(BaseServerRequest):
             )
         elif isinstance(game.get_player2(), AI):
             self._send_message["ai_difficulty"] = getattr(
-                game.get_player1(), "difficulty"
+                game.get_player2(), "difficulty"
             )
 
     def is_response_success(self) -> Optional[bool]:
