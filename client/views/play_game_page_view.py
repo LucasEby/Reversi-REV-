@@ -41,7 +41,7 @@ class PlayGamePageView(BasePageView):
         go from 0 to 1 - size [0, size). This was done on purpose to make space for the row numbers
         and column letters:
         """
-        board: string = ""  # reset board string.
+        board: str = ""  # reset board string.
         board_state: List[List[CellState]] = self._game_obj.board.get_state()
         for row in range(0, self._size + 1):
             for col in range(0, self._size + 1):
@@ -66,9 +66,9 @@ class PlayGamePageView(BasePageView):
         """
         Prints out the game's score.
         """
-        temp_tuple: tuple = self._game_obj.get_score()
-        temp_string0: string = str(temp_tuple[0])
-        temp_string1: string = str(temp_tuple[1])
+        temp_tuple: Tuple[int, int] = self._game_obj.get_score()
+        temp_string0: str = str(temp_tuple[0])
+        temp_string1: str = str(temp_tuple[1])
         print("Player 1's score: " + temp_string0)
         print("Player 2's score: " + temp_string1)
 
@@ -79,7 +79,7 @@ class PlayGamePageView(BasePageView):
         valid_input: bool = False
         row: int = 0
         col: int = 0
-        print(f"\nPlayer {self._game_obj.curr_player}'s turn")
+        print(f"\nPlayer {self._game_obj.get_curr_player()}'s turn")
         while not valid_input:
             row_str: str = input("Enter row for disk: ")
             col_str = input("Enter col for disk: ")
@@ -97,7 +97,7 @@ class PlayGamePageView(BasePageView):
         """
         Prints out the winner of the game.
         """
-        winner_string: string = str(self._game_obj.get_winner())
+        winner_string: str = str(self._game_obj.get_winner())
         print("Player " + winner_string + " won the game!")
 
     def update_game(self, game: Game):

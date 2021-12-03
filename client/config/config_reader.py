@@ -33,7 +33,7 @@ class ConfigReader:
         """
 
         # Try reading file
-        data_dict: Dict[Any]
+        data_dict: Dict[Any, Any]
         file_stream = None
         try:
             file_path: str = os.path.join(os.path.dirname(__file__), self._FILE)
@@ -47,7 +47,7 @@ class ConfigReader:
 
         # Extract data from dictionary into private fields
         if "server" in data_dict:
-            server_file_info: Dict[Any] = data_dict["server"]
+            server_file_info: Dict[Any, Any] = data_dict["server"]
             if "server_ip" in server_file_info and "server_port" in server_file_info:
                 self._server_info = ServerInfo(
                     server_ip=server_file_info["server_ip"],

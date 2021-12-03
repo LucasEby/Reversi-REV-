@@ -2,7 +2,6 @@ from queue import Queue
 from threading import Lock
 from typing import List, Dict, Callable, Any, Optional
 import json
-import traceback
 import socket
 from client.config.config_reader import ConfigReader, ServerInfo
 
@@ -16,9 +15,9 @@ class ClientCommsManager:
     # initialize singleton as None if ClientCommManager class has not been constructed ever
     _singleton = None
     _lock: Lock = Lock()
-    _client: socket = socket.socket()
+    _client: socket.socket = socket.socket()
     _callback_map: Dict[str, List[Callable[[bool, Any], None]]] = {}
-    _send_queue: Queue = Queue(maxsize=1)
+    _send_queue: Queue = Queue()
     _connected_to_server: bool = False
 
     def __new__(cls):
@@ -37,10 +36,12 @@ class ClientCommsManager:
         Tries to connect to server. Putting in own function allows chance to re-connect if failed
         """
         address: Optional[ServerInfo] = ConfigReader().get_server_info()
+        if address is None:
+            return
         try:
             # Create a new socket (if old failed, we need a new one)
             self._client = socket.socket()
-            self._client.connect(address)
+            self._client.connect((address.server_ip, address.server_port))
             self._connected_to_server = True
         except Exception:
             self._connected_to_server = False
@@ -49,7 +50,7 @@ class ClientCommsManager:
         self,
         message: Dict[str, Any],
         response_protocol_type: str,
-        callback: Callable[[Any], None],
+        callback: Callable[..., None],
     ) -> None:
         """
         Send out the message to the server for communication and the message will be encapsulated before transmission.
@@ -125,8 +126,7 @@ class ClientCommsManager:
 
         :param pcg: the received package directly from the server in bytes
         """
-        protocols: str = pcg.decode()
-        protocols: List[str] = protocols.split("$$")
+        protocols: List[str] = pcg.decode().split("$$")
         # parse all the protocols if multiple are received
         for str_protocol in protocols[:-1]:
             protocol: Dict[str, Any] = json.loads(str_protocol)

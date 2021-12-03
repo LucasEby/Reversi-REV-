@@ -2,7 +2,12 @@ from datetime import datetime
 from threading import Condition
 from typing import Dict, Any, Optional
 
-from common.client_server_protocols import create_game_server_schema
+from schema import Schema  # type: ignore
+
+from common.client_server_protocols import (
+    create_game_server_schema,
+    create_game_client_schema,
+)
 from server.client_comms.base_client_response import BaseClientResponse
 from server.database_management.database_manager import DatabaseManager, DatabaseGame
 
@@ -18,11 +23,22 @@ class CreateGameClientResponse(BaseClientResponse):
         self._db_get_game_success: Optional[bool] = None
         self._db_complete_cv: Condition = Condition()
         self._retrieved_dbg: Optional[DatabaseGame] = None
+        self._sent_message_schema: Schema = create_game_client_schema
+        self._response_message_schema: Schema = create_game_server_schema
+        self._response_message["protocol_type"] = self._response_message_schema.schema[
+            "protocol_type"
+        ]
 
     def respond(self) -> Dict[str, Any]:
         """
         Respond to the client through the server comms manager
+        :return Message to send to client
         """
+        # Check schema of incoming message is ok
+        if not self._sent_message_schema.is_valid(self._sent_message):
+            self._response_message.update({"success": False, "game_id": 0})
+            return self._response_message
+
         # Create a game in the database
         dbg: DatabaseGame = DatabaseGame(
             complete=False,
@@ -66,7 +82,6 @@ class CreateGameClientResponse(BaseClientResponse):
         # Return the response message
         self._response_message.update(
             {
-                "protocol_type": create_game_server_schema.schema["protocol_type"],
                 "success": self._db_create_game_success and self._db_get_game_success,
                 "game_id": 0
                 if self._retrieved_dbg is None
