@@ -75,7 +75,7 @@ matchmaker_server_schema = Schema(
     {
         "protocol_type": "matchmaker",
         "success": bool,
-        "game_id": int,
         "opp_account_id": int,
+        "game_id": int,
     }
 )
