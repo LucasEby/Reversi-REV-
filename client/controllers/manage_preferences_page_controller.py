@@ -56,25 +56,25 @@ class ManagePreferencesPageController(HomeButtonPageController):
 
             # check input validity instruction choice
             while not pref_to_change.isdigit() or int(pref_to_change) > 7:
-                pref_to_change: str = input(
+                pref_to_change = input(
                     "Invalid instruction choice, please enter again: "
                 )
 
             instruction: int = int(pref_to_change)
             if instruction == 0:
-                self.__execute_change_board_size()
+                self.__execute_change_board_size("")
             elif instruction == 1:
-                self.__execute_change_board_color()
+                self.__execute_change_board_color("")
             elif instruction == 2:
-                self.__execute_change_my_disk_color()
+                self.__execute_change_my_disk_color("")
             elif instruction == 3:
-                self.__execute_change_opp_disk_color()
+                self.__execute_change_opp_disk_color("")
             elif instruction == 4:
-                self.__execute_change_line_color()
+                self.__execute_change_line_color("")
             elif instruction == 5:
-                self.__execute_change_rule()
+                self.__execute_change_rule("")
             elif instruction == 6:
-                self.__execute_change_tile_move_confirmation()
+                self.__execute_change_tile_move_confirmation("")
             elif instruction == 7:
                 q = True
 

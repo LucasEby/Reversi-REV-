@@ -1,4 +1,6 @@
 black
+mypy
 mysql-connector-python
-pyyaml
+pyYAML
 schema
+types-PyYAML

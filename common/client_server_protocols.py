@@ -1,7 +1,6 @@
-from schema import Schema, Optional, Or
+from schema import Schema, Optional, Or  # type: ignore
 
 # https://github.com/keleshev/schema
-from client.model.colors import Color
 
 create_game_client_schema = Schema(
     {
@@ -19,6 +18,41 @@ create_game_server_schema = Schema(
         "success": bool,
         "game_id": int,
     }
+)
+
+save_game_client_schema = Schema(
+    {
+        "protocol_type": "save_game",
+        "game_id": int,
+        "complete": bool,
+        "board_state": [[int]],
+        "next_turn": int,
+    }
+)
+
+save_game_server_schema = Schema(
+    {
+        "protocol_type": "save_game",
+        "success": bool,
+    }
+)
+
+save_preferences_client_schema = Schema(
+    {
+        "protocol_type": "save_preferences",
+        "account_id": int,
+        "pref_board_length": int,
+        "pref_board_color": str,
+        "pref_disk_color": str,
+        "pref_opp_disk_color": str,
+        "pref_line_color": str,
+        "pref_rules": str,
+        "pref_tile_move_confirmation": bool,
+    }
+)
+
+save_preferences_server_schema = Schema(
+    {"protocol_type": "save_preferences", "success": bool}
 )
 
 credential_check_client_schema = Schema(
@@ -45,11 +79,10 @@ create_account_client_schema = Schema(
         "password": str,
         "elo": int,
         "pref_board_length": int,
-        # TODO: need to change the type of followings
-        "pref_board_color": Color,
-        "pref_disk_color": Color,
-        "pref_opp_disk_color": Color,
-        "pref_line_color": Color,
+        "pref_board_color": str,
+        "pref_disk_color": str,
+        "pref_opp_disk_color": str,
+        "pref_line_color": str,
         "pref_rules": str,
         "pref_tile_move_confirmation": bool,
     }
