@@ -1,7 +1,7 @@
 from threading import Condition
 from typing import Dict, Any, Optional
 
-from schema import Schema
+from schema import Schema  # type: ignore
 
 from common.client_server_protocols import (
     create_account_server_schema,

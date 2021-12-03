@@ -1,7 +1,7 @@
 from threading import Condition
 from typing import Dict, Any, Optional
 
-from schema import Schema
+from schema import Schema  # type: ignore
 
 from common.client_server_protocols import (
     matchmaker_server_schema,
@@ -9,7 +9,6 @@ from common.client_server_protocols import (
 )
 
 from server.client_comms.base_client_response import BaseClientResponse
-from server.database_management.database_manager import DatabaseManager, DatabaseGame
 from server.matchmaker import Matchmaker
 
 

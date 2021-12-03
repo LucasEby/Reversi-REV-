@@ -8,7 +8,7 @@ class MatchmakingUser:
     account_id: int
     pref_rules: str
     pref_board_size: int
-    callback: Callable[[int], None]
+    callback: Callable[[int, int], None]
 
 
 class Matchmaker:
@@ -32,7 +32,7 @@ class Matchmaker:
         account_id: int,
         rules: str,
         board_size: int,
-        callback: Callable[[int], None],
+        callback: Callable[[int, int], None],
     ) -> None:
         """
         Matches a user with another user with the same preference for rules and board size.
@@ -63,8 +63,9 @@ class Matchmaker:
 
             # If there are users to match, notify their callbacks
             pop_index, match_user = compatible_users[0]
-            match_user.callback(account_id)
-            callback(match_user.account_id)
+            game_id = 0  # TODO: create the game and get the game id
+            match_user.callback(account_id, game_id)
+            callback(match_user.account_id, game_id)
             # Remove matched user from users list
             self._users.pop(pop_index)
 

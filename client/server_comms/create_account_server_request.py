@@ -1,5 +1,7 @@
 from typing import Optional
 
+from schema import Schema  # type: ignore
+
 from client.model.preference import Preference
 from client.server_comms.base_server_request import BaseServerRequest
 from common.client_server_protocols import credential_check_server_schema

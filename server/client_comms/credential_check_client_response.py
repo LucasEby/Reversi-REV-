@@ -1,7 +1,7 @@
 from threading import Condition
 from typing import Dict, Any, Optional
 
-from schema import Schema
+from schema import Schema  # type: ignore
 
 from common.client_server_protocols import (
     credential_check_server_schema,
@@ -53,14 +53,19 @@ class CredentialCheckClientResponse(BaseClientResponse):
             while self._db_credential_check_success is None:
                 self._db_complete_cv.wait()
 
+        credential_check_result: bool = False
+        if self._retrieved_dba is not None:
+            if (
+                self._retrieved_dba.username == self._sent_message["username"]
+                and self._retrieved_dba.password == self._sent_message["password"]
+            ):
+                credential_check_result = True
+
         # Return the response message
         self._response_message.update(
             {
                 "success": self._db_credential_check_success,
-                "credential_check": False
-                if self._retrieved_dba.username == self._sent_message["username"]
-                or self._retrieved_dba.password == self._sent_message["password"]
-                else True,
+                "credential_check": credential_check_result,
                 "account_id": None
                 if self._retrieved_dba is None
                 else self._retrieved_dba.account_id,
