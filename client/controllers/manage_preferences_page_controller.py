@@ -149,7 +149,7 @@ class ManagePreferencesPageController(HomeButtonPageController):
         # size: str = input("Enter an integer for the new board size: ")
 
         # check input validity (.isdigit() makes sure size is a non-negative integer)
-        while not task_info.isdigit() or int(task_info) % 2 != 0:
+        while not task_info.isdigit() or int(task_info) % 2 != 0 or int(task_info) < 3:
             task_info = input("Invalid board size, please enter again: ")
 
         new_board_size: int = int(task_info)

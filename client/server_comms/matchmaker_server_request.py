@@ -11,7 +11,8 @@ class MatchmakerServerRequest(BaseServerRequest):
     def __init__(self, account: Account) -> None:
         """
         Create server request for match making.
-        :param account:    the account whose account id is used for match making
+
+        :param account: the account whose account id is used for match making.
         """
         super().__init__()
         self._response_schema = matchmaker_server_schema
@@ -26,8 +27,9 @@ class MatchmakerServerRequest(BaseServerRequest):
 
     def is_response_success(self) -> Optional[bool]:
         """
-        Returns whether the response was a success
-        :return: True if success, false if failure, None if response is expected but hasn't arrived yet
+        Returns whether the response was a success.
+
+        :return: True if success, false if failure, None if response is expected but hasn't arrived yet.
         """
         if self._response_success is None:
             return None
@@ -38,8 +40,9 @@ class MatchmakerServerRequest(BaseServerRequest):
 
     def get_game_id(self) -> Optional[int]:
         """
-        Retrieves game ID from the server response if available
-        :return: Game ID if available, None otherwise
+        Retrieves game ID from the server response if available.
+
+        :return: Game ID if available, None otherwise.
         """
         if self.is_response_success() is True:
             return self._response_message["game_id"]
@@ -48,10 +51,22 @@ class MatchmakerServerRequest(BaseServerRequest):
 
     def get_opp_account_id(self) -> Optional[int]:
         """
-        Retrieves opponent's account ID from the server response if available
-        :return: Opponent's account ID if available, None otherwise
+        Retrieves opponent's account ID from the server response if available.
+
+        :return: Opponent's account ID if available, None otherwise.
         """
         if self.is_response_success() is True:
             return self._response_message["opp_account_id"]
+        else:
+            return None
+
+    def get_player_term(self) -> Optional[int]:
+        """
+        Retrieves player's term from the server response if available.
+
+        :return: Player's term if available, None otherwise.
+        """
+        if self.is_response_success() is True:
+            return self._response_message["player_term"]
         else:
             return None

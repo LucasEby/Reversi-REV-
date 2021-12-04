@@ -62,9 +62,7 @@ credential_check_server_schema = Schema(
         "protocol_type": "login",
         "success": bool,
         "encrypted_password": str,
-        "account_id": Optional[
-            int
-        ],  # TODO: should we return account_id without password checked
+        "account_id": int,  # TODO: should we return account_id without password checked?
     }
 )
 
@@ -172,5 +170,6 @@ matchmaker_server_schema = Schema(
         "success": bool,
         "game_id": int,
         "opp_account_id": int,
+        "player_term": int,
     }
 )
