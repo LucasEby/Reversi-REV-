@@ -45,8 +45,12 @@ class GetGameServerRequest(BaseServerRequest):
             board_state: [[int]] = self._response_message["board_state"]
             size: int = len(board_state[0])
             next_turn: int = self._response_message["next_turn"]
-            account1: Dict[str, Any] = self._response_message["account1"]
-            account2: Dict[str, Any] = self._response_message["account2"]
+            if "account1" in self._response_message:
+                account1: Optional[Dict[str, Any]] = self._response_message["account1"]
+            else: account1 = None
+            if "account2" in self._response_message:
+                account2: Optional[Dict[str, Any]] = self._response_message["account2"]
+            else: account2 = None
             new_board: Board = Board(size, board_state)
             p1: Optional[Account] = None
             p2: Optional[Account] = None
