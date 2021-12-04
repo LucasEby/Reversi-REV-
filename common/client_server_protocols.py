@@ -1,4 +1,4 @@
-from schema import Schema, Optional, Or # type: ignore
+from schema import Schema, Optional, Or  # type: ignore
 
 # https://github.com/keleshev/schema
 
