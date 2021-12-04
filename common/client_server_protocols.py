@@ -59,6 +59,7 @@ credential_check_client_schema = Schema(
     {
         "protocol_type": "login",
         "username": str,
+        "password": str,
     }
 )
 
@@ -100,6 +101,7 @@ matchmaker_client_schema = Schema(
         "protocol_type": "matchmaker",
         "my_account_id": int,
         "pref_rule": str,
+        "pref_board_size": int,
     }
 )
 
@@ -108,7 +110,8 @@ matchmaker_server_schema = Schema(
         "protocol_type": "matchmaker",
         "success": bool,
         "game_id": int,
-        "opp_account_id": int,
+        "opp_username": str,
+        "opp_elo": int,
         "player_term": int,
     }
 )

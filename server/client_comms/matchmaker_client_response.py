@@ -10,6 +10,7 @@ from common.client_server_protocols import (
 
 from server.client_comms.base_client_response import BaseClientResponse
 from server.matchmaker import Matchmaker
+from server.database_management.database_manager import DatabaseManager, DatabaseAccount
 
 
 class MatchmakerClientResponse(BaseClientResponse):
@@ -26,6 +27,8 @@ class MatchmakerClientResponse(BaseClientResponse):
         self._player_term: Optional[
             int
         ] = None  # whether the player will be the first or second to play
+        self._db_complete_cv: Condition = Condition()
+        self._db_get_opp_account_success: Optional[bool] = None
         self._sent_message_schema: Schema = matchmaker_client_schema  # from client side
         self._response_message_schema: Schema = matchmaker_server_schema
         self._response_message["protocol_type"] = self._response_message_schema.schema[
@@ -55,16 +58,31 @@ class MatchmakerClientResponse(BaseClientResponse):
             while self._opp_account_id and self._game_id is None:
                 self._complete_matchmaker.wait()
 
+        # Check if an opponent id is returned to retrieve information; return false message directly if it is none
+        if self._opp_account_id is None:
+            self._response_message["success"] = False
+            return self._response_message
+
+        DatabaseManager().get_account(
+            key=self._opp_account_id,
+            callback=self.__opp_account_retrieved_callback,
+            get_username=True,
+            get_elo=True,
+        )
+
         # Return the response message
         self._response_message.update(
             {
                 "success": False
-                if self._opp_account_id or self._game_id is None
+                if not self._db_get_opp_account_success or self._game_id is None
                 else True,
                 "game_id": 0 if self._game_id is None else self._game_id,
-                "opp_account_id": 0
-                if self._opp_account_id is None
-                else self._opp_account_id,
+                "opp_username": None
+                if self._retrieved_dba.username is None
+                else self._retrieved_dba.username,
+                "opp_elo": 0
+                if self._retrieved_dba.elo is None
+                else self._retrieved_dba.elo,
                 "player_term": 0 if self._player_term is None else self._player_term,
             }
         )
@@ -88,3 +106,17 @@ class MatchmakerClientResponse(BaseClientResponse):
             self._opp_account_id = opp_account_id
             self._player_term = player_term
             self._complete_matchmaker.notify()
+
+    def __opp_account_retrieved_callback(
+        self, success: bool, dba: DatabaseAccount
+    ) -> None:
+        """
+        Callback for account information in the database manager has been retrieved
+        :param success: Whether game was updated successfully
+        """
+        # Notify class that database has completed its task
+        with self._db_complete_cv:
+            self._db_get_opp_account_success = success
+            if success is True:
+                self._retrieved_dba = dba
+            self._db_complete_cv.notify()
