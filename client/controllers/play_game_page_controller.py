@@ -1,4 +1,4 @@
-from typing import Tuple, Optional, Callable
+from typing import Tuple, Callable, List
 
 from client.controllers.home_button_page_controller import HomeButtonPageController
 from client.model.game import Game
@@ -11,7 +11,6 @@ class PlayGamePageController(HomeButtonPageController):
         self,
         go_home_callback: Callable[[], None],
         end_game_callback: Callable[[Game], None],
-        place_tile_callback: Callable[[int, int], None],
         game: Game,
         preferences: Preference,
         window,
@@ -28,51 +27,48 @@ class PlayGamePageController(HomeButtonPageController):
         self._end_game_callback: Callable[[Game], None] = end_game_callback
         self._game = game
         self.__view = PlayGamePageView(
-            game_obj=self._game,
+            game=self._game,
             place_tile_cb=self.__handle_place_tile,
             forfeit_cb=self.__handle_forfeit,
             preferences=preferences,
-            end_game_callback=end_game_callback,
+            end_game_callback=self.__execute_end_game,
             window=window,
         )
 
-    def __handle_place_tile(self, coordinate: Tuple[int, int]) -> None:
+    def __handle_place_tile(self, coordinate: tuple[int, int]) -> None:
         """
         Handles tile placement action from the user by queueing task
         :param coordinate: Coordinate on board (down, right) where tile placement was attempted
         """
-        self.queue(task_name="place_tile", task_info=coordinate)
-        self.__place_tile_callback(coordinate)
+        if not self._game.is_game_over():
+            valid_moves: List[List[bool]] = self._game.get_valid_moves()
+            if self._game.board.is_valid_posn(coordinate[0], coordinate[1]):
+                if valid_moves[coordinate[0]][coordinate[1]]:
+                    self.__execute_task_place_tile(coordinate)
+        else:
+            self.queue(task_name="end_game", task_info=None)
+            # self._end_game_callback(self._game)
+            self.__view.execute_end_game()
 
     def __handle_forfeit(self, player_num: int) -> None:
         """
         Handles forfeit action from user by queueing task
         :param player_num: Player number who forfeited
         """
+        # print("handle called")
         self.queue(task_name="forfeit", task_info=player_num)
+        self.__execute_task_forfeit(player_num)
 
     def __execute_task_place_tile(self, task_info: Tuple[int, int]) -> None:
         """
         Takes action on tile placement by communicating with model and updating view
         :param task_info: coordinate (see __handle_place_tile)
         """
-        self.queue(task_name="place_tile", task_info=task_info)
-        # coordinate = task_info
-        # # Try placing tile. If tile placement doesn't work, don't do anything.
-        # # Having no action occur on a click is enough feedback to user that their click is invalid
-        # valid_placement: bool = False
-        # try:
-        #     valid_placement = self._game.place_tile(posn=coordinate)
-        # except Exception:
-        #     valid_placement = False
-        # # If game is over, notify parent via callback
-        # if self._game.is_game_over():
-        #     self._end_game_callback(self._game)
-        #     return
-        # # Update view
-        # if valid_placement:
-        #     self._view.update_game(game=self._game)
-        # self._view.display()
+        self._game.place_tile(task_info)
+        self.__view.display()
+        if self._game.is_game_over():
+            self.queue(task_name="end_game", task_info=None)
+            self.__view.execute_end_game()
 
     def __execute_task_forfeit(self, task_info: int) -> None:
         """
@@ -81,10 +77,12 @@ class PlayGamePageController(HomeButtonPageController):
         """
         player_num = task_info
         self.__view.display_player_forfeit(player_num)
-        self.queue(task_name="place_tile", task_info=player_num)
         # Notify model who forfeited and notify parent game is over
-        # self._game.forfeit(player_num)
-        # self._end_game_callback(self._game)
+        self._game.forfeit(self._game.curr_player)
+        self.__execute_end_game()
+
+    def __execute_end_game(self):
+        self._end_game_callback(self._game)
 
     def run(self):
         self.__view.display()
@@ -100,3 +98,21 @@ class PlayGamePageController(HomeButtonPageController):
 #
 # play game page view in the main branch
 # instead of calling playgamecontroller.callback
+
+
+# def place_tile_callback(self, coordinate: Tuple[int, int]):
+#     valid_input: bool = False
+#     row: int = 0
+#     col: int = 0
+#     print(f"\nPlayer {self._game_obj.curr_player}'s turn")
+#     while not valid_input:
+#         row_str: str = input("Enter row for disk: ")
+#         col_str = input("Enter col for disk: ")
+#         try:
+#             row = int(row_str) - 1
+#             col = ord(col_str.lower()) - 97
+#         except ValueError:
+#             print("Invalid row or col. Please try again.")
+#             continue
+#         valid_input = True
+#     self._place_tile_cb((row, col))

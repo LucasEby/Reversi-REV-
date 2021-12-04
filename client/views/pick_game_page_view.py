@@ -59,7 +59,7 @@ class PickGamePageView(BasePageView):
             pady=50,
             fg="black",
             bg="purple",
-            command=self._change_preferences_callback,
+            command=self.__handle_change_preferences,
         )
 
     def display(self) -> None:
@@ -73,9 +73,14 @@ class PickGamePageView(BasePageView):
         self.__btn_local_multiplayer_game.pack()
         self.__btn_online_game.pack()
         self.__btn_change_pref.pack()
-        self._frame.place()  # lift()
+        self._frame.lift()  # self._frame.place()  # lift()
         # Start window loop
         self._frame.mainloop()
+
+    def __handle_change_preferences(self) -> None:
+        self._change_preferences_callback()
+        self._exit()
+        self._frame.destroy()
 
     def __destroy_buttons_and_load(self, load_message) -> None:
         """
@@ -102,6 +107,7 @@ class PickGamePageView(BasePageView):
         """
         self.__destroy_buttons_and_load("Loading local single player game...")
         self._exit()
+        self._frame.destroy()
 
     def display_local_multiplayer_game_chosen(self) -> None:
         """
@@ -113,6 +119,7 @@ class PickGamePageView(BasePageView):
         """
         self.__destroy_buttons_and_load("Loading local multi player game...")
         self._exit()
+        self._frame.destroy()
 
     def display_online_game_chosen(self) -> None:
         """
@@ -124,3 +131,4 @@ class PickGamePageView(BasePageView):
         """
         self.__destroy_buttons_and_load("Loading online multi player game...")
         self._exit()
+        self._frame.destroy()

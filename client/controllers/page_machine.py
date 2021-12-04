@@ -1,12 +1,9 @@
-from typing import Tuple
-
 from client.controllers.base_page_controller import BasePageController
+from client.controllers.end_game_page_controller import EndGamePageController
 from client.controllers.play_game_page_controller import PlayGamePageController
-from client.controllers.manage_preferences_page_controller import (
-    ManagePreferencesPageController,
-)
+# from client.controllers.manage_preferences_page_controller import (ManagePreferencesPageController,)
 from client.controllers.pick_game_page_controller import PickGamePageController
-from client.views.pick_game_page_view import PickGamePageView
+from client.controllers.manage_preferences_page_controller import ManagePreferencesPageController
 
 from client.model.game import Game
 from client.model.user import User
@@ -33,16 +30,25 @@ class PageMachine:
             main_user=self.main_user,
             window=self.__window,
         )
-        self.run()
 
     def run(self) -> None:
         """
         Forever runs the active page controller
         """
         while True:
-            # print("page machine run called")
-            self.current_page_controller.run()
-            print("stuck here")
+            try:
+                self.current_page_controller.run()
+            except:
+                print("dumb loop")
+                continue
+        # print(str(self.current_page_controller))
+        # self.current_page_controller.run()
+        # print(str(self.current_page_controller))
+        # self.current_page_controller.run()
+        # print(str(self.current_page_controller))
+        # self.current_page_controller.run()
+        # print(str(self.current_page_controller))
+        # print("DONE")
 
     def go_home_callback(self) -> None:
         """
@@ -55,16 +61,13 @@ class PageMachine:
         """
         Update current page controller to end game page when gameplay has completed
         """
-        # TODO:
-        # self.current_page_controller =
-        # These should not be pass
-        self.current_page_controller = EndGamePageController(
-            self,
-            self.go_home_callback,
-            self.rematch_callback,
-            self.play_again_callback,
-            game,
-            self.__window,
+        self.current_page_controller: BasePageController = EndGamePageController(
+            go_home_callback=self.go_home_callback,
+            rematch_callback=self.rematch_callback,
+            play_again_callback=self.play_again_callback,
+            play_different_mode_callback=self.play_different_mode_callback,
+            game=game,
+            window=self.__window,
         )
 
     def local_single_callback(self, game: Game) -> None:
@@ -74,7 +77,7 @@ class PageMachine:
         :return:
         """
         # print("play local single player game")
-        self.current_page_controller = PlayGamePageController(
+        self.current_page_controller: BasePageController = PlayGamePageController(
             self.go_home_callback,
             self.end_game_callback,
             game,
@@ -90,16 +93,13 @@ class PageMachine:
         :param game:
         :return:
         """
-        print("local multi callback called")
-        self.current_page_controller = PlayGamePageController(
+        self.current_page_controller: BasePageController = PlayGamePageController(
             self.go_home_callback,
             self.end_game_callback,
-            self.place_tile_callback,
             game,
             self.preferences,
             self.__window,
         )
-        print("got initialized")
 
     def online_callback(self, game: Game) -> None:
         """
@@ -108,52 +108,83 @@ class PageMachine:
         :param game:
         :return:
         """
-        self.current_page_controller = PlayGamePageController(
+        self.current_page_controller: BasePageController = PlayGamePageController(
             self.go_home_callback, self.end_game_callback, game
         )
         # self.current_page_controller = PlayGamePageController(self.go_home_callback, self.end_game_callback, game)
         # These should not be pass
 
-    def place_tile_callback(self, coordinate: Tuple[int, int]):
-        # row, col
-        print("fish")
-
-    def manage_preferences_callback(self, game: Game) -> None:
+    def manage_preferences_callback(self) -> None:
         """
-
         :param self:
-        :param game:
         :return:
         """
+        self.current_page_controller: BasePageController = ManagePreferencesPageController(
+            end_game_callback=self.end_game_callback()
+        )
+        print("manage preferences callback called")
         # self.current_page_controller = ManagePreferencesPageController(self.go_home_callback,
         # self.end_game_callback, User(id_num=1, username="P1"))
-        pass
         # These should not be pass
 
-    def play_again_callback(self) -> None:
+    def play_again_callback(self, game: Game) -> None:
         """
         :param self:
         """
-        self.current_page_controller = PickGamePageController(
-            self.go_home_callback,
-            self.local_single_callback,
-            self.local_multi_callback,
-            self.online_callback,
-            self.manage_preferences_callback,
-            self.main_user,
-            self.__window,
+        # self.current_page_controller: BasePageController = PickGamePageController(
+        #     self.go_home_callback,
+        #     self.local_single_callback,
+        #     self.local_multi_callback,
+        #     self.online_callback,
+        #     self.manage_preferences_callback,
+        #     self.main_user,
+        #     self.__window,
+        # )
+        print("rematch callback")
+        users: tuple[User, User] = game.get_users()
+        user1: User = users[0]
+        user2: User = users[1]
+        game = Game(user1, user2)
+        self.current_page_controller: BasePageController = PlayGamePageController(
+            end_game_callback=self.end_game_callback,
+            game=game,
+            go_home_callback=self.go_home_callback,
+            preferences=self.preferences,
+            window=self.__window
         )
 
-    def rematch_callback(self) -> None:
+    def play_different_mode_callback(self):
+        self.current_page_controller: BasePageController = PickGamePageController(
+            go_home_callback=self.go_home_callback,
+            local_multi_callback=self.local_multi_callback,
+            local_single_callback=self.local_single_callback,
+            main_user=self.main_user,
+            manage_preferences_callback=self.manage_preferences_callback,
+            online_callback=self.online_callback,
+            window=self.__window
+        )
+
+
+    def rematch_callback(self, game: Game) -> None:
         """
         :param self:
+        :param game:
         """
-        # TODO: Need actual rematch capabilites
+        # How is this different from play again??
+        users: tuple[User, User] = game.get_users()
+        user1: User = users[0]
+        user2: User = users[1]
+        game = Game(user1, user2)
+        self.current_page_controller: BasePageController = PlayGamePageController(
+            end_game_callback=self.end_game_callback,
+            game=game,
+            go_home_callback=self.go_home_callback,
+            preferences=self.preferences,
+            window=self.__window
+        )
 
-        # self.current_page_controller = PickGamePageController()
 
-
-PageMachine()
+PageMachine().run()
 
 # main_user.get_preference().set_board_size(4)
 # main_user: User = User(id_num=1, username="P1")

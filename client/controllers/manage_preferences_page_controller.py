@@ -35,7 +35,7 @@ class ManagePreferencesPageController(HomeButtonPageController):
             "tile_move_confirmation"
         ] = self.__execute_change_tile_move_confirmation
         # execute stuffs
-        self._end_game_callback: Callable[[], None] = end_home_callback
+        self._end_home_callback: Callable[[], None] = end_home_callback
         self.__user: User = user
         self.__view: ManagePreferencesPageView = ManagePreferencesPageView(user)
         self.__preference: Preference = user.get_preference()
@@ -122,7 +122,7 @@ class ManagePreferencesPageController(HomeButtonPageController):
         Handles game rule change request from the user by queueing task
         :param rule: the rule of the game that the user want to set
         """
-        self.queue(task_name="ruler", task_info=rule)
+        self.queue(task_name="rule", task_info=rule)
 
     def ___handle_change_tile_move_confirmation(self, confirm: str) -> None:
         """

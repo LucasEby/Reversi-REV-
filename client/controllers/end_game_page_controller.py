@@ -2,16 +2,17 @@ from typing import Callable
 
 from client.controllers.base_page_controller import BasePageController
 from client.views.end_game_page_view import EndGamePageView
+from client.model.game import Game
 
 
 class EndGamePageController(BasePageController):
     def __init__(
         self,
         go_home_callback: Callable[[], None],
-        rematch_callback: Callable[[], None],
+        rematch_callback: Callable[[Game], None],
         play_again_callback: Callable[[], None],
         play_different_mode_callback: Callable[[], None],
-        Game,
+        game: Game,
         window,
     ) -> None:
         """
@@ -22,44 +23,38 @@ class EndGamePageController(BasePageController):
         super().__init__()
 
         self.__go_home_callback: Callable[[], None] = go_home_callback
-        self._rematch_callback: Callable[[], None] = rematch_callback
+        self._rematch_callback: Callable[[Game], None] = rematch_callback
         self._play_again_callback: Callable[[], None] = play_again_callback
         self._play_different_mode_callback: Callable[
             [], None
         ] = play_different_mode_callback
+        self._game: Game = game
 
         self._task_execute_dict["rematch_button"] = self.__execute_task_rematch_button
-        self._task_execute_dict[
-            "play_again_button"
-        ] = self.__execute_task_play_again_button
-        self._task_execute_dict[
-            "play_different_mode_button"
-        ] = self.__execute_task_play_different_mode_button
-        self.__view = EndGamePageView()
+        self._task_execute_dict["play_again_button"] = self.__execute_task_play_again_button
+        self._task_execute_dict["play_different_mode_button"] = self.__execute_task_play_different_mode_button
+        self.__view = EndGamePageView(
+            go_home_cb=self.__go_home_callback,
+            game=game,
+            rematch_cb=self._rematch_callback,
+            play_again_cb=self._play_again_callback,
+            play_different_mode_cb=self._play_different_mode_callback,
+            window=window,
+        )
 
     def run(self):
-        self.__view.start_gui()
-        self._window = window
-        self._game = Game
-
-        self.__view = EndGamePageView(
-            self,
-            self.__go_home_callback,
-            Game,
-            self._rematch_callback,
-            self._play_again_callback,
-            window,
-        )
+        print("end game run called")
+        self.__view.display()
 
     def __handle_rematch_button(self) -> None:
         """
         Handles rematch button action from the user by queueing task
         """
-        # TODO: Rematch builds a new game functioanlity
+        # TODO: Rematch builds a new game functionality
         self.queue(task_name="rematch_button")
 
     def __execute_task_rematch_button(self) -> None:
-        self._rematch_callback()
+        self._rematch_callback(self._game)
 
     def __handle_play_again(self) -> None:
         """
@@ -68,7 +63,7 @@ class EndGamePageController(BasePageController):
         self.queue(task_name="play_again")
 
     def __execute_task_rematch_button(self) -> None:
-        self._rematch_callback()
+        self._rematch_callback(self._game)
         # TODO: Rematch builds a new game functioanlity
 
     def __execute_task_play_again_button(self) -> None:
@@ -88,6 +83,3 @@ class EndGamePageController(BasePageController):
         Handles rematch button action from the user by queueing task
         """
         self._play_different_mode_callback()
-
-    def run(self):
-        pass

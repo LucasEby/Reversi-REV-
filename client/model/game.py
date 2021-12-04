@@ -45,6 +45,10 @@ class Game:
         self._rules: AbstractRule = active_user.get_preference().get_rule()
         self.save: bool = save
         self.curr_player: int = next_turn
+        self._player1_forfeit: bool = False
+        self._player2_forfeit: bool = False
+        self._user1 = user1
+        self._user2 = user2
 
     def is_game_over(self) -> bool:
         """
@@ -60,6 +64,8 @@ class Game:
             or (self.board.get_num_type(CellState.player1) == 0)
             or (self.board.get_num_type(CellState.player2) == 0)
             or (not self.valid_moves_exist())
+            or self._player1_forfeit
+            or self._player2_forfeit
         )
 
     def place_tile(self, posn: Tuple[int, int]) -> bool:
@@ -169,7 +175,11 @@ class Game:
         """
         if not self.is_game_over():
             raise Exception("cannot get winner until game is over")
-        if self.board.get_num_type(CellState.player1) > self.board.get_num_type(
+        if self._player1_forfeit:
+            return 2
+        elif self._player2_forfeit:
+            return 1
+        elif self.board.get_num_type(CellState.player1) > self.board.get_num_type(
             CellState.player2
         ):
             return 1
@@ -228,4 +238,18 @@ class Game:
         """
         return self.curr_player
 
-    # def forfeit(self):
+    def forfeit(self, forfeit_player: int):
+        if forfeit_player == 1:
+            self._player1_forfeit = True
+            # Just to make sure that only one of them are true:
+            self._player2_forfeit = False
+        elif forfeit_player == 2:
+            self._player2_forfeit = True
+            # Just to make sure that only one of them are true:
+            self._player1_forfeit = False
+        else:
+            raise Exception("The player, " + str(forfeit_player) + ", given is not playing this game.")
+
+    def get_users(self):
+        users: tuple[User, User] = (self._user1, self._user2)
+        return users

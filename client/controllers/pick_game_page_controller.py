@@ -45,7 +45,7 @@ class PickGamePageController(HomeButtonPageController):
         :return: None
         """
         self.queue(task_name="change_preferences")
-        # self._manage_preferences_callback(self._game)
+        self._manage_preferences_callback()
 
     def _handle_local_single_player_game(self) -> None:
         """
@@ -71,7 +71,7 @@ class PickGamePageController(HomeButtonPageController):
         self.__view.display_local_multiplayer_game_chosen()
         player2_username = "Guest"
         game_obj = Game(self._main_user, User(player2_username))
-        self.queue(task_name="local_game_multi", task_info=game_obj)
+        # self.queue(task_name="local_game_multi", task_info=game_obj)
         self._local_multi_callback(game_obj)
 
     def _handle_online_game(self) -> None:
