@@ -4,7 +4,8 @@ from typing import List, Callable, Tuple
 from client.model.cell import Cell, CellState
 from client.model.game import Game
 from client.model.preference import Preference
-from client.views.base_page_view import BasePageView
+# from client.views.base_page_view import BasePageView
+from client.views.home_button_page_view import HomeButtonPageView
 import tkinter as tk
 
 
@@ -12,7 +13,7 @@ def do_place_tile(__handle_place_tile_cb, r, c):
     __handle_place_tile_cb(r, c)
 
 
-class PlayGamePageView(BasePageView):
+class PlayGamePageView(HomeButtonPageView):
     __ABC_ARRAY = list(string.ascii_lowercase)
 
     def __init__(
@@ -22,6 +23,7 @@ class PlayGamePageView(BasePageView):
         forfeit_cb: Callable[[int], None],
         preferences: Preference,
         end_game_callback,
+        go_home_callback,
         window,
     ) -> None:
         """
@@ -30,7 +32,7 @@ class PlayGamePageView(BasePageView):
         :param place_tile_cb: Callback function to call when a tile is placed
         :param forfeit_cb: Callback function to call when a player forfeits
         """
-        super().__init__(window=window)
+        super().__init__(go_home_callback=go_home_callback, window=window)
         self._frame.pack()
         self.__game: Game = game
         self.__size: int = game.board.size
@@ -49,6 +51,7 @@ class PlayGamePageView(BasePageView):
         self.__padx = self.__pady = 22
         self.__game_color: string = str(self.__preferences.get_board_color()).lower()
         self.__btn_size: int = int(45 / (self.__size + 2 + self.__padx))
+        self.__btn_home: tk.Button = self.add_home_button(padx=self.__padx, btn_size=self.__btn_size)
         self.__btn_forfeit = tk.Button(
             self._frame,
             text="forfeit",
@@ -69,6 +72,7 @@ class PlayGamePageView(BasePageView):
         self.__display_score()
         self.__display_current_player()
         self.__btn_forfeit.grid(column=0, row=self.__size)
+        self.__btn_home.grid(column=1, row=self.__size)
         self._frame.lift()
         # self._frame.place()
         self._frame.mainloop()
@@ -171,14 +175,14 @@ class PlayGamePageView(BasePageView):
     def __handle_forfeit(self):
         self.__forfeit_cb(self.__game.curr_player)
         self._exit()
-        self._frame.destroy()
+        # self._frame.destroy()
 
     def execute_end_game(self):
         # self.__destroy_buttons_and_load("The game has ended!")
         # self._exit()
         self.__end_game_callback()
         self._exit()
-        self._frame.destroy()
+        # self._frame.destroy()
 
     def display_player_forfeit(self, player_num):
         if player_num == 1:
@@ -191,7 +195,7 @@ class PlayGamePageView(BasePageView):
             )
         self.__destroy_buttons_and_load(forfeit_message)
         self._exit()
-        self._frame.destroy()
+        # self._frame.destroy()
 
     def __destroy_buttons_and_load(self, load_message) -> None:
         """

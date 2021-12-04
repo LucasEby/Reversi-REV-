@@ -16,8 +16,8 @@ class BasePageView(ABC):
         self._frame.pack()
 
     def _exit(self):
-        self._frame.destroy()
         self._frame.quit()
+        self._frame.destroy()
 
     @abstractmethod
     def display(self) -> None:

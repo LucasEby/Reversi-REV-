@@ -1,15 +1,16 @@
-from client.views.base_page_view import BasePageView
+from client.views.home_button_page_view import HomeButtonPageView
 import tkinter as tk
 from typing import Callable
 
 
-class PickGamePageView(BasePageView):
+class PickGamePageView(HomeButtonPageView):
     def __init__(
         self,
         local_single_callback: Callable[[], None],
         local_multi_callback: Callable[[], None],
         online_callback: Callable[[], None],
         change_preferences_callback: Callable[[], None],
+        go_home_callback,
         window,
     ) -> None:
         """
@@ -17,7 +18,7 @@ class PickGamePageView(BasePageView):
         and an online multiplayer button. When a button is clicked, a "loading game" message is displayed and the
         controller is notified.
         """
-        super().__init__(window=window)
+        super().__init__(go_home_callback=go_home_callback, window=window)
         self._frame.pack()
         self._local_single_callback = local_single_callback
         self._local_multi_callback = local_multi_callback
@@ -25,6 +26,8 @@ class PickGamePageView(BasePageView):
         self._change_preferences_callback = change_preferences_callback
         # self._window = window
         # Make the main window buttons
+        self.__padx = 20
+        self.__btn_size = 20
         self.__btn_local_single_player = tk.Button(
             self._frame,
             text="Play local single player game",
@@ -61,6 +64,7 @@ class PickGamePageView(BasePageView):
             bg="purple",
             command=self.__handle_change_preferences,
         )
+        self.__btn_home: tk.Button = self.add_home_button(padx=self.__padx, btn_size=self.__btn_size)
 
     def display(self) -> None:
         """
@@ -73,6 +77,7 @@ class PickGamePageView(BasePageView):
         self.__btn_local_multiplayer_game.pack()
         self.__btn_online_game.pack()
         self.__btn_change_pref.pack()
+        self.__btn_home.pack()
         self._frame.lift()  # self._frame.place()  # lift()
         # Start window loop
         self._frame.mainloop()
@@ -80,7 +85,7 @@ class PickGamePageView(BasePageView):
     def __handle_change_preferences(self) -> None:
         self._change_preferences_callback()
         self._exit()
-        self._frame.destroy()
+        # self._frame.destroy()
 
     def __destroy_buttons_and_load(self, load_message) -> None:
         """
@@ -107,7 +112,7 @@ class PickGamePageView(BasePageView):
         """
         self.__destroy_buttons_and_load("Loading local single player game...")
         self._exit()
-        self._frame.destroy()
+        # self._frame.destroy()
 
     def display_local_multiplayer_game_chosen(self) -> None:
         """
@@ -119,7 +124,7 @@ class PickGamePageView(BasePageView):
         """
         self.__destroy_buttons_and_load("Loading local multi player game...")
         self._exit()
-        self._frame.destroy()
+        # self._frame.destroy()
 
     def display_online_game_chosen(self) -> None:
         """
@@ -131,4 +136,4 @@ class PickGamePageView(BasePageView):
         """
         self.__destroy_buttons_and_load("Loading online multi player game...")
         self._exit()
-        self._frame.destroy()
+        # self._frame.destroy()

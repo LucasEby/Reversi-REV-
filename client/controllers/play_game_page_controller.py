@@ -21,9 +21,11 @@ class PlayGamePageController(HomeButtonPageController):
         :param end_game_callback: Callback to call after a game ended
         :param game: Game that was created to play the game with
         """
-        super().__init__(go_home_callback=go_home_callback)
+        super().__init__(go_home_callback=go_home_callback, window=window)
         self._task_execute_dict["place_tile"] = self.__execute_task_place_tile
         self._task_execute_dict["forfeit"] = self.__execute_task_forfeit
+        self._task_execute_dict["end_game"] = self.__execute_end_game
+
         self._end_game_callback: Callable[[Game], None] = end_game_callback
         self._game = game
         self.__view = PlayGamePageView(
@@ -32,6 +34,7 @@ class PlayGamePageController(HomeButtonPageController):
             forfeit_cb=self.__handle_forfeit,
             preferences=preferences,
             end_game_callback=self.__execute_end_game,
+            go_home_callback=go_home_callback,
             window=window,
         )
 
@@ -55,7 +58,6 @@ class PlayGamePageController(HomeButtonPageController):
         Handles forfeit action from user by queueing task
         :param player_num: Player number who forfeited
         """
-        # print("handle called")
         self.queue(task_name="forfeit", task_info=player_num)
         self.__execute_task_forfeit(player_num)
 

@@ -89,6 +89,7 @@ class ManagePreferencesPageController(HomeButtonPageController):
         :param size: the size of the board that the user want to set
         """
         self.queue(task_name="board_size", task_info=size)
+        self.__execute_change_board_size()
 
     def ___handle_change_board_color(self, color: str) -> None:
         """
@@ -278,5 +279,3 @@ class ManagePreferencesPageController(HomeButtonPageController):
 
         return color
 
-
-# TODO:Changes in execute might be needed for re-enter to cooperate with the GUI?
