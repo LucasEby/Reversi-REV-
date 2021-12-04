@@ -34,3 +34,23 @@ class CredentialCheckServerRequest(BaseServerRequest):
             return False
         else:
             return self._response_message["success"]
+
+    def get_encrypted_password(self) -> Optional[int]:
+        """
+        Retrieves encrypted password from the server response if available
+        :return: Encrypted password if available, None otherwise
+        """
+        if self.is_response_success() is True:
+            return self._response_message["encrypted_password"]
+        else:
+            return None
+
+    def get_account_id(self) -> Optional[int]:
+        """
+        Retrieves account ID from the server response if available
+        :return: Account ID if available, None otherwise
+        """
+        if self.is_response_success() is True:
+            return self._response_message["account_id"]
+        else:
+            return None

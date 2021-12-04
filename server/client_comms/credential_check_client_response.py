@@ -53,20 +53,14 @@ class CredentialCheckClientResponse(BaseClientResponse):
             while self._db_credential_check_success is None:
                 self._db_complete_cv.wait()
 
-        credential_check_result: bool = False
-        if self._retrieved_dba is not None:
-            if (
-                self._retrieved_dba.username == self._sent_message["username"]
-                and self._retrieved_dba.password == self._sent_message["password"]
-            ):
-                credential_check_result = True
-
         # Return the response message
         self._response_message.update(
             {
                 "success": self._db_credential_check_success,
-                "credential_check": credential_check_result,
-                "account_id": None
+                "encrypted_password": None
+                if self._retrieved_dba is None
+                else self._retrieved_dba.password,
+                "account_id": 0
                 if self._retrieved_dba is None
                 else self._retrieved_dba.account_id,
             }
