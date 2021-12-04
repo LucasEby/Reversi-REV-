@@ -18,7 +18,7 @@ class Game:
     def __init__(
         self,
         user1: User,
-        user2: User,
+        user2: Optional[User],
         p1_first_move: bool = True,
         save: bool = False,
         saved_board: Board = None,
@@ -35,10 +35,7 @@ class Game:
         """
         self._id: Optional[int] = None
         self._player1: Player = Player(1, user1)
-        if user2 is None:
-            self._player2: Player = Player(2)
-        else:
-            self._player2: Player = Player(2, user2)
+        self._player2: Player = Player(2, user2)
         active_user: User = user1 if p1_first_move else user2
         # Use the size and rule preference of active user, since both users must use the same size
         if saved_board is None:
@@ -48,14 +45,6 @@ class Game:
         self._rules: AbstractRule = active_user.get_preference().get_rule()
         self.save: bool = save
         self.curr_player: int = next_turn
-
-    def update_online_game(self, updated_info: UpdatedGameInfo):
-        """
-        Update the board and curr_player of this game after the other player has made a move.
-        :param updated_info: the new state of the board and next turn
-        """
-        self.board = updated_info.board
-        self.curr_player = updated_info.next_turn
 
     def is_game_over(self) -> bool:
         """

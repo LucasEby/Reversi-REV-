@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional, Union, List, Dict, Any
 
 from client.model.account import Account
 from client.model.board import Board
@@ -45,24 +45,26 @@ class GetGameServerRequest(BaseServerRequest):
             board_state: [[int]] = self._response_message["board_state"]
             size: int = len(board_state[0])
             next_turn: int = self._response_message["next_turn"]
-            accounts: dict = self._response_message["accounts"]
+            account1: Dict[str, Any] = self._response_message["account1"]
+            account2: Dict[str, Any] = self._response_message["account2"]
             new_board: Board = Board(size, board_state)
             p1: Optional[Account] = None
             p2: Optional[Account] = None
             ai_difficulty: int = 0
             new_game: Optional[Game] = None
-            if accounts is not None:
-                p1_id: int = accounts["p1_account_id"]
-                p1_username: str = accounts["p1_username"]
-                p1_elo: int = accounts["p1_elo"]
-                p2_id: int = accounts["p2_account_id"]
-                p2_username: str = accounts["p2_username"]
-                p2_elo: int = accounts["p2_elo"]
+            if account1 is not None:
+                p1_id: int = account1["p1_account_id"]
+                p1_username: str = account1["p1_username"]
+                p1_elo: int = account1["p1_elo"]
                 p1 = Account(p1_username, p1_elo, p1_id)
+            if account2 is not None:
+                p2_id: int = account2["p2_account_id"]
+                p2_username: str = account2["p2_username"]
+                p2_elo: int = account2["p2_elo"]
                 p2 = Account(p2_username, p2_elo, p2_id)
             if "ai_difficulty" in self._response_message:
                 ai_difficulty: int = self._response_message["ai_difficulty"]
-            if p1 is not None:
+            if p1 is not None or p2 is not None:
                 new_game: Game = Game(
                     p1, p2, save=True, saved_board=new_board, next_turn=next_turn
                 )
@@ -71,7 +73,7 @@ class GetGameServerRequest(BaseServerRequest):
         elif (
             self.is_response_success() is True and not self._send_message["resume_game"]
         ):
-            board_state: [[int]] = self._response_message["board_state"]
+            board_state: List[List[int]] = self._response_message["board_state"]
             size: int = len(board_state[0])
             new_board: Board = Board(size, board_state)
             next_turn: int = self._response_message["next_turn"]

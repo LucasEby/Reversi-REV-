@@ -61,22 +61,28 @@ class GetGameClientResponse(BaseClientResponse):
             and self._retrieved_dbg is not None
         ):
             # Get user info from database
-            DatabaseManager().get_account(
-                callback=self.__p1_retrieved_callback,
-                key=self._retrieved_dbg.p1_account_id,
-                get_username=True,
-                get_elo=True,
-            )
-            DatabaseManager().get_account(
-                callback=self.__p2_retrieved_callback,
-                key=self._retrieved_dbg.p2_account_id,
-                get_username=True,
-                get_elo=True,
-            )
+            if self._retrieved_dbg.p1_account_id is not None:
+                DatabaseManager().get_account(
+                    callback=self.__p1_retrieved_callback,
+                    key=self._retrieved_dbg.p1_account_id,
+                    get_username=True,
+                    get_elo=True,
+                )
+            if self._retrieved_dbg.p2_account_id is not None:
+                DatabaseManager().get_account(
+                    callback=self.__p2_retrieved_callback,
+                    key=self._retrieved_dbg.p2_account_id,
+                    get_username=True,
+                    get_elo=True,
+                )
             # Wait for database to complete task
             with self._db_complete_cv:
                 while (
-                    self._db_get_p1_success is None or self._db_get_p2_success is None
+                    self._retrieved_dbg.p1_account_id is not None
+                    and self._db_get_p1_success is None
+                ) or (
+                    self._retrieved_dbg.p2_account_id is not None
+                    and self._db_get_p2_success is None
                 ):
                     self._db_complete_cv.wait()
 
@@ -114,32 +120,40 @@ class GetGameClientResponse(BaseClientResponse):
             and self._sent_message["resume_game"]
             and self._retrieved_dbg is not None
         ):
-            self._response_message.update(
-                {
-                    "accounts": {
-                        "p1_account_id": self._retrieved_dbg.p1_account_id,
-                        "p1_username": ""
-                        if self._retrieved_p1 is None
-                        else self._retrieved_p1.username,
-                        "p1_elo": 0
-                        if self._retrieved_p1 is None
-                        else self._retrieved_p1.elo,
-                        "p2_account_id": self._retrieved_dbg.p2_account_id,
-                        "p2_username": ""
-                        if self._retrieved_p2 is None
-                        else self._retrieved_p2.username,
-                        "p2_elo": 0
-                        if self._retrieved_p2 is None
-                        else self._retrieved_p2.elo,
+            if (
+                self._retrieved_dbg is not None
+                and self._retrieved_dbg.p1_account_id is not None
+            ):
+                self._response_message.update(
+                    {
+                        "account1": {
+                            "p1_account_id": self._retrieved_dbg.p1_account_id,
+                            "p1_username": ""
+                            if self._retrieved_p1 is None
+                            else self._retrieved_p1.username,
+                            "p1_elo": 0
+                            if self._retrieved_p1 is None
+                            else self._retrieved_p1.elo,
+                        }
                     }
-                }
-            )
-        else:
-            self._response_message.update(
-                {
-                    "accounts": None,
-                }
-            )
+                )
+            if (
+                self._retrieved_dbg is not None
+                and self._retrieved_dbg.p2_account_id is not None
+            ):
+                self._response_message.update(
+                    {
+                        "account2": {
+                            "p2_account_id": self._retrieved_dbg.p2_account_id,
+                            "p2_username": ""
+                            if self._retrieved_p2 is None
+                            else self._retrieved_p2.username,
+                            "p2_elo": 0
+                            if self._retrieved_p2 is None
+                            else self._retrieved_p2.elo,
+                        }
+                    }
+                )
         return self._response_message
 
     def __game_retrieved_callback(self, success: bool, dbg: DatabaseGame) -> None:

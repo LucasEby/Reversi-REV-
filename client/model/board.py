@@ -1,12 +1,12 @@
-from typing import List
+from typing import List, Optional
 
 from client.model.cell import Cell, CellState
 
 
 class Board:
-    def __init__(self, size: int, saved_state: List[List[int]] = None) -> None:
-        if size % 2 != 0:
-            raise Exception("Board size must be an even number")
+    def __init__(
+        self, size: int, saved_state: Optional[List[List[int]]] = None
+    ) -> None:
         self.size: int = size
         if saved_state is None:
             self.cells: List[List[Cell]] = [
