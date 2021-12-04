@@ -2,34 +2,33 @@ from typing import Optional
 
 from schema import Schema  # type: ignore
 
-from client.model.preference import Preference
+from client.model.account import Account
 from client.server_comms.base_server_request import BaseServerRequest
-from common.client_server_protocols import credential_check_server_schema
+from common.client_server_protocols import create_account_server_schema
 
 
 class CreateAccountServerRequest(BaseServerRequest):
-    def __init__(self, username: str, password: str, preference: Preference) -> None:
+    def __init__(self, account: Account, password: str) -> None:
         """
         Create server request for creating account.
-        :param username:    the username that the user gives in
+        :param account:    the account created for the user with preferences and elo initialized
         :param password:    the password that the user gives in
-        :param preference:  initial preference for new user
         """
         super().__init__()
-        self._response_schema = credential_check_server_schema
+        self._response_schema = create_account_server_schema
         self._send_message.update(
             {
                 "protocol_type": self._response_schema.schema["protocol_type"],
-                "username": username,
+                "username": account.get_username(),
                 "password": password,
-                "elo": 0,
-                "pref_board_length": preference.get_board_size(),
-                "pref_board_color": preference.get_board_color(),
-                "pref_disk_color": preference.get_my_disk_color(),
-                "pref_opp_disk_color": preference.get_opp_disk_color(),
-                "pref_line_color": preference.get_line_color(),
-                "pref_rules": str(preference.get_rule()),
-                "pref_tile_move_confirmation": preference.get_tile_move_confirmation(),
+                "elo": account.elo,
+                "pref_board_length": account.get_preference().get_board_size(),
+                "pref_board_color": account.get_preference().get_board_color(),
+                "pref_disk_color": account.get_preference().get_my_disk_color(),
+                "pref_opp_disk_color": account.get_preference().get_opp_disk_color(),
+                "pref_line_color": account.get_preference().get_line_color(),
+                "pref_rules": str(account.get_preference().get_rule()),
+                "pref_tile_move_confirmation": account.get_preference().get_tile_move_confirmation(),
             }
         )
 

@@ -14,7 +14,7 @@ class CredentialCheckServerRequest(BaseServerRequest):
         :param password:    the password that the user gives in
         """
         super().__init__()
-        self._response_schema = credential_check_server_schema
+        self._response_schema: Schema = credential_check_server_schema
         self._send_message.update(
             {
                 "protocol_type": self._response_schema.schema["protocol_type"],

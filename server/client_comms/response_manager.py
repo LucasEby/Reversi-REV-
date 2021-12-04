@@ -5,9 +5,16 @@ from common.client_server_protocols import (
     create_game_client_schema,
     save_game_client_schema,
     save_preferences_client_schema,
+    create_account_client_schema,
+    credential_check_client_schema,
+    matchmaker_client_schema,
 )
 from server.client_comms.base_client_response import BaseClientResponse
 from server.client_comms.create_game_client_response import CreateGameClientResponse
+from server.client_comms.credential_check_client_response import (
+    CredentialCheckClientResponse,
+)
+from server.client_comms.matchmaker_client_response import MatchmakerClientResponse
 from server.client_comms.save_game_client_response import SaveGameClientResponse
 from server.client_comms.save_preferences_client_response import (
     SavePreferencesClientResponse,
@@ -28,6 +35,15 @@ class ResponseManager:
         save_preferences_client_schema.schema[
             "protocol_type"
         ]: SavePreferencesClientResponse.__name__,
+        create_account_client_schema.schema[
+            "protocol_type"
+        ]: CreateGameClientResponse.__name__,
+        credential_check_client_schema.schema[
+            "protocol_type"
+        ]: CredentialCheckClientResponse.__name__,
+        matchmaker_client_schema.schema[
+            "protocol_type"
+        ]: MatchmakerClientResponse.__name__,
     }
 
     def __new__(cls, *args, **kwargs):

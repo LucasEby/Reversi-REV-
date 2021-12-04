@@ -12,6 +12,7 @@ class AbstractRule(ABC):
     def is_valid_move(plyr_num: int, posn: Tuple[int, int], brd: Board) -> bool:
         """
         Determines if a move that was played is valid based on a given ruleset
+
         :param plyr_num: Player number of the player attempting to place a disk
         :param posn: Position of the move that is being evaluated
         :param brd: Current board

@@ -12,7 +12,6 @@ from server.client_comms.base_client_response import BaseClientResponse
 from server.matchmaker import Matchmaker
 
 
-# TODO: cancel field in the message for user to cancel?
 class MatchmakerClientResponse(BaseClientResponse):
     def __init__(self, message: Dict[str, Any]) -> None:
         """

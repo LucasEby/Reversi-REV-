@@ -19,7 +19,7 @@ class MatchmakerServerRequest(BaseServerRequest):
             {
                 "protocol_type": self._response_schema.schema["protocol_type"],
                 "my_account_id": account.id,
-                "pref_rule": account.get_preference().get_rule(),
+                "pref_rule": str(account.get_preference().get_rule()),
                 "pref_board_size": account.get_preference().get_board_size(),
             }
         )
@@ -35,6 +35,16 @@ class MatchmakerServerRequest(BaseServerRequest):
             return False
         else:
             return self._response_message["success"]
+
+    def get_game_id(self) -> Optional[int]:
+        """
+        Retrieves game ID from the server response if available
+        :return: Game ID if available, None otherwise
+        """
+        if self.is_response_success() is True:
+            return self._response_message["game_id"]
+        else:
+            return None
 
     def get_opp_account_id(self) -> Optional[int]:
         """
