@@ -13,7 +13,7 @@ class Board:
                 [Cell(CellState.empty) for _ in range(size)] for _ in range(size)
             ]
         else:
-            self.cells: List[List[Cell]] = [
+            self.cells = [
                 [Cell(CellState(saved_state[i][j])) for i in range(self.size)]
                 for j in range(self.size)
             ]

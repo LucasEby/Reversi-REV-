@@ -553,6 +553,8 @@ class DatabaseManager:
             if self._db_cursor is None:
                 raise DatabaseConnectionException("Database not connected")
             self._db_cursor.execute(query_str)
+            if self._db_connection is None:
+                raise DatabaseConnectionException("Database not connected")
             self._db_connection.commit()
         except Exception as e:
             success = False
@@ -760,6 +762,8 @@ class DatabaseManager:
             if self._db_cursor is None:
                 raise DatabaseConnectionException("Database not connected")
             self._db_cursor.execute(query_str, query_args)
+            if self._db_connection is None:
+                raise DatabaseConnectionException("Database not connected")
             self._db_connection.commit()
         except Exception:
             success = False
@@ -799,6 +803,8 @@ class DatabaseManager:
         query_str += f" from account order by elo desc limit {num_elos}"
         top_elos: List[Tuple[str, int]] = []
         try:
+            if self._db_cursor is None:
+                raise DatabaseConnectionException("Database not connected")
             self._db_cursor.execute(query_str)
             # Grab result from query, make sure at most num_elos returned
             raw_result: List[Tuple[Any, ...]] = self._db_cursor.fetchall()

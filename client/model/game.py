@@ -36,7 +36,7 @@ class Game:
         self._id: Optional[int] = None
         self._player1: Player = Player(1, user1)
         self._player2: Player = Player(2, user2)
-        active_user: User = user1 if p1_first_move else user2
+        active_user: User = user1 if (p1_first_move or user2 is None) else user2
         # Use the size and rule preference of active user, since both users must use the same size
         if saved_board is None:
             self.board: Board = Board(active_user.get_preference().get_board_size())

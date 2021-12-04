@@ -42,7 +42,7 @@ class GetGameServerRequest(BaseServerRequest):
             # but they are included because they may be useful
             game_id: int = self._response_message["game_id"]
             complete: bool = self._response_message["complete"]
-            board_state: [[int]] = self._response_message["board_state"]
+            board_state: List[List[int]] = self._response_message["board_state"]
             size: int = len(board_state[0])
             next_turn: int = self._response_message["next_turn"]
             if "account1" in self._response_message:
@@ -69,9 +69,9 @@ class GetGameServerRequest(BaseServerRequest):
                 p2_elo: int = account2["p2_elo"]
                 p2 = Account(p2_username, p2_elo, p2_id)
             if "ai_difficulty" in self._response_message:
-                ai_difficulty: int = self._response_message["ai_difficulty"]
-            if p1 is not None or p2 is not None:
-                new_game: Game = Game(
+                ai_difficulty = self._response_message["ai_difficulty"]
+            if p1 is not None:
+                new_game = Game(
                     p1, p2, save=True, saved_board=new_board, next_turn=next_turn
                 )
                 new_game.set_id(game_id)
@@ -79,10 +79,10 @@ class GetGameServerRequest(BaseServerRequest):
         elif (
             self.is_response_success() is True and not self._send_message["resume_game"]
         ):
-            board_state: List[List[int]] = self._response_message["board_state"]
-            size: int = len(board_state[0])
-            new_board: Board = Board(size, board_state)
-            next_turn: int = self._response_message["next_turn"]
+            board_state = self._response_message["board_state"]
+            size = len(board_state[0])
+            new_board = Board(size, board_state)
+            next_turn = self._response_message["next_turn"]
             updated_info: UpdatedGameInfo = UpdatedGameInfo(new_board, next_turn)
             return updated_info
         else:
