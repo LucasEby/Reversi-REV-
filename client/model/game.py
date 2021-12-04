@@ -248,7 +248,11 @@ class Game:
             # Just to make sure that only one of them are true:
             self._player1_forfeit = False
         else:
-            raise Exception("The player, " + str(forfeit_player) + ", given is not playing this game.")
+            raise Exception(
+                "The player, "
+                + str(forfeit_player)
+                + ", given is not playing this game."
+            )
 
     def get_users(self):
         users: tuple[User, User] = (self._user1, self._user2)

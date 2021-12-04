@@ -1,9 +1,12 @@
 from client.controllers.base_page_controller import BasePageController
 from client.controllers.end_game_page_controller import EndGamePageController
 from client.controllers.play_game_page_controller import PlayGamePageController
+
 # from client.controllers.manage_preferences_page_controller import (ManagePreferencesPageController,)
 from client.controllers.pick_game_page_controller import PickGamePageController
-from client.controllers.manage_preferences_page_controller import ManagePreferencesPageController
+from client.controllers.manage_preferences_page_controller import (
+    ManagePreferencesPageController,
+)
 
 from client.model.game import Game
 from client.model.user import User
@@ -119,8 +122,8 @@ class PageMachine:
         :param self:
         :return:
         """
-        self.current_page_controller: BasePageController = ManagePreferencesPageController(
-            end_game_callback=self.end_game_callback()
+        self.current_page_controller: BasePageController = (
+            ManagePreferencesPageController(end_game_callback=self.end_game_callback())
         )
         print("manage preferences callback called")
         # self.current_page_controller = ManagePreferencesPageController(self.go_home_callback,
@@ -150,7 +153,7 @@ class PageMachine:
             game=game,
             go_home_callback=self.go_home_callback,
             preferences=self.preferences,
-            window=self.__window
+            window=self.__window,
         )
 
     def play_different_mode_callback(self):
@@ -161,9 +164,8 @@ class PageMachine:
             main_user=self.main_user,
             manage_preferences_callback=self.manage_preferences_callback,
             online_callback=self.online_callback,
-            window=self.__window
+            window=self.__window,
         )
-
 
     def rematch_callback(self, game: Game) -> None:
         """
@@ -180,7 +182,7 @@ class PageMachine:
             game=game,
             go_home_callback=self.go_home_callback,
             preferences=self.preferences,
-            window=self.__window
+            window=self.__window,
         )
 
 

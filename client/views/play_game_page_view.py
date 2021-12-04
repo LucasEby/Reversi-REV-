@@ -16,13 +16,13 @@ class PlayGamePageView(BasePageView):
     __ABC_ARRAY = list(string.ascii_lowercase)
 
     def __init__(
-            self,
-            game: Game,
-            place_tile_cb: Callable[[Tuple[int, int]], None],
-            forfeit_cb: Callable[[int], None],
-            preferences: Preference,
-            end_game_callback,
-            window,
+        self,
+        game: Game,
+        place_tile_cb: Callable[[Tuple[int, int]], None],
+        forfeit_cb: Callable[[int], None],
+        preferences: Preference,
+        end_game_callback,
+        window,
     ) -> None:
         """
         Fills in the needed board variables and initializes the current state of the board
@@ -39,8 +39,12 @@ class PlayGamePageView(BasePageView):
         self.__preferences = preferences
         self.__end_game_callback = end_game_callback
         self.__window = window
-        self.__player1_color: string = str(self.__preferences.get_my_disk_color()).lower()
-        self.__player2_color: string = str(self.__preferences.get_opp_disk_color()).lower()
+        self.__player1_color: string = str(
+            self.__preferences.get_my_disk_color()
+        ).lower()
+        self.__player2_color: string = str(
+            self.__preferences.get_opp_disk_color()
+        ).lower()
         self.__game_bg = self.__preferences.get_line_color()
         self.__padx = self.__pady = 22
         self.__game_color: string = str(self.__preferences.get_board_color()).lower()
@@ -78,37 +82,59 @@ class PlayGamePageView(BasePageView):
         and column letters:
         """
         board_state: List[List[CellState]] = self.__game.board.get_state()
-        valid_moves: List[List[bool]] = self.__game.get_valid_moves()  #row, col
+        valid_moves: List[List[bool]] = self.__game.get_valid_moves()  # row, col
 
         for row in range(0, self.__size):
             for col in range(0, self.__size):
                 if board_state[row][col] == CellState.player1:
-                    tk.Button(self._frame, text="Player 1", padx=self.__padx, pady=self.__pady, fg=self.__player1_color, bg=self.__player1_color, height=self.__btn_size,
-                                   width=self.__btn_size, state=tk.DISABLED).grid(column=col, row=row)
-                elif board_state[row][col] == CellState.player2:
-                    tk.Button(self._frame, text="Player 2", padx=self.__padx, pady=self.__pady, fg=self.__player2_color, bg=self.__player2_color, height=self.__btn_size,
-                                   width=self.__btn_size, state=tk.DISABLED).grid(column=col, row=row)
-                elif (board_state[row][col] == CellState.empty) and not valid_moves[row][col]:
                     tk.Button(
-                            self._frame,
-                            padx=self.__padx,
-                            pady=self.__pady,
-                            bg="green",
-                            fg=self.__game_color,
-                            height=self.__btn_size,
-                            width=self.__btn_size,
-                            state=tk.DISABLED,
-                        ).grid(column=col, row=row)
+                        self._frame,
+                        text="Player 1",
+                        padx=self.__padx,
+                        pady=self.__pady,
+                        fg=self.__player1_color,
+                        bg=self.__player1_color,
+                        height=self.__btn_size,
+                        width=self.__btn_size,
+                        state=tk.DISABLED,
+                    ).grid(column=col, row=row)
+                elif board_state[row][col] == CellState.player2:
+                    tk.Button(
+                        self._frame,
+                        text="Player 2",
+                        padx=self.__padx,
+                        pady=self.__pady,
+                        fg=self.__player2_color,
+                        bg=self.__player2_color,
+                        height=self.__btn_size,
+                        width=self.__btn_size,
+                        state=tk.DISABLED,
+                    ).grid(column=col, row=row)
+                elif (board_state[row][col] == CellState.empty) and not valid_moves[
+                    row
+                ][col]:
+                    tk.Button(
+                        self._frame,
+                        padx=self.__padx,
+                        pady=self.__pady,
+                        bg="green",
+                        fg=self.__game_color,
+                        height=self.__btn_size,
+                        width=self.__btn_size,
+                        state=tk.DISABLED,
+                    ).grid(column=col, row=row)
                 else:
-                    ButtonMaker(frame=self._frame,
-                                padx=self.__padx,
-                                pady=self.__pady,
-                                row=row,
-                                col=col,
-                                bg="green",
-                                fg="green",
-                                btn_size=self.__btn_size,
-                                handle_place_tile_callback=self.__handle_place_tile_cb)
+                    ButtonMaker(
+                        frame=self._frame,
+                        padx=self.__padx,
+                        pady=self.__pady,
+                        row=row,
+                        col=col,
+                        bg="green",
+                        fg="green",
+                        btn_size=self.__btn_size,
+                        handle_place_tile_callback=self.__handle_place_tile_cb,
+                    )
 
     def __handle_place_tile_cb(self, row: int, col: int):
         temp_tuple: tuple[int, int] = (row, col)
@@ -121,8 +147,12 @@ class PlayGamePageView(BasePageView):
         temp_tuple: tuple = self.__game.get_score()
         player1_string: string = "Player 1's score: " + str(temp_tuple[0])
         player2_string: string = "Player 2's score: " + str(temp_tuple[1])
-        tk.Label(self._frame, fg="orange", text=player1_string).grid(column=self.__size, row=self.__size)
-        tk.Label(self._frame, fg="purple", text=player2_string).grid(column=self.__size, row=(self.__size + 1))
+        tk.Label(self._frame, fg="orange", text=player1_string).grid(
+            column=self.__size, row=self.__size
+        )
+        tk.Label(self._frame, fg="purple", text=player2_string).grid(
+            column=self.__size, row=(self.__size + 1)
+        )
 
     def __display_current_player(self) -> None:
         """
@@ -130,7 +160,9 @@ class PlayGamePageView(BasePageView):
         """
         current_player: int = self.__game.curr_player
         turn_string: string = "Player turn: Player" + str(current_player)
-        tk.Label(self._frame, fg="red", text=turn_string).grid(column=self.__size, row=(self.__size + 2))
+        tk.Label(self._frame, fg="red", text=turn_string).grid(
+            column=self.__size, row=(self.__size + 2)
+        )
 
     def update_game(self, game: Game):
         self.__game = game
@@ -151,11 +183,11 @@ class PlayGamePageView(BasePageView):
     def display_player_forfeit(self, player_num):
         if player_num == 1:
             forfeit_message = (
-                    "Player " + str(player_num) + " forfeited the game! Player 2 wins!"
+                "Player " + str(player_num) + " forfeited the game! Player 2 wins!"
             )
         else:
             forfeit_message = (
-                    "Player " + str(player_num) + " forfeited the game! Player 1 wins!"
+                "Player " + str(player_num) + " forfeited the game! Player 1 wins!"
             )
         self.__destroy_buttons_and_load(forfeit_message)
         self._exit()
@@ -178,16 +210,8 @@ class PlayGamePageView(BasePageView):
 
 class ButtonMaker:
     def __init__(
-            self,
-            frame,
-            padx,
-            pady,
-            row,
-            col,
-            bg,
-            fg,
-            btn_size,
-            handle_place_tile_callback) -> None:
+        self, frame, padx, pady, row, col, bg, fg, btn_size, handle_place_tile_callback
+    ) -> None:
         self.frame: tk.Frame = frame
         self.row = row
         self.col = col
@@ -197,17 +221,18 @@ class ButtonMaker:
         self.state = tk.NORMAL
         self.__handle_place_tile_cb = handle_place_tile_callback
         self.button = tk.Button(
-                    self.frame,
-                    padx=padx,
-                    pady=pady,
-                    bg=self.bg,
-                    fg=self.fg,
-                    height=self.btn_size,
-                    width=self.btn_size,
-                    state=tk.NORMAL,
-                    command=lambda: do_place_tile(self.__handle_place_tile_cb, r=self.row,
-                                                c=self.col),
-                ).grid(row=row, column=col)
+            self.frame,
+            padx=padx,
+            pady=pady,
+            bg=self.bg,
+            fg=self.fg,
+            height=self.btn_size,
+            width=self.btn_size,
+            state=tk.NORMAL,
+            command=lambda: do_place_tile(
+                self.__handle_place_tile_cb, r=self.row, c=self.col
+            ),
+        ).grid(row=row, column=col)
 
 
 # self.__fg = [[]]

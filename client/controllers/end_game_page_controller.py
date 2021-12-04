@@ -31,8 +31,12 @@ class EndGamePageController(BasePageController):
         self._game: Game = game
 
         self._task_execute_dict["rematch_button"] = self.__execute_task_rematch_button
-        self._task_execute_dict["play_again_button"] = self.__execute_task_play_again_button
-        self._task_execute_dict["play_different_mode_button"] = self.__execute_task_play_different_mode_button
+        self._task_execute_dict[
+            "play_again_button"
+        ] = self.__execute_task_play_again_button
+        self._task_execute_dict[
+            "play_different_mode_button"
+        ] = self.__execute_task_play_different_mode_button
         self.__view = EndGamePageView(
             go_home_cb=self.__go_home_callback,
             game=game,

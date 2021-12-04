@@ -115,9 +115,7 @@ class EndGamePageView(BasePageView):
         Prints out the winner of the game.
         """
         # return tk.Label(str(self._game_obj.get_score()))
-        return tk.Label(
-            self._frame, text=("Winner: " + str(self._game.get_winner()))
-        )
+        return tk.Label(self._frame, text=("Winner: " + str(self._game.get_winner())))
 
     def display_winner(self) -> None:
         """

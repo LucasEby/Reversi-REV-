@@ -3,6 +3,7 @@ from typing import Tuple, Optional, Callable
 from client.model.colors import Color
 from client.views.manage_preferences_page_view import ManagePreferencesPageView
 from client.model.preference import Preference
+
 # from client.model.rule import Rule
 from client.model.user import User
 from client.controllers.home_button_page_controller import HomeButtonPageController
