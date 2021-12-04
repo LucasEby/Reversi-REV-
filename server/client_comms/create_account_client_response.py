@@ -77,7 +77,6 @@ class CreateAccountClientResponse(BaseClientResponse):
             {
                 "success": self._db_create_account_success
                 and self._db_get_account_id_success,
-                "create_account": False,
                 "account_id": 0
                 if self._retrieved_dba is None
                 else self._retrieved_dba.account_id,
