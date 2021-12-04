@@ -72,7 +72,11 @@ class GetGameServerRequest(BaseServerRequest):
                 ai_difficulty = self._response_message["ai_difficulty"]
             if p1 is not None:
                 new_game = Game(
-                    p1, p2, save=True, saved_board=new_board, next_turn=next_turn
+                    p1,
+                    p2,
+                    save=True,
+                    saved_board=new_board,
+                    p1_first_move=not bool(next_turn - 1),
                 )
                 new_game.set_id(game_id)
             return new_game

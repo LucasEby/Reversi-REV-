@@ -1,120 +1,112 @@
-from typing import Tuple, Callable, List
+import time
+from typing import Tuple, Callable
 
-from client.controllers.home_button_page_controller import HomeButtonPageController
+from client.controllers.base_page_controller import BasePageController
 from client.model.game import Game
-from client.model.preference import Preference
+from client.model.user import User
+from client.server_comms.save_game_server_request import SaveGameServerRequest
 from client.views.play_game_page_view import PlayGamePageView
 
 
-class PlayGamePageController(HomeButtonPageController):
+class PlayGamePageController(BasePageController):
+
+    _SAVE_GAME_TIMEOUT_SEC: float = 5
+
     def __init__(
         self,
-        go_home_callback: Callable[[], None],
-        end_game_callback: Callable[[Game], None],
+        end_game_callback: Callable[[Game, User], None],
         game: Game,
-        preferences: Preference,
-        window,
+        main_user: User,
     ) -> None:
         """
         Page controller used for handling and responding to user inputs that occur in-game
-        :param go_home_callback: Callback to call when user requested going to the home screen
         :param end_game_callback: Callback to call after a game ended
         :param game: Game that was created to play the game with
         """
-        super().__init__(go_home_callback=go_home_callback, window=window)
+        super().__init__()
         self._task_execute_dict["place_tile"] = self.__execute_task_place_tile
         self._task_execute_dict["forfeit"] = self.__execute_task_forfeit
-        self._task_execute_dict["end_game"] = self.__execute_end_game
 
-        self._end_game_callback: Callable[[Game], None] = end_game_callback
-        self._game = game
-        self.__view = PlayGamePageView(
+        self._end_game_callback: Callable[[Game, User], None] = end_game_callback
+
+        self._game: Game = game
+        self._main_user: User = main_user
+        self._view: PlayGamePageView = PlayGamePageView(
             game=self._game,
             place_tile_cb=self.__handle_place_tile,
             forfeit_cb=self.__handle_forfeit,
-            preferences=preferences,
-            end_game_callback=self.__execute_end_game,
-            go_home_callback=go_home_callback,
-            window=window,
+            preferences=main_user.get_preference(),
         )
 
-    def __handle_place_tile(self, coordinate: tuple[int, int]) -> None:
+    def __handle_place_tile(self, coordinate: Tuple[int, int]) -> None:
         """
         Handles tile placement action from the user by queueing task
+
         :param coordinate: Coordinate on board (down, right) where tile placement was attempted
         """
-        if not self._game.is_game_over():
-            valid_moves: List[List[bool]] = self._game.get_valid_moves()
-            if self._game.board.is_valid_posn(coordinate[0], coordinate[1]):
-                if valid_moves[coordinate[0]][coordinate[1]]:
-                    self.__execute_task_place_tile(coordinate)
-        else:
-            self.queue(task_name="end_game", task_info=None)
-            # self._end_game_callback(self._game)
-            self.__view.execute_end_game()
+        self.queue(task_name="place_tile", task_info=coordinate)
 
-    def __handle_forfeit(self, player_num: int) -> None:
+    def __handle_forfeit(self) -> None:
         """
         Handles forfeit action from user by queueing task
-        :param player_num: Player number who forfeited
         """
-        self.queue(task_name="forfeit", task_info=player_num)
-        self.__execute_task_forfeit(player_num)
+        self.queue(task_name="forfeit")
 
     def __execute_task_place_tile(self, task_info: Tuple[int, int]) -> None:
         """
         Takes action on tile placement by communicating with model and updating view
+
         :param task_info: coordinate (see __handle_place_tile)
         """
-        self._game.place_tile(task_info)
-        self.__view.display()
-        if self._game.is_game_over():
-            self.queue(task_name="end_game", task_info=None)
-            self.__view.execute_end_game()
+        coordinate: Tuple[int, int] = task_info
+        # Try placing tile. If tile placement doesn't work, don't do anything.
+        # Having no action occur on a click is enough feedback to user that their click is invalid
+        try:
+            valid_placement = self._game.place_tile(posn=coordinate)
+        except Exception:
+            valid_placement = False
 
-    def __execute_task_forfeit(self, task_info: int) -> None:
+        # Save game if it should be saved, waiting for save to be successful with a timeout
+        if valid_placement is True:
+            try:
+                if self._game.save is True:
+                    server_request: SaveGameServerRequest = SaveGameServerRequest(
+                        self._game
+                    )
+                    server_request.send()
+                    start_time: float = time.time()
+                    while server_request.is_response_success() is None:
+                        if time.time() - start_time > self._SAVE_GAME_TIMEOUT_SEC:
+                            raise ConnectionError(
+                                "Server unresponsive. Game could not be saved"
+                            )
+                    if server_request.is_response_success() is False:
+                        raise ConnectionError("Server could not properly save game")
+            except ConnectionError:
+                # TODO: Notify view of server error
+                valid_placement = True
+
+        # If game is over, notify parent via callback
+        if self._game.is_game_over():
+            self.__end_game()
+            return
+
+        # Update view
+        if valid_placement:
+            self._view.update_game(game=self._game)
+        self._view.display()
+
+    def __execute_task_forfeit(self) -> None:
         """
         Takes action on player forfeit by communicating with model and updating view
-        :param task_info: player_num (see __handle_forfeit)
         """
-        player_num = task_info
-        self.__view.display_player_forfeit(player_num)
         # Notify model who forfeited and notify parent game is over
         self._game.forfeit(self._game.curr_player)
-        self.__execute_end_game()
+        self.__end_game()
 
-    def __execute_end_game(self):
-        self._end_game_callback(self._game)
-
-    def run(self):
-        self.__view.display()
-
-
-# def run(self):
-#     self.__view.start_gui()
-
-
-# play game controller calls end game callback
-# in page machine:
-# self.currentPageController.run()
-#
-# play game page view in the main branch
-# instead of calling playgamecontroller.callback
-
-
-# def place_tile_callback(self, coordinate: Tuple[int, int]):
-#     valid_input: bool = False
-#     row: int = 0
-#     col: int = 0
-#     print(f"\nPlayer {self._game_obj.curr_player}'s turn")
-#     while not valid_input:
-#         row_str: str = input("Enter row for disk: ")
-#         col_str = input("Enter col for disk: ")
-#         try:
-#             row = int(row_str) - 1
-#             col = ord(col_str.lower()) - 97
-#         except ValueError:
-#             print("Invalid row or col. Please try again.")
-#             continue
-#         valid_input = True
-#     self._place_tile_cb((row, col))
+    def __end_game(self) -> None:
+        """
+        Performs actions needed to successfully end the game
+        """
+        self._view.destroy()
+        self._end_game_callback(self._game, self._main_user)

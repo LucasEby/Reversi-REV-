@@ -22,16 +22,15 @@ class Game:
         p1_first_move: bool = True,
         save: bool = False,
         saved_board: Board = None,
-        next_turn: int = 1,
     ) -> None:
         """
         Initializes a game with the given parameters
+
         :param user1: User correlating to player 1 (playing first)
         :param user2: User correlating to player 2 (playing second)
         :param p1_first_move: True if user1 has first move, false if user2 has first move
         :param save: Whether to save game after every turn
         :param saved_board: A board that may already have had moves on it
-        :param next_turn: Which player will make the next move
         """
         self._id: Optional[int] = None
         self._player1: Player = Player(1, user1)
@@ -44,11 +43,10 @@ class Game:
             self.board = saved_board
         self._rules: AbstractRule = active_user.get_preference().get_rule()
         self.save: bool = save
-        self.curr_player: int = next_turn
-        self._player1_forfeit: bool = False
-        self._player2_forfeit: bool = False
+        self.curr_player: int = 1 if p1_first_move else 2
         self._user1 = user1
         self._user2 = user2
+        self._forfeited_player: Optional[int] = None
 
     def is_game_over(self) -> bool:
         """
@@ -64,8 +62,7 @@ class Game:
             or (self.board.get_num_type(CellState.player1) == 0)
             or (self.board.get_num_type(CellState.player2) == 0)
             or (not self.valid_moves_exist())
-            or self._player1_forfeit
-            or self._player2_forfeit
+            or self._forfeited_player is not None
         )
 
     def place_tile(self, posn: Tuple[int, int]) -> bool:
@@ -175,10 +172,8 @@ class Game:
         """
         if not self.is_game_over():
             raise Exception("cannot get winner until game is over")
-        if self._player1_forfeit:
-            return 2
-        elif self._player2_forfeit:
-            return 1
+        if self._forfeited_player is not None:
+            return 2 if self._forfeited_player == 1 else 1
         elif self.board.get_num_type(CellState.player1) > self.board.get_num_type(
             CellState.player2
         ):
@@ -227,6 +222,7 @@ class Game:
     def set_id(self, id: int) -> None:
         """
         Sets the ID of the game
+
         :param id: ID of the game
         """
         self._id = id
@@ -234,26 +230,16 @@ class Game:
     def get_curr_player(self) -> int:
         """
         Returns the current player (next to play)
+
         :return: Next player as an integer
         """
         return self.curr_player
 
-    def forfeit(self, forfeit_player: int):
-        if forfeit_player == 1:
-            self._player1_forfeit = True
-            # Just to make sure that only one of them are true:
-            self._player2_forfeit = False
-        elif forfeit_player == 2:
-            self._player2_forfeit = True
-            # Just to make sure that only one of them are true:
-            self._player1_forfeit = False
-        else:
-            raise Exception(
-                "The player, "
-                + str(forfeit_player)
-                + ", given is not playing this game."
-            )
+    def forfeit(self, forfeit_player: int) -> None:
+        """
+        Sets game internals so given player forfeits
 
-    def get_users(self):
-        users: tuple[User, User] = (self._user1, self._user2)
-        return users
+        :param forfeit_player: Number of player who is forfeiting (1 or 2)
+        """
+        if 1 <= forfeit_player <= 2:
+            self._forfeited_player = forfeit_player

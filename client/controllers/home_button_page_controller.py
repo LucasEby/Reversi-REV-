@@ -6,13 +6,13 @@ from client.views.home_button_page_view import HomeButtonPageView
 
 class HomeButtonPageController(BasePageController):
     def __init__(
-            self,
-            go_home_callback: Callable[[], None],
-            window
+        self,
+        go_home_callback: Callable[[], None],
     ) -> None:
         """
         Specific type of page controller with a home button already handled.
         Many pages could have a home button, so this removes duplicate code.
+
         :param go_home_callback: Callback to call when going to the home screen
         """
         super().__init__()
@@ -20,20 +20,13 @@ class HomeButtonPageController(BasePageController):
         self._go_home_callback: Callable[[], None] = go_home_callback
         self._home_view = HomeButtonPageView(
             go_home_callback=self.__handle_home_button,
-            window=window,
         )
-
-    def run(self):
-        pass
 
     def __handle_home_button(self) -> None:
         """
         Handles home button action from the user by queueing task
         """
         self.queue(task_name="home_button")
-        self.__execute_task_home_button()
-        # TODO:
-        # self._go_home_callback: Callable[[], None] =
 
     def __execute_task_home_button(self) -> None:
         """

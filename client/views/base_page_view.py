@@ -1,24 +1,24 @@
 from abc import ABC, abstractmethod
 import tkinter as tk
 
+from client.tkinter_gui import TkinterGUI
+
 
 class BasePageView(ABC):
-    def __init__(self, window, title="") -> None:
+    def __init__(self) -> None:
         """
         Abstract page view for all others to build off of
         """
-        self.__build_frame(window, title)
-
-    def __build_frame(self, window, title) -> None:
-        self._frame = tk.Frame(window, padx=10, pady=10)  # padding=10)
-        window.title(title)
-        window.resizable(True, True)  # False, False)
+        self._frame = tk.Frame(TkinterGUI().get_window())
+        self._frame.lift()
         self._frame.pack()
-
-    def _exit(self):
-        self._frame.quit()
-        self._frame.destroy()
 
     @abstractmethod
     def display(self) -> None:
         pass
+
+    @abstractmethod
+    def destroy(self) -> None:
+        for widgets in self._frame.winfo_children():
+            widgets.destroy()
+        self._frame.destroy()
