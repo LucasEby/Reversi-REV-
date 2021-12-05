@@ -30,14 +30,12 @@ class WelcomePageView(BasePageView):
         self._password_entry = ""
         super().__init__(window=frame)
 
-    
     def __display(self) -> None:
         """
         Packs/Grids the End Game frame and its 5 elements
         """
-        self._topframe.grid(row = 0, columnspan=2)
-        #TODO: ADD IN THE DISPLAY FOR THE TOP ELOS
-
+        self._topframe.grid(row=0, columnspan=2)
+        # TODO: ADD IN THE DISPLAY FOR THE TOP ELOS
 
         self._frame.lift()
 
