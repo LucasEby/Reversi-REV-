@@ -24,15 +24,28 @@ class WelcomePageView(BasePageView):
         self._create_account_callback = create_account_cb
         self._play_as_guest_callback = guest_cb
         self._frame = frame
+        self._topframe = tk.Frame(self._frame)
+
         self._username_entry = ""
         self._password_entry = ""
         super().__init__(window=frame)
+
+    
+    def __display(self) -> None:
+        """
+        Packs/Grids the End Game frame and its 5 elements
+        """
+        self._topframe.grid(row = 0, columnspan=2)
+        #TODO: ADD IN THE DISPLAY FOR THE TOP ELOS
+
+
+        self._frame.lift()
 
     def __title_label(self) -> tk.Label:
         """
         Prints out the games's name
         """
-        return tk.Label(self._frame, text="ROI-VERSI")
+        return tk.Label(self._topframe, text="ROI-VERSI")
 
     def __login_username_field(self) -> tk.Entry:
         """
@@ -40,7 +53,7 @@ class WelcomePageView(BasePageView):
 
         :returns: tkinter entry object
         """
-        return tk.Entry(self._frame, textvariable=self._username_entry)
+        return tk.Entry(self._topframe, textvariable=self._username_entry)
 
     def __login_password_field(self) -> tk.Entry:
         """
@@ -48,7 +61,7 @@ class WelcomePageView(BasePageView):
 
         :returns: tkinter entry object
         """
-        return tk.Entry(self._frame, textvariable=self._password_entry)
+        return tk.Entry(self._topframe, textvariable=self._password_entry)
 
     def __login_button(self) -> tk.Button:
         """
@@ -56,7 +69,7 @@ class WelcomePageView(BasePageView):
         TODO: NEED TO PASS THE USERNAME AND PASSWORD TO THE SERVER HERE
         """
         return tk.Button(
-            self._frame,
+            self._topframe,
             text="Login",
             width=25,
             height=5,
@@ -66,7 +79,7 @@ class WelcomePageView(BasePageView):
 
     def __play_as_guest_button(self) -> tk.Button:
         return tk.Button(
-            self._frame,
+            self._topframe,
             text="Play as Guest",
             width=25,
             height=5,
@@ -76,7 +89,7 @@ class WelcomePageView(BasePageView):
 
     def __create_account_button(self) -> tk.Button:
         return tk.Button(
-            self._frame,
+            self._topframe,
             text="Create a new account",
             width=25,
             height=5,
