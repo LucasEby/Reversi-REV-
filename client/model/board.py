@@ -1,19 +1,22 @@
-from typing import List
+from typing import List, Optional
 
 from client.model.cell import Cell, CellState
 
 
 class Board:
-    def __init__(self, size: int, next_turn: int) -> None:
-        if size % 2 != 0:
-            raise Exception("Board size must be an even number")
-        if (next_turn != 1) and (next_turn != 2):
-            raise Exception("Next turn must be a valid player (1 or 2)")
+    def __init__(
+        self, size: int, saved_state: Optional[List[List[int]]] = None
+    ) -> None:
         self.size: int = size
-        self.next_turn: int = next_turn
-        self.cells: List[List[Cell]] = [
-            [Cell(CellState.empty) for _ in range(size)] for _ in range(size)
-        ]
+        if saved_state is None:
+            self.cells: List[List[Cell]] = [
+                [Cell(CellState.empty) for _ in range(size)] for _ in range(size)
+            ]
+        else:
+            self.cells = [
+                [Cell(CellState(saved_state[i][j])) for i in range(self.size)]
+                for j in range(self.size)
+            ]
         # initialize the four starting disks at the center of the board
         self.cells[size // 2][size // 2 - 1].state = CellState.player1
         self.cells[size // 2 - 1][size // 2].state = CellState.player1
