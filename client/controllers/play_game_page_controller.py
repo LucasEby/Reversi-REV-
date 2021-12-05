@@ -3,6 +3,8 @@ from typing import Tuple, Callable
 
 from client.controllers.home_button_page_controller import HomeButtonPageController
 from client.model.game import Game
+from client.model.game_manager import GameManager
+from client.model.user import User
 from client.server_comms.save_game_server_request import SaveGameServerRequest
 from client.views.play_game_page_view import PlayGamePageView
 
@@ -14,8 +16,9 @@ class PlayGamePageController(HomeButtonPageController):
     def __init__(
         self,
         go_home_callback: Callable[[], None],
-        end_game_callback: Callable[[Game], None],
-        game: Game,
+        end_game_callback: Callable[[GameManager], None],
+        game_manager: GameManager,
+        main_user: User
     ) -> None:
         """
         Page controller used for handling and responding to user inputs that occur in-game
@@ -26,8 +29,12 @@ class PlayGamePageController(HomeButtonPageController):
         super().__init__(go_home_callback=go_home_callback)
         self._task_execute_dict["place_tile"] = self.__execute_task_place_tile
         self._task_execute_dict["forfeit"] = self.__execute_task_forfeit
-        self._end_game_callback: Callable[[Game], None] = end_game_callback
-        self._game = game
+        self._end_game_callback: Callable[[GameManager], None] = end_game_callback
+        self._game = game_manager.game
+        self._game_manager: GameManager = game_manager
+        self.main_user = main_user  # unused
+        self._game.get_curr_player()  # current player
+
         self._view = PlayGamePageView(
             game_obj=self._game,
             place_tile_cb=self.__handle_place_tile,
@@ -56,6 +63,10 @@ class PlayGamePageController(HomeButtonPageController):
         coordinate = task_info
         # Try placing tile. If tile placement doesn't work, don't do anything.
         # Having no action occur on a click is enough feedback to user that their click is invalid
+        if self._game.check_placement(task_info):
+            self._game_manager.make_move()
+
+
         try:
             valid_placement = self._game.place_tile(posn=coordinate)
         except Exception:
@@ -83,7 +94,7 @@ class PlayGamePageController(HomeButtonPageController):
 
         # If game is over, notify parent via callback
         if self._game.is_game_over():
-            self._end_game_callback(self._game)
+            self._end_game_callback(self._game_manager)
             return
         # Update view
         if valid_placement:

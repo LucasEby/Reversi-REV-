@@ -1,5 +1,7 @@
+from typing import Tuple
+
 from client.model.player import Player
-from client.model.user import User
+from client.model.game import Game
 import math
 
 
@@ -10,7 +12,8 @@ class AI(Player):
         :param player_num: Play order of AI
         """
         super().__init__(user=None, player_num=player_num)
-        self._difficulty = 0
+        self._difficulty: int = 0
+        self._player_type: str = "local_ai"
 
     def set_difficulty(self, difficulty: int) -> None:
         """
@@ -26,6 +29,17 @@ class AI(Player):
         :return: Difficulty
         """
         return self._difficulty
+
+    def get_move(self, game: Game) -> None:
+        return Tuple[0: int, 0: int]
+
+    def place_tile(self, game: Game) -> None:
+        """
+        This allows the AI to place a tile. (We had to add this functionality
+        after adding the AI).
+        """
+        game.place_tile(self.__next_move)
+        # TODO: need to add this functionality in.
 
     def minimax(self, cur_depth, node_index,
                 max_turn, scores):
@@ -50,15 +64,38 @@ class AI(Player):
                                True, scores))
 
 
-# AI array of numbers each number will b
-#
+# AI Weight class
+# 4 end conditions to check with their weight:
+# Corners are the best
+# Edges that are NOT next to corners are the second best
+# The closer a piece is to the middle, the better it is
+# Cells that are next to corners are the worst
+
+# AI check class
+# So this will have to create the tree somehow
+# We'll need a function in here that'll iterate through recursively probably
+
+# The AI difficulty is the depth it searches the tree.
+
+# MAX - WIN
+# 4 - Corner
+# 3 - Edge that is not next to a corner
+# 2 - The closest piece to the middle
+# 1 - Cell that is next to a corner
+# -4 - Corner for opponent
+# -3 - Edge that is not next to a corner for opponent
+# -2 - The closest piece to the middle for the opponent
+# -1 - Cell that is next ot a corner for opponent
+# MIN - LOSS (Opponent wins)
+
+# need to use get
 
 # Driver code
 scores1 = [3, 5, 2, 9, 12, 5, 23, 23]
 
 tree_depth = math.log(len(scores1), 2)
 
-ai = AI(5)
+ai = AI(1)
 ai.set_difficulty(int(tree_depth))
 
 print("The optimal value is : ", end="")

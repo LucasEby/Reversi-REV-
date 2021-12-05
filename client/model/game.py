@@ -3,30 +3,28 @@ from typing import List, Tuple, Optional
 from client.model.abstract_rule import AbstractRule
 from client.model.board import Board
 from client.model.cell import CellState
-from client.model.player import Player
-from client.model.user import User
 
 
 class Game:
     def __init__(
-        self, user1: User, user2: User, p1_first_move: bool = True, save: bool = False
+            self, board_size: int, rules: AbstractRule, p1_first_move: bool = True, save: bool = False
     ) -> None:
         """
         Initializes a game with the given parameters
-        :param user1: User correlating to player 1 (playing first)
-        :param user2: User correlating to player 2 (playing second)
+        :param board_size: The size of the board as specified by the main user's preferences
+        :param rules: The set of rules the game will be running on
         :param p1_first_move: True if user1 has first move, false if user2 has first move
         :param save: Whether to save game after every turn
         """
         self._id: Optional[int] = None
-        self._player1: Player = Player(1, user1)
-        self._player2: Player = Player(2, user2)
-        active_user: User = user1 if p1_first_move else user2
         # Use the size and rule preference of active user, since both users must use the same size and rules
-        self.board: Board = Board(active_user.get_preference().get_board_size(), 1)
-        self._rules: AbstractRule = active_user.get_preference().get_rule()
+        self.board: Board = Board(board_size, 1)
+        self.rules: AbstractRule = rules
         self.save: bool = save
-        self.curr_player: int = 1
+        if p1_first_move:
+            self.curr_player: int = 1
+        else:
+            self.curr_player: int = 2
 
     def is_game_over(self) -> bool:
         """
@@ -55,7 +53,7 @@ class Game:
         """
         if not self.board.is_valid_posn(posn[0], posn[1]):
             raise Exception("out-of bounds move attempted")
-        if not self._rules.is_valid_move(self.curr_player, posn, self.board):
+        if not self.rules.is_valid_move(self.curr_player, posn, self.board):
             return False
         self.board.cells[posn[0]][posn[1]].fill(self.curr_player)
 
@@ -127,7 +125,7 @@ class Game:
         ]
         for i in range(self.board.size):
             for j in range(self.board.size):
-                valid_moves[i][j] = self._rules.is_valid_move(
+                valid_moves[i][j] = self.rules.is_valid_move(
                     self.curr_player, (i, j), self.board
                 )
         return valid_moves
@@ -168,27 +166,6 @@ class Game:
             CellState.player2
         )
 
-    def get_rules(self) -> AbstractRule:
-        """
-        Get the current rules of the game
-        :return: Rule that is being played in the game
-        """
-        return self._rules
-
-    def get_player1(self) -> Player:
-        """
-        Get information about player 1
-        :return: Player 1
-        """
-        return self._player1
-
-    def get_player2(self) -> Player:
-        """
-        Get information about player 2
-        :return: Player 2
-        """
-        return self._player2
-
     def get_id(self) -> Optional[int]:
         """
         Returns ID of game
@@ -210,4 +187,33 @@ class Game:
         """
         return self.curr_player
 
-    # def forfeit(self):
+    def check_placement(self, posn: Tuple[int, int]) -> bool:
+        """
+        Checks the tile placement.
+
+        :param posn: the position on the board to place a disk
+        :raises Exception: Thrown when the given position is not on the board
+        :return: True if the move is possible, False if not.
+        """
+        if not self.board.is_valid_posn(posn[0], posn[1]):
+            return False
+        if not self.rules.is_valid_move(self.curr_player, posn, self.board):
+            return False
+        return True
+
+
+# def forfeit(self):
+
+# def get_player1(self) -> Player:
+#     """
+#     Get information about player 1
+#     :return: Player 1
+#     """
+#     return self._player1
+#
+# def get_player2(self) -> Player:
+#     """
+#     Get information about player 2
+#     :return: Player 2
+#     """
+#     return self._player2
