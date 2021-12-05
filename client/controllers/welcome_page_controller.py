@@ -30,7 +30,7 @@ class WelcomePageController(BasePageController):
         self._task_execute_dict["login_button"] = self.__execute_task_login_button
         self._task_execute_dict[
             "create_account_button"
-        ] = self.__execute_create_account_button
+        ] = self.__execute_task_create_account_button
         self._task_execute_dict[
             "play_as_guest_button"
         ] = self.__execute_task_play_as_guest_button
@@ -50,7 +50,7 @@ class WelcomePageController(BasePageController):
         """
         self.queue(task_name="login_button")
 
-    def __execute_task_rematch_button(self) -> None:
+    def __execute_task_login_button(self) -> None:
         self._login_callback()
 
     def __handle_create_account_button(self) -> None:
@@ -68,5 +68,5 @@ class WelcomePageController(BasePageController):
         """
         self.queue(task_name="play_as_guest_button")
 
-    def __execute_task_handle_play_as_guest_button(self) -> None:
-        self._login_callback()
+    def __execute_task_play_as_guest_button(self) -> None:
+        self._play_as_guest_callback()
