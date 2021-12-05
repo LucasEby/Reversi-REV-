@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import List, Tuple, Optional
 
 from client.model.abstract_rule import AbstractRule
@@ -7,9 +8,21 @@ from client.model.player import Player
 from client.model.user import User
 
 
+@dataclass
+class UpdatedGameInfo:
+    board: Board
+    next_turn: int
+
+
 class Game:
     def __init__(
-        self, user1: User, user2: User, p1_first_move: bool = True, save: bool = False
+        self,
+        user1: User,
+        user2: Optional[User],
+        p1_first_move: bool = True,
+        save: bool = False,
+        saved_board: Board = None,
+        next_turn: int = 1,
     ) -> None:
         """
         Initializes a game with the given parameters
@@ -17,16 +30,21 @@ class Game:
         :param user2: User correlating to player 2 (playing second)
         :param p1_first_move: True if user1 has first move, false if user2 has first move
         :param save: Whether to save game after every turn
+        :param saved_board: A board that may already have had moves on it
+        :param next_turn: Which player will make the next move
         """
         self._id: Optional[int] = None
         self._player1: Player = Player(1, user1)
         self._player2: Player = Player(2, user2)
-        active_user: User = user1 if p1_first_move else user2
-        # Use the size and rule preference of active user, since both users must use the same size and rules
-        self.board: Board = Board(active_user.get_preference().get_board_size(), 1)
+        active_user: User = user1 if (p1_first_move or user2 is None) else user2
+        # Use the size and rule preference of active user, since both users must use the same size
+        if saved_board is None:
+            self.board: Board = Board(active_user.get_preference().get_board_size())
+        else:
+            self.board = saved_board
         self._rules: AbstractRule = active_user.get_preference().get_rule()
         self.save: bool = save
-        self.curr_player: int = 1
+        self.curr_player: int = next_turn
 
     def is_game_over(self) -> bool:
         """
