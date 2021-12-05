@@ -32,9 +32,7 @@ class CalculateNewELOs:
         return 1.0 / (1 + (10 ** ((elo_a - elo_b) / 400)))
 
     @classmethod
-    def __calc_elo(
-        cls, old_elo: int, player_won: bool, expected_outcome: float
-    ) -> int:
+    def __calc_elo(cls, old_elo: int, player_won: bool, expected_outcome: float) -> int:
         """
         Calculate the player's new ELO.
         :param old_elo: the player's old ELO
