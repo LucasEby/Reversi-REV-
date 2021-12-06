@@ -1,9 +1,10 @@
 import random
 import time
-from typing import Callable
+from typing import Callable, Optional
 
 from client.controllers.home_button_page_controller import HomeButtonPageController
 from client.server_comms.create_game_server_request import CreateGameServerRequest
+from client.server_comms.get_game_server_request import GetGameServerRequest
 from client.views.pick_game_page_view import PickGamePageView
 from client.model.user import User
 from client.model.game_manager import GameManager
@@ -151,3 +152,22 @@ class PickGamePageController(HomeButtonPageController):
         except ConnectionError as e:
             # TODO: Notify view of server error
             print(e)
+
+    def __get_saved_game_for_resuming(self) -> Optional[Game]:
+        if isinstance(self._main_user, Account):
+            try:
+                server_request: GetGameServerRequest = GetGameServerRequest(self._main_user.id, True)
+                server_request.send()
+                start_time: float = time.time()
+                while server_request.is_response_success() is None:
+                    if time.time() - start_time > self._CREATE_GAME_TIMEOUT_SEC:
+                        raise ConnectionError(
+                            "Server unresponsive. Game could not be retrieved"
+                        )
+                if server_request.is_response_success() is False:
+                    raise ConnectionError("Server could not properly retrieve game")
+                else:
+                    return server_request.get_game()
+            except ConnectionError as e:
+                # TODO: Notify view of server error
+                print(e)
