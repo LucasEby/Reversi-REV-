@@ -54,8 +54,12 @@ class EndGamePageController(HomeButtonPageController):
     def __update_elos(self, game_manager: GameManager) -> None:
         user1: User = game_manager.get_player1().get_user()
         user2: User = game_manager.get_player2().get_user()
+        if user1 is None or user2 is None:
+            return
         p1_won: bool = game_manager.game.get_winner() == 1
         if isinstance(user1, Account) and isinstance(user2, Account):
+            if user1.id is None or user2.id is None:
+                return
             updated_elos = CalculateNewELOs.get_new_elos(
                 user1.id, user1.elo, user2.id, user2.elo, p1_won
             )
@@ -81,7 +85,7 @@ class EndGamePageController(HomeButtonPageController):
                     p2_id, p2_new_elo
                 )
                 server_request2.send()
-                start_time: float = time.time()
+                start_time = time.time()
                 while server_request2.is_response_success() is None:
                     if time.time() - start_time > self._UPDATE_ELO_TIMEOUT_SEC:
                         raise ConnectionError(

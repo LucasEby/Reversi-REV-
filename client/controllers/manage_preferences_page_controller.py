@@ -1,7 +1,12 @@
 from typing import Callable
+import time
 
+from client.model.account import Account
 from client.model.colors import Color
 from client.model.standard_rule import StandardRule
+from client.server_comms.save_preferences_server_request import (
+    SavePreferencesServerRequest,
+)
 from client.views.manage_preferences_page_view import ManagePreferencesPageView
 from client.model.preference import Preference
 from client.model.user import User
@@ -13,6 +18,8 @@ class ManagePreferencesPageController(HomeButtonPageController):
     This class represents a controller for Manage Preferences Page. It outputs to the view for Manage Preferences Page.
     It also takes input and make changes to the user's preference setting accordingly.
     """
+
+    _UPDATE_PREFERENCES_TIMEOUT_SEC: float = 5
 
     def __init__(
         self,
@@ -284,3 +291,25 @@ class ManagePreferencesPageController(HomeButtonPageController):
             color = input("Input color invalid, please enter again: ")
 
         return color
+
+    def __update_preferences_in_database(self, account: Account) -> None:
+        """
+        Updates the preferences for this account in the database.
+        :param account: the account whose preferences should be updated
+        """
+        try:
+            server_request: SavePreferencesServerRequest = SavePreferencesServerRequest(
+                account
+            )
+            server_request.send()
+            start_time: float = time.time()
+            while server_request.is_response_success() is None:
+                if time.time() - start_time > self._UPDATE_PREFERENCES_TIMEOUT_SEC:
+                    raise ConnectionError(
+                        "Server unresponsive. Game could not be created"
+                    )
+            if server_request.is_response_success() is False:
+                raise ConnectionError("Server could not properly create game")
+        except ConnectionError as e:
+            # TODO: Notify view of server error
+            print(e)
