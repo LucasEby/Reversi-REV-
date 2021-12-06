@@ -98,6 +98,8 @@ class PlayGamePageController(BasePageController):
         self._game_manager.make_move()
         self._view.display()
 
+    # TODO how is the game updated for online games? Need to call GetGameServerRequest at some point for new board state
+
     def __execute_task_forfeit(self) -> None:
         """
         Takes action on player forfeit by communicating with model and updating view

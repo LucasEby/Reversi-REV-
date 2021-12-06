@@ -1,11 +1,12 @@
 import random
 import time
-from typing import Callable, Optional
+from typing import Callable, Union
 
 from client.controllers.home_button_page_controller import HomeButtonPageController
 from client.server_comms.create_game_server_request import CreateGameServerRequest
 from client.server_comms.get_game_server_request import GetGameServerRequest
 from client.views.pick_game_page_view import PickGamePageView
+from client.model.game import Game, UpdatedGameInfo
 from client.model.user import User
 from client.model.game_manager import GameManager
 from client.model.player import Player
@@ -153,10 +154,12 @@ class PickGamePageController(HomeButtonPageController):
             # TODO: Notify view of server error
             print(e)
 
-    def __get_saved_game_for_resuming(self) -> Optional[Game]:
-        if isinstance(self._main_user, Account):
+    def __get_saved_game_for_resuming(self) -> Union[Game, UpdatedGameInfo, None]:
+        if isinstance(self._main_user, Account) and self._main_user.id is not None:
             try:
-                server_request: GetGameServerRequest = GetGameServerRequest(self._main_user.id, True)
+                server_request: GetGameServerRequest = GetGameServerRequest(
+                    self._main_user.id, True
+                )
                 server_request.send()
                 start_time: float = time.time()
                 while server_request.is_response_success() is None:
@@ -167,7 +170,8 @@ class PickGamePageController(HomeButtonPageController):
                 if server_request.is_response_success() is False:
                     raise ConnectionError("Server could not properly retrieve game")
                 else:
-                    return server_request.get_game()
+                    return server_request.get_game(self._main_user)
             except ConnectionError as e:
                 # TODO: Notify view of server error
                 print(e)
+        return None

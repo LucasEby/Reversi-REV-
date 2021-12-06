@@ -67,8 +67,9 @@ class EndGamePageController(HomeButtonPageController):
             p1_new_elo: int = updated_elos[0][1]
             p2_id: int = updated_elos[1][0]
             p2_new_elo: int = updated_elos[1][1]
-            # Create game, waiting for database call to be successful with a timeout
+            # Update ELOs, waiting for database call to be successful with a timeout
             try:
+                # Update player 1's ELO
                 server_request1: UpdateELOServerRequest = UpdateELOServerRequest(
                     p1_id, p1_new_elo
                 )
@@ -81,6 +82,7 @@ class EndGamePageController(HomeButtonPageController):
                         )
                 if server_request1.is_response_success() is False:
                     raise ConnectionError("Server could not properly update P1 ELO")
+                # Update player 2's ELO
                 server_request2: UpdateELOServerRequest = UpdateELOServerRequest(
                     p2_id, p2_new_elo
                 )
