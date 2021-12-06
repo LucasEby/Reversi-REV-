@@ -26,8 +26,6 @@ class TestMatchmaking(unittest.TestCase):
             "pref_board_size": 8,
         }
 
-
-
         DatabaseManager().disconnect_database()
         # Ensure execution of query no longer works after disconnect
         with self.assertRaises(Exception):

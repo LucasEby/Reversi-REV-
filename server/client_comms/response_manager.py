@@ -27,7 +27,9 @@ from server.client_comms.cancel_match_client_response import CancelMatchClientRe
 from server.client_comms.get_game_client_response import GetGameClientResponse
 from server.client_comms.get_top_elos_client_response import GetTopELOsClientResponse
 from server.client_comms.update_elo_client_response import UpdateELOClientResponse
-from server.client_comms.create_account_client_response import CreateAccountClientResponse
+from server.client_comms.create_account_client_response import (
+    CreateAccountClientResponse,
+)
 
 
 class ResponseManager:
