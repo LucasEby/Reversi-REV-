@@ -1,15 +1,19 @@
-from typing import Callable, Optional
+from typing import Callable
+import time
 
 from client.controllers.home_button_page_controller import HomeButtonPageController
 from client.model.account import Account
+from client.model.calculate_new_elos import CalculateNewELOs
 from client.model.user import User
+from client.server_comms.update_elo_server_request import UpdateELOServerRequest
 from client.views.end_game_page_view import EndGamePageView
-from client.model.game import Game
 from client.model.game_manager import GameManager
 from client.model.player import Player
 
 
 class EndGamePageController(HomeButtonPageController):
+    _UPDATE_ELO_TIMEOUT_SEC: float = 5
+
     def __init__(
         self,
         go_home_callback: Callable[[], None],
@@ -32,8 +36,8 @@ class EndGamePageController(HomeButtonPageController):
             [User], None
         ] = play_different_mode_callback
         self._game_manager: GameManager = game_manager
-        self._game: Game = self._game_manager.game
         self._main_user: User = self._game_manager.main_user
+        self.__update_elos(self._game_manager)
 
         self._task_execute_dict["play_again"] = self.__execute_task_play_again
         self._task_execute_dict[
@@ -46,6 +50,46 @@ class EndGamePageController(HomeButtonPageController):
             play_different_mode_cb=self.__handle_play_different_mode,
             game_manager=game_manager,
         )
+
+    def __update_elos(self, game_manager: GameManager) -> None:
+        user1: User = game_manager.get_player1().get_user()
+        user2: User = game_manager.get_player2().get_user()
+        p1_won: bool = game_manager.game.get_winner() == 1
+        if isinstance(user1, Account) and isinstance(user2, Account):
+            updated_elos = CalculateNewELOs.get_new_elos(user1.id, user1.elo, user2.id, user2.elo, p1_won)
+            p1_id: int = updated_elos[0][0]
+            p1_new_elo: int = updated_elos[0][1]
+            p2_id: int = updated_elos[1][0]
+            p2_new_elo: int = updated_elos[1][1]
+            # Create game, waiting for database call to be successful with a timeout
+            try:
+                server_request1: UpdateELOServerRequest = UpdateELOServerRequest(
+                    p1_id, p1_new_elo
+                )
+                server_request1.send()
+                start_time: float = time.time()
+                while server_request1.is_response_success() is None:
+                    if time.time() - start_time > self._UPDATE_ELO_TIMEOUT_SEC:
+                        raise ConnectionError(
+                            "Server unresponsive. P1 ELO could not be updated"
+                        )
+                if server_request1.is_response_success() is False:
+                    raise ConnectionError("Server could not properly update P1 ELO")
+                server_request2: UpdateELOServerRequest = UpdateELOServerRequest(
+                    p2_id, p2_new_elo
+                )
+                server_request2.send()
+                start_time: float = time.time()
+                while server_request2.is_response_success() is None:
+                    if time.time() - start_time > self._UPDATE_ELO_TIMEOUT_SEC:
+                        raise ConnectionError(
+                            "Server unresponsive. P2 ELO could not be updated"
+                        )
+                if server_request2.is_response_success() is False:
+                    raise ConnectionError("Server could not properly update P2 ELO")
+            except ConnectionError as e:
+                # TODO: Notify view of server error
+                print(e)
 
     def __handle_play_again(self) -> None:
         """
