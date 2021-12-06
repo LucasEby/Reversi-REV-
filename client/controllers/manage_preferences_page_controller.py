@@ -153,7 +153,7 @@ class ManagePreferencesPageController(HomeButtonPageController):
             task_info = input("Invalid board size, please enter again: ")
 
         new_board_size: int = int(task_info)
-        self._preference.set_board_size(new_board_size)  # chang the board size
+        self._preference.set_board_size(new_board_size)  # change the board size
         # self.__view.display_board_size()  # print out the board size before change
 
     def __execute_change_board_color(self, task_info: str) -> None:

@@ -39,12 +39,14 @@ class PlayGamePageView(BasePageView):
         self._game_bg: str = self._preferences.get_line_color().lower()
         self._padx: int = 1
         self._pady: int = self._padx
+        self._button_height: int = int(3.0 / 8 * self._size)
+        self._button_width: int = self._size
         self._game_color: str = self._preferences.get_board_color().lower()
         self._btn_forfeit: tk.Button = tk.Button(
             self._frame,
             text="Forfeit",
-            height=3,
-            width=8,
+            height=self._button_height,
+            width=self._button_width,
             fg="black",
             bg="purple",
             command=self._forfeit_cb,
@@ -57,8 +59,8 @@ class PlayGamePageView(BasePageView):
                     pady=self._pady,
                     fg=self._player1_color,
                     bg=self._player1_color,
-                    height=3,
-                    width=8,
+                    height=self._button_height,
+                    width=self._button_width,
                     command=lambda row=row, col=col: self._place_tile_cb(  # type: ignore
                         (row, col)
                     ),

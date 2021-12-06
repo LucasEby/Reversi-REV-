@@ -66,7 +66,7 @@ class EndGamePageController(HomeButtonPageController):
 
     def __execute_task_play_different_mode(self) -> None:
         """
-        Notifies upper level to play different game mode different mode with
+        Notifies upper level to play different game mode
         """
         self._view.destroy()
         self._play_different_mode_callback(self._main_user)
