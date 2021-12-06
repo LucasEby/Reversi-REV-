@@ -19,7 +19,7 @@ class ManagePreferencesPageController(HomeButtonPageController):
         go_home_callback: Callable[[], None],
         end_home_callback: Callable[[], None],
         game_manager: GameManager,
-        user: User
+        user: User,
     ) -> None:
         """
         Construct the controller with a view for the passed in user

@@ -62,18 +62,27 @@ class AI(Player):
         half: int = math.floor(board_size / 2)
 
         # position_weight: weight of the position chosen as a result of its location on the board
-        if (((row == 0) and ((col == 0) or (col == board_size - 1)))
-            or ((row == board_size - 1) and ((col == 0) or (col == board_size - 1)))):
+        if ((row == 0) and ((col == 0) or (col == board_size - 1))) or (
+            (row == board_size - 1) and ((col == 0) or (col == board_size - 1))
+        ):
             # position is located in the corner.
             position_weight = 4
-        elif (((row <= 1) and ((col <= 1) or (col >= board_size - 2)))
-              or ((row >= board_size - 2) and ((col <= 1) or (col >= board_size - 2)))):
+        elif ((row <= 1) and ((col <= 1) or (col >= board_size - 2))) or (
+            (row >= board_size - 2) and ((col <= 1) or (col >= board_size - 2))
+        ):
             # position is located next to a corner. This is THE WORST POSITION.
             position_weight = -4
-        elif (row == 0) or (row == board_size - 1) or (col == 0) or (col == board_size - 1):
+        elif (
+            (row == 0)
+            or (row == board_size - 1)
+            or (col == 0)
+            or (col == board_size - 1)
+        ):
             # position is located on an edge. It is not a corner and is not next to a corner.
             position_weight = 3
-        elif ((row >= half - 1) or (row <= half)) and ((col >= half - 1) or (col <= half)):
+        elif ((row >= half - 1) or (row <= half)) and (
+            (col >= half - 1) or (col <= half)
+        ):
             # position is located in the 4 middle cells in the center of the board.
             position_weight = 2
         else:
@@ -139,13 +148,18 @@ class AI(Player):
             for row in range(0, game.board.size):
                 for col in range(0, game.board.size):
                     # Is the spot available?
-                    if (board_state[row][col] == CellState.empty) and valid_moves[row][col] \
-                            and (depth < self._difficulty):
+                    if (
+                        (board_state[row][col] == CellState.empty)
+                        and valid_moves[row][col]
+                        and (depth < self._difficulty)
+                    ):
                         copied_game = copy.deepcopy(game)
                         copied_game.place_tile((row, col))
                         score = self.__minimax(copied_game, depth + 1, False)
                         bestScore = max(score, bestScore)
-                    elif (board_state[row][col] == CellState.empty) and valid_moves[row][col]:
+                    elif (board_state[row][col] == CellState.empty) and valid_moves[
+                        row
+                    ][col]:
                         # we're at the terminal point that we want to go to.
                         score = self.__weight_pos(row=row, col=col, game=game)
                         bestScore = max(score, bestScore)
@@ -155,13 +169,18 @@ class AI(Player):
             for row in range(0, game.board.size):
                 for col in range(0, game.board.size):
                     # Is the spot available?
-                    if (board_state[row][col] == CellState.empty) and valid_moves[row][col] \
-                            and (depth < self._difficulty):
+                    if (
+                        (board_state[row][col] == CellState.empty)
+                        and valid_moves[row][col]
+                        and (depth < self._difficulty)
+                    ):
                         copied_game = copy.deepcopy(game)
                         copied_game.place_tile((row, col))
                         score = self.__minimax(copied_game, depth + 1, True)
                         bestScore = min(score, bestScore)
-                    elif (board_state[row][col] == CellState.empty) and valid_moves[row][col]:
+                    elif (board_state[row][col] == CellState.empty) and valid_moves[
+                        row
+                    ][col]:
                         # we're at the terminal point that we want to go to.
                         # Negative was put here on purpose:
                         score = -self.__weight_pos(row=row, col=col, game=game)
@@ -196,16 +215,16 @@ class AI(Player):
 # need to use get
 
 # Driver code
-scores1 = [3, 5, 2, 9, 12, 5, 23, 23]
-
-tree_depth = math.log(len(scores1), 2)
-main_user: User = User(username="P1")
-main_user.get_preference().set_board_size(8)
-player1 = Player(1)
-player2 = AI(1)
-game_manager = GameManager()
-game = Game(main_user.get_preference().get_board_size(), main_user.get_preference().get_rule(), False, False)
-ai.set_difficulty(int(tree_depth))
-
-print("The optimal value is : ", end="")
-print(ai.minimax(0, 0, True, scores1))
+# scores1 = [3, 5, 2, 9, 12, 5, 23, 23]
+#
+# tree_depth = math.log(len(scores1), 2)
+# main_user: User = User(username="P1")
+# main_user.get_preference().set_board_size(8)
+# player1 = Player(1)
+# player2 = AI(1)
+# game_manager = GameManager()
+# game = Game(main_user.get_preference().get_board_size(), main_user.get_preference().get_rule(), False, False)
+# ai.set_difficulty(int(tree_depth))
+#
+# print("The optimal value is : ", end="")
+# print(ai.minimax(0, 0, True, scores1))

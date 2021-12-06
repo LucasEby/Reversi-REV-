@@ -8,7 +8,12 @@ from client.model.user import User
 
 class GameManager:
     def __init__(
-        self, player1: Player, player2: Player, board_size: int, rules: AbstractRule, main_user: User
+        self,
+        player1: Player,
+        player2: Player,
+        board_size: int,
+        rules: AbstractRule,
+        main_user: User,
     ) -> None:
         """
         Initializes a game with the given parameters.
@@ -30,10 +35,14 @@ class GameManager:
     def set_move(self, posn: Tuple[int, int]) -> None:
         if self.game.get_curr_player() == 1:
             current_player: Player = self.get_player1()
-            waiting_player: Player = self.get_player2()  # Used for "online opponent" reasons
+            waiting_player: Player = (
+                self.get_player2()
+            )  # Used for "online opponent" reasons
         else:
             current_player: Player = self.get_player2()
-            waiting_player: Player = self.get_player1()  # Used for "online opponent" reasons
+            waiting_player: Player = (
+                self.get_player1()
+            )  # Used for "online opponent" reasons
 
         if current_player.get_player_type() == "local_multi":
             current_player.set_next_move(posn=posn)

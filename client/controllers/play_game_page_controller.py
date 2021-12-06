@@ -18,7 +18,7 @@ class PlayGamePageController(HomeButtonPageController):
         go_home_callback: Callable[[], None],
         end_game_callback: Callable[[GameManager], None],
         game_manager: GameManager,
-        main_user: User
+        main_user: User,
     ) -> None:
         """
         Page controller used for handling and responding to user inputs that occur in-game
@@ -65,7 +65,6 @@ class PlayGamePageController(HomeButtonPageController):
         # Having no action occur on a click is enough feedback to user that their click is invalid
         if self._game.check_placement(task_info):
             self._game_manager.make_move()
-
 
         try:
             valid_placement = self._game.place_tile(posn=coordinate)

@@ -7,7 +7,11 @@ from client.model.cell import CellState
 
 class Game:
     def __init__(
-            self, board_size: int, rules: AbstractRule, p1_first_move: bool = True, save: bool = False
+        self,
+        board_size: int,
+        rules: AbstractRule,
+        p1_first_move: bool = True,
+        save: bool = False,
     ) -> None:
         """
         Initializes a game with the given parameters
@@ -154,7 +158,7 @@ class Game:
         ):
             return 1
         elif self.board.get_num_type(CellState.player2) > self.board.get_num_type(
-                CellState.player1
+            CellState.player1
         ):
             return 2
         else:
