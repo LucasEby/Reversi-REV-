@@ -47,7 +47,7 @@ class PageMachine:
             go_home_callback=self.go_home_callback,
             play_again_callback=self.play_again_callback,
             play_different_mode_callback=self.play_different_mode_callback,
-            game_manager=game_manager
+            game_manager=game_manager,
         )
 
     def game_picked_callback(self, game_manager: GameManager) -> None:
@@ -57,8 +57,7 @@ class PageMachine:
         :param game_manager: Contains the main user of the application and the picked game
         """
         self.current_page_controller = PlayGamePageController(
-            end_game_callback=self.end_game_callback,
-            game_manager=game_manager
+            end_game_callback=self.end_game_callback, game_manager=game_manager
         )
 
     def manage_preferences_callback(self, user: User) -> None:
@@ -80,8 +79,7 @@ class PageMachine:
         :param game_manager: Contains the main user of the application and the game to play with
         """
         self.current_page_controller = PlayGamePageController(
-            end_game_callback=self.end_game_callback,
-            game_manager=game_manager
+            end_game_callback=self.end_game_callback, game_manager=game_manager
         )
 
     def play_different_mode_callback(self, main_user: User):

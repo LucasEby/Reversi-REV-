@@ -5,11 +5,7 @@ from client.model.game import Game
 
 
 class Player:
-    def __init__(
-        self,
-        player_num: int,
-        user: Optional[User] = None
-    ) -> None:
+    def __init__(self, player_num: int, user: Optional[User] = None) -> None:
         self._user: Optional[User] = user
         # Else, create an AI player
         if (player_num != 1) and (player_num != 2):

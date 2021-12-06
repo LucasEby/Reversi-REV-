@@ -14,7 +14,7 @@ class EndGamePageController(HomeButtonPageController):
         go_home_callback: Callable[[], None],
         play_again_callback: Callable[[GameManager], None],
         play_different_mode_callback: Callable[[User], None],
-        game_manager: GameManager
+        game_manager: GameManager,
     ) -> None:
         """
         Page controller to handle the next steps after a game ends
@@ -22,8 +22,7 @@ class EndGamePageController(HomeButtonPageController):
         :param go_home_callback: Callback to call when going to the home screen
         :param play_again_callback: Callback to call when attempting to play same game mode
         :param play_different_mode_callback: Callback to call when user wants to play different game mode
-        :param game: Game that was just ended
-        :param main_user: Primary user of the application
+        :param game_manager: Contains the Game that was just ended and the primary user of the application
         """
         super().__init__(go_home_callback=go_home_callback)
 
@@ -44,7 +43,7 @@ class EndGamePageController(HomeButtonPageController):
             go_home_cb=go_home_callback,
             play_again_cb=self.__handle_play_again,
             play_different_mode_cb=self.__handle_play_different_mode,
-            game_manager=game_manager
+            game_manager=game_manager,
         )
 
     def __handle_play_again(self) -> None:
@@ -66,7 +65,7 @@ class EndGamePageController(HomeButtonPageController):
         self._view.destroy()
         old_p1: Player = self._game_manager.get_player1()
         old_p2: Player = self._game_manager.get_player2()
-        new_game_manager = GameManager(old_p1, old_p2, self._main_user)
+        new_game_manager = GameManager(old_p1, old_p2, self._main_user, None, None)
         self._play_again_callback(new_game_manager)
 
     def __execute_task_play_different_mode(self) -> None:

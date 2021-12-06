@@ -11,7 +11,7 @@ class EndGamePageView(HomeButtonPageView):
         go_home_cb: Callable[[], None],
         play_again_cb: Callable[[], None],
         play_different_mode_cb: Callable[[], None],
-        game_manager: GameManager
+        game_manager: GameManager,
     ) -> None:
         """
         View to choose what to do after the game ends

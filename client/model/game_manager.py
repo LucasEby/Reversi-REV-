@@ -1,9 +1,10 @@
-from typing import Tuple
+from typing import Tuple, Optional
 from client.model.ai import AI
 from client.model.player import Player
 from client.model.game import Game
 from client.model.abstract_rule import AbstractRule
 from client.model.user import User
+from client.model.account import Account
 
 
 class GameManager:
@@ -12,6 +13,10 @@ class GameManager:
         player1: Player,
         player2: Player,
         main_user: User,
+        p1_account: Optional[Account],
+        p2_account: Optional[Account],
+        p1_first_move: bool = True,
+        save: bool = False,
     ) -> None:
         """
         Initializes a game with the given parameters.
@@ -23,7 +28,14 @@ class GameManager:
         self.main_user: User = main_user
         self.__board_size: int = self.main_user.get_preference().get_board_size()
         self.__rules: AbstractRule = self.main_user.get_preference().get_rule()
-        self.game: Game = Game(board_size=self.__board_size, rules=self.__rules)
+        self.game: Game = Game(
+            board_size=self.__board_size,
+            rules=self.__rules,
+            p1_first_move=p1_first_move,
+            save=save,
+        )
+        self._p1_account: Optional[Account] = p1_account
+        self._p2_account: Optional[Account] = p2_account
 
     def make_move(self) -> None:
         self.__players[self.game.get_curr_player() - 1].place_tile(self.game)

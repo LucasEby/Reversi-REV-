@@ -43,9 +43,6 @@ class OnlinePlayer(Player):
     def set_next_move(self, posn: Tuple[int, int]) -> None:
         self.__next_move = posn
 
-    def get_player_type(self) -> str:
-        return self._player_type
-
     # Might need this?
     def get_next_move(self) -> Tuple[int, int]:
         """

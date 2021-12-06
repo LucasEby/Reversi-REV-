@@ -1,8 +1,15 @@
+from dataclasses import dataclass
 from typing import List, Tuple, Optional
 
 from client.model.abstract_rule import AbstractRule
 from client.model.board import Board
 from client.model.cell import CellState
+
+
+@dataclass
+class UpdatedGameInfo:
+    board: Board
+    next_turn: int
 
 
 class Game:
@@ -25,10 +32,7 @@ class Game:
         self.board: Board = Board(board_size)
         self.rules: AbstractRule = rules
         self.save: bool = save
-        if p1_first_move:
-            self.curr_player: int = 1
-        else:
-            self.curr_player: int = 2
+        self.curr_player: int = 1 if p1_first_move else 2
         self._forfeited_player: Optional[int] = None
 
     def is_game_over(self) -> bool:
@@ -41,11 +45,11 @@ class Game:
         :return: true if the game is over (no more turns can be made by one or both players), otherwise false
         """
         return (
-                (self.board.get_num_type(CellState.empty) == 0)
-                or (self.board.get_num_type(CellState.player1) == 0)
-                or (self.board.get_num_type(CellState.player2) == 0)
-                or (not self.valid_moves_exist())
-                or self._forfeited_player is not None
+            (self.board.get_num_type(CellState.empty) == 0)
+            or (self.board.get_num_type(CellState.player1) == 0)
+            or (self.board.get_num_type(CellState.player2) == 0)
+            or (not self.valid_moves_exist())
+            or self._forfeited_player is not None
         )
 
     def place_tile(self, posn: Tuple[int, int]) -> bool:

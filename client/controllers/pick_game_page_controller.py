@@ -82,8 +82,9 @@ class PickGamePageController(HomeButtonPageController):
         # We need to also change "User(2, Guest) to be an AI
         # player2_username: str = "Guest"
         # game_obj: Game = Game(self._main_user, User(player2_username))
-        game_manager = GameManager(Player(1, self._main_user),
-                                   AI(2), self._main_user)
+        game_manager = GameManager(
+            Player(1, self._main_user), AI(2), self._main_user, None, None
+        )
         self._game_picked_callback(game_manager)
 
     def __execute_local_multiplayer_game(self):
@@ -91,8 +92,9 @@ class PickGamePageController(HomeButtonPageController):
         Create local multiplayer game
         """
         self._view.destroy()
-        game_manager = GameManager(Player(1, self._main_user),
-                                   Player(2), self._main_user)
+        game_manager = GameManager(
+            Player(1, self._main_user), Player(2), self._main_user
+        )
         # player2_username: str = "Guest"
         # game_obj: Game = Game(
         #    self._main_user,
