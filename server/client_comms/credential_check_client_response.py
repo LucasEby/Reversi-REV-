@@ -44,7 +44,6 @@ class CredentialCheckClientResponse(BaseClientResponse):
             callback=self.__credential_retrieved_callback,
             key=self._sent_message["username"],
             get_account_id=True,
-            get_username=True,
             get_password=True,
         )
 
@@ -57,7 +56,7 @@ class CredentialCheckClientResponse(BaseClientResponse):
         self._response_message.update(
             {
                 "success": self._db_credential_check_success,
-                "encrypted_password": None
+                "encrypted_password": ""
                 if self._retrieved_dba is None
                 else self._retrieved_dba.password,
                 "account_id": 0

@@ -50,40 +50,6 @@ save_preferences_client_schema = Schema(
     }
 )
 
-credential_check_client_schema = Schema(
-    {
-        "protocol_type": "login",
-        "username": str,
-        "password": str,
-    }
-)
-
-credential_check_server_schema = Schema(
-    {
-        "protocol_type": "login",
-        "success": bool,
-        "encrypted_password": str,
-        "account_id": int,  # TODO: should we return account_id without password checked?
-    }
-)
-
-create_account_client_schema = Schema(
-    {
-        "protocol_type": "create_account",
-        "username": str,
-        "password": str,
-        "elo": int,
-        "pref_board_length": int,
-        # TODO: need to change the type of followings
-        "pref_board_color": Color,
-        "pref_disk_color": Color,
-        "pref_opp_disk_color": Color,
-        "pref_line_color": Color,
-        "pref_rules": str,
-        "pref_tile_move_confirmation": bool,
-    }
-)
-
 save_preferences_server_schema = Schema(
     {"protocol_type": "save_preferences", "success": bool}
 )
@@ -146,6 +112,38 @@ get_top_elos_server_schema = Schema(
         "protocol_type": "get_top_elos",
         "success": bool,
         "top_elos": [[str, int]],
+    }
+)
+
+credential_check_client_schema = Schema(
+    {
+        "protocol_type": "login",
+        "username": str,
+    }
+)
+
+credential_check_server_schema = Schema(
+    {
+        "protocol_type": "login",
+        "success": bool,
+        "encrypted_password": str,
+        "account_id": int,
+    }
+)
+
+create_account_client_schema = Schema(
+    {
+        "protocol_type": "create_account",
+        "username": str,
+        "password": str,
+        "elo": int,
+        "pref_board_length": int,
+        "pref_board_color": str,
+        "pref_disk_color": str,
+        "pref_opp_disk_color": str,
+        "pref_line_color": str,
+        "pref_rules": str,
+        "pref_tile_move_confirmation": bool,
     }
 )
 

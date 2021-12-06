@@ -27,6 +27,7 @@ from server.client_comms.get_game_client_response import GetGameClientResponse
 from server.client_comms.get_top_elos_client_response import GetTopELOsClientResponse
 from server.client_comms.update_elo_client_response import UpdateELOClientResponse
 from server.client_comms.cancel_match_client_response import CancelMatchClientResponse
+from server.client_comms.create_account_client_response import CreateAccountClientResponse
 
 
 class ResponseManager:
@@ -54,7 +55,7 @@ class ResponseManager:
         ]: SaveGameClientResponse.__name__,
         create_account_client_schema.schema[
             "protocol_type"
-        ]: CreateGameClientResponse.__name__,
+        ]: CreateAccountClientResponse.__name__,
         credential_check_client_schema.schema[
             "protocol_type"
         ]: CredentialCheckClientResponse.__name__,

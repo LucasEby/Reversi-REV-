@@ -55,11 +55,11 @@ class MatchmakerClientResponse(BaseClientResponse):
 
         # Wait for matchmaker to complete task
         with self._complete_matchmaker:
-            while self._opp_account_id and self._game_id is None:
+            while self._opp_account_id is None:
                 self._complete_matchmaker.wait()
 
         # Check if an opponent id is returned to retrieve information; return false message directly if it is none
-        if self._opp_account_id is None:
+        if self._opp_account_id is None or self._game_id is None:
             self._response_message["success"] = False
             return self._response_message
 
@@ -69,6 +69,10 @@ class MatchmakerClientResponse(BaseClientResponse):
             get_username=True,
             get_elo=True,
         )
+
+        with self._db_complete_cv:
+            while self._db_get_opp_account_success is None:
+                self._db_complete_cv.wait()
 
         # Return the response message
         self._response_message.update(
