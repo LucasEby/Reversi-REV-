@@ -1,4 +1,7 @@
 from abc import ABC, abstractmethod
+import tkinter as tk
+
+from client.tkinter_gui import TkinterGUI
 
 
 class BasePageView(ABC):
@@ -6,8 +9,16 @@ class BasePageView(ABC):
         """
         Abstract page view for all others to build off of
         """
-        self.display()
+        self._frame = tk.Frame(TkinterGUI().get_window())
+        self._frame.lift()
+        self._frame.pack()
 
     @abstractmethod
     def display(self) -> None:
         pass
+
+    @abstractmethod
+    def destroy(self) -> None:
+        for widgets in self._frame.winfo_children():
+            widgets.destroy()
+        self._frame.destroy()

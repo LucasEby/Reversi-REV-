@@ -17,12 +17,14 @@ class ManagePreferencesPageController(HomeButtonPageController):
     def __init__(
         self,
         go_home_callback: Callable[[], None],
-        end_home_callback: Callable[[], None],
+        preferences_complete_callback: Callable[[], None],
         user: User,
     ) -> None:
         """
         Construct the controller with a view for the passed in user
 
+        :param go_home_callback: Callback for when user wants to go to home page
+        :param preferences_complete_callback: Callback for when preferences have been updated
         :param user: The user who is interacting with Manage Preferences Page
         """
         super().__init__(go_home_callback=go_home_callback)
@@ -36,10 +38,12 @@ class ManagePreferencesPageController(HomeButtonPageController):
             "tile_move_confirmation"
         ] = self.__execute_change_tile_move_confirmation
         # execute stuffs
-        self._end_game_callback: Callable[[], None] = end_home_callback
-        self.__user: User = user
-        self.__view: ManagePreferencesPageView = ManagePreferencesPageView(user)
-        self.__preference: Preference = user.get_preference()
+        self._end_home_callback: Callable[[], None] = preferences_complete_callback
+        self._user: User = user
+        self._view: ManagePreferencesPageView = ManagePreferencesPageView(
+            go_home_callback=go_home_callback, user=user
+        )
+        self._preference: Preference = user.get_preference()
 
     def pref_go(self) -> None:
         """
@@ -49,7 +53,7 @@ class ManagePreferencesPageController(HomeButtonPageController):
         q: bool = False  # record for exit or not
 
         while not q:
-            self.__view.display()
+            self._view.display()
             pref_to_change: str = input(
                 "According to the menu, enter 0-7 to change setting or exit:\n"
             )
@@ -126,7 +130,7 @@ class ManagePreferencesPageController(HomeButtonPageController):
 
         :param rule: the rule of the game that the user want to set
         """
-        self.queue(task_name="ruler", task_info=rule)
+        self.queue(task_name="rule", task_info=rule)
 
     def ___handle_change_tile_move_confirmation(self, confirm: str) -> None:
         """
@@ -149,7 +153,7 @@ class ManagePreferencesPageController(HomeButtonPageController):
             task_info = input("Invalid board size, please enter again: ")
 
         new_board_size: int = int(task_info)
-        self.__preference.set_board_size(new_board_size)  # chang the board size
+        self._preference.set_board_size(new_board_size)  # change the board size
         # self.__view.display_board_size()  # print out the board size before change
 
     def __execute_change_board_color(self, task_info: str) -> None:
@@ -164,7 +168,7 @@ class ManagePreferencesPageController(HomeButtonPageController):
         task_info = self.__check_color_validity(task_info)
 
         # change the board color and check redundancy
-        while not self.__preference.set_board_color(Color(task_info.lower())):
+        while not self._preference.set_board_color(Color(task_info.lower())):
             task_info = input(
                 "Entered board color conflicted with other components, please re-enter a new board color: "
             )
@@ -184,7 +188,7 @@ class ManagePreferencesPageController(HomeButtonPageController):
         task_info = self.__check_color_validity(task_info)
 
         # change the board color and check redundancy
-        while not self.__preference.set_my_disk_color(Color(task_info.lower())):
+        while not self._preference.set_my_disk_color(Color(task_info.lower())):
             task_info = input(
                 "Entered my disk color conflicted with other components, please re-enter a new disk color: "
             )
@@ -204,7 +208,7 @@ class ManagePreferencesPageController(HomeButtonPageController):
         task_info = self.__check_color_validity(task_info)
 
         # change opponent's disk color and check redundancy
-        while not self.__preference.set_opp_disk_color(Color(task_info.lower())):
+        while not self._preference.set_opp_disk_color(Color(task_info.lower())):
             task_info = input(
                 "Entered opponent's disk color conflicted with other components, please re-enter a new disk"
                 + " color: "
@@ -225,7 +229,7 @@ class ManagePreferencesPageController(HomeButtonPageController):
         task_info = self.__check_color_validity(task_info)
 
         # change the line color and check redundancy
-        while not self.__preference.set_line_color(Color(task_info.lower())):
+        while not self._preference.set_line_color(Color(task_info.lower())):
             task_info = input(
                 "Entered line color conflicted with other components, please re-enter a new line color: "
             )
@@ -240,12 +244,11 @@ class ManagePreferencesPageController(HomeButtonPageController):
         # self.__view.display_rule()  # print out rule before change
         # rule: str = input("Enter your rule choice: ")
 
-        # check input validity
         rule_dict = {"standard": StandardRule()}
         while not (task_info.isalpha() and (task_info.lower in rule_dict)):
             task_info = input("Invalid rule, please enter again: ")
 
-        self.__preference.set_rule(rule_dict[task_info.lower()])  # change the rule
+        self._preference.set_rule(rule_dict[task_info.lower()])  # change the rule
         # self.__view.display_rule()  # print out rule after change
 
     def __execute_change_tile_move_confirmation(self, task_info: str) -> None:
@@ -263,11 +266,11 @@ class ManagePreferencesPageController(HomeButtonPageController):
 
         # change the tile move confirmation validity accordingly
         if int(task_info) == 0:
-            self.__preference.set_tile_move_confirmation(False)
+            self._preference.set_tile_move_confirmation(False)
         elif int(task_info) == 1:
-            self.__preference.set_tile_move_confirmation(True)
+            self._preference.set_tile_move_confirmation(True)
 
-        self.__view.display_tile_move_confirmation()  # print out tile move confirmation before change
+        self._view.display_tile_move_confirmation()  # print out tile move confirmation before change
 
     @staticmethod
     def __check_color_validity(color: str) -> str:
@@ -281,6 +284,3 @@ class ManagePreferencesPageController(HomeButtonPageController):
             color = input("Input color invalid, please enter again: ")
 
         return color
-
-
-# TODO:Changes in execute might be needed for re-enter to cooperate with the GUI?

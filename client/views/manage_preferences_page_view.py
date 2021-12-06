@@ -1,18 +1,23 @@
+from typing import Callable
+
 from client.model.preference import Preference
 from client.model.user import User
+from client.views.home_button_page_view import HomeButtonPageView
 
 
-class ManagePreferencesPageView:
+class ManagePreferencesPageView(HomeButtonPageView):
     """
     The class represents the view for Manage Preferences Page. It will display the preference choice for the given user.
     """
 
-    def __init__(self, user: User) -> None:
+    def __init__(self, go_home_callback: Callable[[], None], user: User) -> None:
         """
         Construct a new ManagePreferencesPageView with given user object.
 
+        :param go_home_callback: Function to call when attempting to go home
         :param user: the user object
         """
+        super().__init__(go_home_callback=go_home_callback)
         self.__user: User = user
         self.__preference: Preference = self.__user.get_preference()
         self.display()
@@ -64,6 +69,12 @@ class ManagePreferencesPageView:
             print("Current tile move confirmation: On")
         else:
             print("Current tile move confirmation: Off")
+
+    def destroy(self) -> None:
+        """
+        Destroy all widgets in this view
+        """
+        pass
 
     def display(self) -> None:
         """

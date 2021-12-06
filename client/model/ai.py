@@ -1,5 +1,4 @@
 from client.model.player import Player
-from client.model.user import User
 
 
 class AI(Player):
@@ -19,6 +18,15 @@ class AI(Player):
     def difficulty(self, difficulty: int) -> None:
         """
         Set the difficulty level of the AI
+
         :param difficulty: Difficulty level (>0)
         """
         self._difficulty = max(0, difficulty)
+
+    def get_difficulty(self) -> int:
+        """
+        Returns the current difficulty level of the AI
+
+        :return: Difficulty
+        """
+        return self._difficulty
