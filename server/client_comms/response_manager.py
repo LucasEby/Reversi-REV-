@@ -42,9 +42,7 @@ class ResponseManager:
         save_preferences_client_schema.schema[
             "protocol_type"
         ]: SavePreferencesClientResponse.__name__,
-        get_game_client_schema.schema[
-          "protocol_type"
-        ]: GetGameClientResponse.__name__,
+        get_game_client_schema.schema["protocol_type"]: GetGameClientResponse.__name__,
         update_elo_client_schema.schema[
             "protocol_type"
         ]: UpdateELOClientResponse.__name__,
