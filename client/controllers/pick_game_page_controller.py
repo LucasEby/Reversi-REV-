@@ -43,6 +43,7 @@ class PickGamePageController(HomeButtonPageController):
             self._handle_online_game,
             self._handle_change_preferences,
             go_home_callback=go_home_callback,
+            username=self._main_user.get_username(),
         )
 
     def _handle_local_single_player_game(self) -> None:
