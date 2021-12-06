@@ -1,5 +1,5 @@
 ---
 database:
   host_ip: localhost
-  username: root  # open
+  username: open
   password: test
