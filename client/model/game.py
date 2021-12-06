@@ -145,7 +145,7 @@ class Game:
         (1 for player1, 2 for player2)
 
         :raises Exception: Thrown when the method is called before the game has ended
-        :return: the number representing the winning player
+        :return: the number representing the winning player or 0 if it is a tie.
         """
         if not self.is_game_over():
             raise Exception("cannot get winner until game is over")
@@ -153,8 +153,13 @@ class Game:
             CellState.player2
         ):
             return 1
-        else:
+        elif self.board.get_num_type(CellState.player2) > self.board.get_num_type(
+                CellState.player1
+        ):
             return 2
+        else:
+            # Players tied.
+            return 0
 
     def get_score(self) -> Tuple[int, int]:
         """
