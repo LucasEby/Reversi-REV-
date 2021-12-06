@@ -83,11 +83,12 @@ class Matchmaker:
             # Remove matched user from users list
             self._users.pop(pop_index)
 
-    def remove_user(self, account_id: int) -> None:
+    def remove_user(self, account_id: int) -> bool:
         """
         Removes a user from matchmaking consideration.
 
         :param account_id: Account ID of user to remove
+        :return: True if all users with the same id is removed from the list; otherwise False
         """
         # Remove all users with the same ID as one provided (from back to front)
         with self._match_lock:
@@ -95,6 +96,8 @@ class Matchmaker:
             for i, user in enumerate(reversed_users):
                 if user.account_id == account_id:
                     self._users.pop(len(self._users) - 1 - i)
+                    return True
+        return False
 
     def _create_game(
         self, p1_account_id: int, p2_account_id: int, rule: str

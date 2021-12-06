@@ -176,3 +176,17 @@ matchmaker_server_schema = Schema(
         "player_term": int,
     }
 )
+
+cancel_match_client_schema = Schema(
+    {
+        "protocol_type": "cancel_match",
+        "my_account_id": int,
+    }
+)
+
+cancel_match_server_schema = Schema(
+    {
+        "protocol_type": "cancel_match",
+        "success": bool,
+    }
+)
