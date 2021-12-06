@@ -4,16 +4,17 @@ from client.controllers.home_button_page_controller import HomeButtonPageControl
 from client.model.user import User
 from client.views.end_game_page_view import EndGamePageView
 from client.model.game import Game
+from client.model.game_manager import GameManager
+from client.model.player import Player
 
 
 class EndGamePageController(HomeButtonPageController):
     def __init__(
         self,
         go_home_callback: Callable[[], None],
-        play_again_callback: Callable[[Game, User], None],
+        play_again_callback: Callable[[GameManager], None],
         play_different_mode_callback: Callable[[User], None],
-        game: Game,
-        main_user: User,
+        game_manager: GameManager
     ) -> None:
         """
         Page controller to handle the next steps after a game ends
@@ -26,12 +27,13 @@ class EndGamePageController(HomeButtonPageController):
         """
         super().__init__(go_home_callback=go_home_callback)
 
-        self._play_again_callback: Callable[[Game, User], None] = play_again_callback
+        self._play_again_callback: Callable[[GameManager], None] = play_again_callback
         self._play_different_mode_callback: Callable[
             [User], None
         ] = play_different_mode_callback
-        self._game: Game = game
-        self._main_user: User = main_user
+        self._game_manager: GameManager = game_manager
+        self._game: Game = self._game_manager.game
+        self._main_user: User = self._game_manager.main_user
 
         self._task_execute_dict["play_again"] = self.__execute_task_play_again
         self._task_execute_dict[
@@ -42,7 +44,7 @@ class EndGamePageController(HomeButtonPageController):
             go_home_cb=go_home_callback,
             play_again_cb=self.__handle_play_again,
             play_different_mode_cb=self.__handle_play_different_mode,
-            game=game,
+            game_manager=game_manager
         )
 
     def __handle_play_again(self) -> None:
@@ -62,7 +64,10 @@ class EndGamePageController(HomeButtonPageController):
         Creates game to play again with
         """
         self._view.destroy()
-        self._play_again_callback(self._game, self._main_user)
+        old_p1: Player = self._game_manager.get_player1()
+        old_p2: Player = self._game_manager.get_player2()
+        new_game_manager = GameManager(old_p1, old_p2, self._main_user)
+        self._play_again_callback(new_game_manager)
 
     def __execute_task_play_different_mode(self) -> None:
         """

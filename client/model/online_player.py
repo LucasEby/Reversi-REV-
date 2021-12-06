@@ -2,14 +2,16 @@ from typing import Optional, Tuple
 
 from client.model.user import User
 from client.model.game import Game
+from client.model.player import Player
 
 
-class Player:
+class OnlinePlayer(Player):
     def __init__(
         self,
         player_num: int,
-        user: Optional[User] = None
+        user: Optional[User] = None,
     ) -> None:
+        super().__init__(user=None, player_num=player_num)
         self._user: Optional[User] = user
         # Else, create an AI player
         if (player_num != 1) and (player_num != 2):
@@ -40,6 +42,9 @@ class Player:
 
     def set_next_move(self, posn: Tuple[int, int]) -> None:
         self.__next_move = posn
+
+    def get_player_type(self) -> str:
+        return self._player_type
 
     # Might need this?
     def get_next_move(self) -> Tuple[int, int]:

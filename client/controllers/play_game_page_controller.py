@@ -4,6 +4,7 @@ from typing import Tuple, Callable
 from client.controllers.base_page_controller import BasePageController
 from client.model.game import Game
 from client.model.user import User
+from client.model.game_manager import GameManager
 from client.server_comms.save_game_server_request import SaveGameServerRequest
 from client.views.play_game_page_view import PlayGamePageView
 
@@ -14,9 +15,8 @@ class PlayGamePageController(BasePageController):
 
     def __init__(
         self,
-        end_game_callback: Callable[[Game, User], None],
-        game: Game,
-        main_user: User,
+        end_game_callback: Callable[[GameManager], None],
+        game_manager: GameManager,
     ) -> None:
         """
         Page controller used for handling and responding to user inputs that occur in-game
@@ -27,15 +27,15 @@ class PlayGamePageController(BasePageController):
         self._task_execute_dict["place_tile"] = self.__execute_task_place_tile
         self._task_execute_dict["forfeit"] = self.__execute_task_forfeit
 
-        self._end_game_callback: Callable[[Game, User], None] = end_game_callback
-
-        self._game: Game = game
-        self._main_user: User = main_user
+        self._end_game_callback: Callable[[GameManager], None] = end_game_callback
+        self._game_manager = game_manager
+        self._game: Game = game_manager.game
+        self._main_user: User = game_manager.main_user
         self._view: PlayGamePageView = PlayGamePageView(
-            game=self._game,
+            game_manager=self._game_manager,
             place_tile_cb=self.__handle_place_tile,
             forfeit_cb=self.__handle_forfeit,
-            preferences=main_user.get_preference(),
+            preferences=self._main_user.get_preference(),
         )
 
     def __handle_place_tile(self, coordinate: Tuple[int, int]) -> None:
@@ -95,6 +95,10 @@ class PlayGamePageController(BasePageController):
         if valid_placement:
             self._view.update_game(game=self._game)
         self._view.display()
+        self._game_manager.make_move()
+        self._view.display()
+
+
 
     def __execute_task_forfeit(self) -> None:
         """
@@ -109,4 +113,4 @@ class PlayGamePageController(BasePageController):
         Performs actions needed to successfully end the game
         """
         self._view.destroy()
-        self._end_game_callback(self._game, self._main_user)
+        self._end_game_callback(self._game_manager)

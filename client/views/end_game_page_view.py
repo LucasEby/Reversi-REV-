@@ -1,6 +1,7 @@
 import tkinter as tk
 from typing import Callable
 from client.model.game import Game
+from client.model.game_manager import GameManager
 from client.views.home_button_page_view import HomeButtonPageView
 
 
@@ -10,7 +11,7 @@ class EndGamePageView(HomeButtonPageView):
         go_home_cb: Callable[[], None],
         play_again_cb: Callable[[], None],
         play_different_mode_cb: Callable[[], None],
-        game: Game,
+        game_manager: GameManager
     ) -> None:
         """
         View to choose what to do after the game ends
@@ -23,7 +24,8 @@ class EndGamePageView(HomeButtonPageView):
         super().__init__(go_home_callback=go_home_cb)
         self._play_again_callback: Callable[[], None] = play_again_cb
         self._play_different_mode_callback: Callable[[], None] = play_different_mode_cb
-        self._game: Game = game
+        self._game_manager: GameManager = game_manager
+        self._game: Game = self._game_manager.game
 
         self._score_label: tk.Label = self.__score_label()
         self._winner_label: tk.Label = self.__winner_label()
