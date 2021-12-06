@@ -56,7 +56,9 @@ class EndGamePageController(HomeButtonPageController):
         user2: User = game_manager.get_player2().get_user()
         p1_won: bool = game_manager.game.get_winner() == 1
         if isinstance(user1, Account) and isinstance(user2, Account):
-            updated_elos = CalculateNewELOs.get_new_elos(user1.id, user1.elo, user2.id, user2.elo, p1_won)
+            updated_elos = CalculateNewELOs.get_new_elos(
+                user1.id, user1.elo, user2.id, user2.elo, p1_won
+            )
             p1_id: int = updated_elos[0][0]
             p1_new_elo: int = updated_elos[0][1]
             p2_id: int = updated_elos[1][0]
