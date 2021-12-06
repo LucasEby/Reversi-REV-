@@ -120,7 +120,6 @@ credential_check_client_schema = Schema(
     {
         "protocol_type": "login",
         "username": str,
-        "password": str,
     }
 )
 
@@ -129,7 +128,7 @@ credential_check_server_schema = Schema(
         "protocol_type": "login",
         "success": bool,
         "encrypted_password": str,
-        "account_id": int,  # TODO: should we return account_id without password checked?
+        "account_id": int,
     }
 )
 

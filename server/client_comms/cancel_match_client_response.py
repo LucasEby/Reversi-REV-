@@ -21,7 +21,7 @@ class CancelMatchClientResponse(BaseClientResponse):
         """
         super().__init__(message=message)
         self._complete_matchmaker: Condition = Condition()
-        self._cancel_match_success: Optional[bool] = None
+        self._cancel_match_success: bool = False
         self._sent_message_schema: Schema = (
             cancel_match_client_schema  # from client side
         )
@@ -48,9 +48,7 @@ class CancelMatchClientResponse(BaseClientResponse):
         # Return the response message
         self._response_message.update(
             {
-                "success": False
-                if self._cancel_match_success is None
-                else self._cancel_match_success,
+                "success": self._cancel_match_success,
             }
         )
 
