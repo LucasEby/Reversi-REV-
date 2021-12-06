@@ -49,14 +49,25 @@ class MatchmakerServerRequest(BaseServerRequest):
         else:
             return None
 
-    def get_opp_account_id(self) -> Optional[int]:
+    def get_opp_username(self) -> Optional[int]:
         """
-        Retrieves opponent's account ID from the server response if available.
+        Retrieves opponent's username from the server response if available.
 
-        :return: Opponent's account ID if available, None otherwise.
+        :return: Opponent's username if available, None otherwise.
         """
         if self.is_response_success() is True:
-            return self._response_message["opp_account_id"]
+            return self._response_message["opp_username"]
+        else:
+            return None
+
+    def get_opp_elo(self) -> Optional[int]:
+        """
+        Retrieves opponent's elo from the server response if available.
+
+        :return: Opponent's elo if available, None otherwise.
+        """
+        if self.is_response_success() is True:
+            return self._response_message["opp_elo"]
         else:
             return None
 

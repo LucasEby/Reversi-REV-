@@ -8,6 +8,7 @@ from common.client_server_protocols import (
     create_account_client_schema,
     credential_check_client_schema,
     matchmaker_client_schema,
+    cancel_match_client_schema,
 )
 from server.client_comms.base_client_response import BaseClientResponse
 from server.client_comms.create_game_client_response import CreateGameClientResponse
@@ -19,6 +20,7 @@ from server.client_comms.save_game_client_response import SaveGameClientResponse
 from server.client_comms.save_preferences_client_response import (
     SavePreferencesClientResponse,
 )
+from server.client_comms.cancel_match_client_response import CancelMatchClientResponse
 
 
 class ResponseManager:
@@ -44,6 +46,9 @@ class ResponseManager:
         matchmaker_client_schema.schema[
             "protocol_type"
         ]: MatchmakerClientResponse.__name__,
+        cancel_match_client_schema.schema[
+            "protocol_type"
+        ]: CancelMatchClientResponse.__name__,
     }
 
     def __new__(cls, *args, **kwargs):
