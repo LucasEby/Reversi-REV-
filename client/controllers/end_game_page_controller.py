@@ -1,6 +1,7 @@
-from typing import Callable
+from typing import Callable, Optional
 
 from client.controllers.home_button_page_controller import HomeButtonPageController
+from client.model.account import Account
 from client.model.user import User
 from client.views.end_game_page_view import EndGamePageView
 from client.model.game import Game
@@ -65,7 +66,7 @@ class EndGamePageController(HomeButtonPageController):
         self._view.destroy()
         old_p1: Player = self._game_manager.get_player1()
         old_p2: Player = self._game_manager.get_player2()
-        new_game_manager = GameManager(old_p1, old_p2, self._main_user, None, None)
+        new_game_manager = GameManager(player1=old_p1, player2=old_p2, main_user=self._main_user)
         self._play_again_callback(new_game_manager)
 
     def __execute_task_play_different_mode(self) -> None:

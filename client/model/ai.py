@@ -10,14 +10,13 @@ from client.model.cell import CellState
 
 
 class AI(Player):
-    def __init__(self, player_num: int) -> None:
+    def __init__(self) -> None:
         """
         Create an AI that can play as a player
-
-        :param player_num: Play order of AI
         """
-        super().__init__(user=None, player_num=player_num)
-        self._difficulty: int = 1
+        super().__init__(user=None)
+        self._difficulty: int = 0
+        self.__ai_player = 0
 
     def set_difficulty(self, difficulty: int) -> None:
         """
@@ -25,8 +24,8 @@ class AI(Player):
 
         :param difficulty: Difficulty level (>0)
         """
-        self._difficulty = difficulty
-        self._difficulty = max(0, self._difficulty)
+        if difficulty >= 0:
+            self._difficulty: int = difficulty
 
     def get_difficulty(self) -> int:
         """
@@ -43,7 +42,31 @@ class AI(Player):
 
         param: game is the game object that the AI will place it's tile on.
         """
+        self.__ai_player = game.curr_player
         game.place_tile(self.__get_move(game=game))
+
+    @staticmethod
+    def __apply_weight_to_pos(row: int, col: int, board_size: int) -> int:
+        board_edge: int = board_size - 1
+        half: int = int(board_size / 2)
+        if (row == 0 or row == board_edge) and (col == 0 or col == board_edge):
+            # position is located in the corner.
+            position_weight = 1000
+        elif (row >= board_edge - 1 or row <= 1) and (row >= board_edge - 1 or col <= 1):
+            # position is located next to a corner. This is THE WORST POSITION.
+            position_weight = -1000
+        elif ((((row == 0) or (row == board_edge)) and (2 >= col < board_edge - 1))
+            or (((col == 0) or (col == board_edge)) and (2 >= row < board_edge - 1))):
+            # position is located on an edge. It is not a corner and is not next to a corner.
+            position_weight = 4
+        elif (half - 1 <= row <= half) and (half - 1 <= col <= half):
+            # position is located in the 4 middle cells in the center of the board.
+            position_weight = 3
+        else:
+            # position is located somewhere else on the board.
+            position_weight = 1
+        print("row: " + str(row) + " col: " + str(col) + " " + str(position_weight))
+        return position_weight
 
     def __weight_pos(self, row: int, col: int, game: Game) -> int:
         """
@@ -56,42 +79,32 @@ class AI(Player):
         """
 
         board_size = game.board.size
-        half: int = math.floor(board_size / 2)
-
         # position_weight: weight of the position chosen as a result of its location on the board
-        if ((row == 0) and ((col == 0) or (col == board_size - 1))) or (
-            (row == board_size - 1) and ((col == 0) or (col == board_size - 1))
-        ):
-            # position is located in the corner.
-            position_weight = 4
-        elif ((row <= 1) and ((col <= 1) or (col >= board_size - 2))) or (
-            (row >= board_size - 2) and ((col <= 1) or (col >= board_size - 2))
-        ):
-            # position is located next to a corner. This is THE WORST POSITION.
-            position_weight = -4
-        elif (
-            (row == 0)
-            or (row == board_size - 1)
-            or (col == 0)
-            or (col == board_size - 1)
-        ):
-            # position is located on an edge. It is not a corner and is not next to a corner.
-            position_weight = 3
-        elif ((row >= half - 1) or (row <= half)) and (
-            (col >= half - 1) or (col <= half)
-        ):
-            # position is located in the 4 middle cells in the center of the board.
-            position_weight = 2
-        else:
-            # position is located somewhere else on the board.
-            position_weight = 1
-
+        board_state: List[List[CellState]] = game.board.get_state()
+        position_weight: int = self.__apply_weight_to_pos(row=row, col=col, board_size=board_size)
+        if self.__ai_player == 1:
+            for row2 in range(0, board_size):
+                for col2 in range(0, board_size):
+                    if board_state[row][col] == CellState.player1:
+                        position_weight = position_weight + self.__apply_weight_to_pos(row=row2, col=col2, board_size=board_size)
+                    elif board_state[row][col] == CellState.player2:
+                        position_weight = position_weight - self.__apply_weight_to_pos(row=row2, col=col2, board_size=board_size)
+        elif self.__ai_player == 2:
+            for row2 in range(0, board_size):
+                for col2 in range(0, board_size):
+                    if board_state[row][col] == CellState.player2:
+                        position_weight = position_weight + self.__apply_weight_to_pos(row=row2, col=col2,
+                                                                                       board_size=board_size)
+                    elif board_state[row][col] == CellState.player1:
+                        position_weight = position_weight - self.__apply_weight_to_pos(row=row2, col=col2,
+                                                                                       board_size=board_size)
         # This is in case we want to add the score as additional weight to the position:
         # This variable is in case we need to scale the position_weight:
         # position_weight = position_weight * 10
         # score = game.get_score()
         # weighted_score = score[0] - score[1]
         # position_weight = position_weight + weighted_score
+        # print("position_weight: " + str(position_weight))
         return position_weight
 
     def __get_move(self, game: Game) -> Tuple[int, int]:
@@ -101,7 +114,7 @@ class AI(Player):
         param: game is the current game that the AI is playing.
         return Tuple[int, int] that represents the position that the AI will place a tile at.
         """
-        bestScore = int(-sys.maxsize)
+        best_score = -int(sys.maxsize)
         board_state: List[List[CellState]] = game.board.get_state()
         valid_moves: List[List[bool]] = game.get_valid_moves()
         move: Tuple[int, int] = (0, 0)
@@ -110,9 +123,9 @@ class AI(Player):
                 if (board_state[row][col] == CellState.empty) and valid_moves[row][col]:
                     copied_game = copy.deepcopy(game)
                     copied_game.place_tile((row, col))
-                    score = self.__minimax(copied_game, 0, False)
-                    if score > bestScore:
-                        bestScore = score
+                    score = self.__minimax(copied_game, self._difficulty, False)
+                    if score > best_score:
+                        best_score = score
                         move = (row, col)
         return move
 
@@ -129,7 +142,7 @@ class AI(Player):
         """
         if game.is_game_over():
             if game.get_winner() == 1:
-                return int(-sys.maxsize)
+                return -int(sys.maxsize)
             elif game.get_winner() == 2:
                 return int(sys.maxsize)
             else:
@@ -139,7 +152,7 @@ class AI(Player):
         valid_moves: List[List[bool]] = game.get_valid_moves()
 
         if is_maximizing:
-            bestScore = int(-sys.maxsize)
+            best_score = -int(sys.maxsize)
             for row in range(0, game.board.size):
                 for col in range(0, game.board.size):
                     # Is the spot available?
@@ -151,16 +164,16 @@ class AI(Player):
                         copied_game = copy.deepcopy(game)
                         copied_game.place_tile((row, col))
                         score = self.__minimax(copied_game, depth + 1, False)
-                        bestScore = max(score, bestScore)
+                        best_score = max(score, best_score)
                     elif (board_state[row][col] == CellState.empty) and valid_moves[
                         row
                     ][col]:
                         # we're at the terminal point that we want to go to.
                         score = self.__weight_pos(row=row, col=col, game=game)
-                        bestScore = max(score, bestScore)
-            return bestScore
+                        best_score = max(score, best_score)
+            return best_score
         else:
-            bestScore = int(sys.maxsize)
+            best_score = int(sys.maxsize)
             for row in range(0, game.board.size):
                 for col in range(0, game.board.size):
                     # Is the spot available?
@@ -172,15 +185,15 @@ class AI(Player):
                         copied_game = copy.deepcopy(game)
                         copied_game.place_tile((row, col))
                         score = self.__minimax(copied_game, depth + 1, True)
-                        bestScore = min(score, bestScore)
+                        best_score = min(score, best_score)
                     elif (board_state[row][col] == CellState.empty) and valid_moves[
                         row
                     ][col]:
                         # we're at the terminal point that we want to go to.
                         # Negative was put here on purpose:
                         score = -self.__weight_pos(row=row, col=col, game=game)
-                        bestScore = max(score, bestScore)
-            return bestScore
+                        best_score = min(score, best_score)
+            return best_score
 
 
 # AI Weight class

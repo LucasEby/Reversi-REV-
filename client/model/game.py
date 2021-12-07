@@ -19,6 +19,7 @@ class Game:
         rules: AbstractRule,
         p1_first_move: bool = True,
         save: bool = False,
+        saved_board: Board = None,
     ) -> None:
         """
         Initializes a game with the given parameters
@@ -223,20 +224,3 @@ class Game:
         """
         if 1 <= forfeit_player <= 2:
             self._forfeited_player = forfeit_player
-
-
-# def forfeit(self):
-
-# def get_player1(self) -> Player:
-#     """
-#     Get information about player 1
-#     :return: Player 1
-#     """
-#     return self._player1
-#
-# def get_player2(self) -> Player:
-#     """
-#     Get information about player 2
-#     :return: Player 2
-#     """
-#     return self._player2

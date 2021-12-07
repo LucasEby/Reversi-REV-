@@ -76,13 +76,10 @@ class GetGameServerRequest(BaseServerRequest):
             if "ai_difficulty" in self._response_message:
                 ai_difficulty = self._response_message["ai_difficulty"]
             if p1 is not None:
-
                 new_game_manager = GameManager(
                     main_user=main_user,
-                    player1=Player(1),
-                    player2=Player(2),
-                    p1_account=p1,
-                    p2_account=p2,
+                    player1=Player(p1),
+                    player2=Player(p2),
                     save=True,
                     p1_first_move=not bool(next_turn - 1),
                 )

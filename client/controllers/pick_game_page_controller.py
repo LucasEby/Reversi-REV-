@@ -77,13 +77,11 @@ class PickGamePageController(HomeButtonPageController):
         Create local single player game
         """
         self._view.destroy()
-        # TODO:
-        # We need to incorporate the AI functionality here.
-        # We need to also change "User(2, Guest) to be an AI
-        # player2_username: str = "Guest"
-        # game_obj: Game = Game(self._main_user, User(player2_username))
+        ai = AI()
+        ai.set_difficulty(1)
         game_manager = GameManager(
-            Player(1, self._main_user), AI(2), self._main_user, None, None
+            Player(self._main_user), ai, self._main_user, p1_first_move=bool(random.getrandbits(1)),
+            save=False
         )
         self._game_picked_callback(game_manager)
 
@@ -93,7 +91,8 @@ class PickGamePageController(HomeButtonPageController):
         """
         self._view.destroy()
         game_manager = GameManager(
-            Player(1, self._main_user), Player(2), self._main_user
+            Player(self._main_user), Player(), self._main_user, p1_first_move=bool(random.getrandbits(1)),
+            save=False
         )
         # player2_username: str = "Guest"
         # game_obj: Game = Game(
