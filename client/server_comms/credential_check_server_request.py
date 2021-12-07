@@ -1,3 +1,4 @@
+import json
 from typing import Optional
 
 from schema import Schema  # type: ignore
@@ -33,11 +34,12 @@ class CredentialCheckServerRequest(BaseServerRequest):
         else:
             return self._response_message["success"]
 
-    def get_encrypted_password(self) -> Optional[int]:
+    def get_encrypted_password(self) -> Optional[str]:
         """
         Retrieves encrypted password from the server response if available
         :return: Encrypted password if available, None otherwise
         """
+        print(self._response_message)
         if self.is_response_success() is True:
             return self._response_message["encrypted_password"]
         else:

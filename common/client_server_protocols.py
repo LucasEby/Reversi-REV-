@@ -1,7 +1,6 @@
 from schema import Schema, Optional, Or  # type: ignore
 
 # https://github.com/keleshev/schema
-from client.model.colors import Color
 
 create_game_client_schema = Schema(
     {
@@ -47,6 +46,8 @@ save_preferences_client_schema = Schema(
         "pref_disk_color": str,
         "pref_opp_disk_color": str,
         "pref_line_color": str,
+        "pref_rules": str,
+        "pref_tile_move_confirmation": bool,
     }
 )
 
