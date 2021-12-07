@@ -1,6 +1,7 @@
 from typing import Optional, Union, List, Dict, Any
 
 from client.model.account import Account
+from client.model.ai import AI
 from client.model.board import Board
 
 from client.model.game_manager import GameManager
@@ -61,8 +62,8 @@ class GetGameServerRequest(BaseServerRequest):
                 account2 = None
             new_board: Board = Board(size, board_state)
             ai_difficulty: int = 0
-            p1: User = User("p1")
-            p2: User = User("p2")
+            p1: User = User("Guest")
+            p2: User = User("Guest")
             new_game_manager: Optional[GameManager] = None
             if account1 is not None:
                 p1_id: int = account1["p1_account_id"]
@@ -74,16 +75,22 @@ class GetGameServerRequest(BaseServerRequest):
                 p2_username: str = account2["p2_username"]
                 p2_elo: int = account2["p2_elo"]
                 p2 = Account(p2_username, p2_elo, p2_id)
-            if "ai_difficulty" in self._response_message:
-                ai_difficulty = self._response_message["ai_difficulty"]
             if p1 is not None:
                 new_game_manager = GameManager(
                     main_user=main_user,
                     player1=Player(p1),
-                    player2=Player(p2),
+                    player2=AI()
+                    if "ai_difficulty" in self._response_message
+                    else Player(p2),
                     save=True,
                     p1_first_move=not bool(next_turn - 1),
                 )
+                if isinstance(new_game_manager.get_player2(), AI):
+                    setattr(
+                        new_game_manager.get_player2(),
+                        "difficulty",
+                        self._response_message["ai_difficulty"],
+                    )
                 new_game_manager.game.set_id(game_id)
                 new_game_manager.game.board = new_board
             return new_game_manager

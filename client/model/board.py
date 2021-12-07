@@ -12,16 +12,16 @@ class Board:
             self.cells: List[List[Cell]] = [
                 [Cell(CellState.empty) for _ in range(size)] for _ in range(size)
             ]
+            # initialize the four starting disks at the center of the board
+            self.cells[size // 2][size // 2 - 1].state = CellState.player1
+            self.cells[size // 2 - 1][size // 2].state = CellState.player1
+            self.cells[size // 2 - 1][size // 2 - 1].state = CellState.player2
+            self.cells[size // 2][size // 2].state = CellState.player2
         else:
             self.cells = [
-                [Cell(CellState(saved_state[i][j])) for i in range(self.size)]
+                [Cell(CellState(saved_state[j][i])) for i in range(self.size)]
                 for j in range(self.size)
             ]
-        # initialize the four starting disks at the center of the board
-        self.cells[size // 2][size // 2 - 1].state = CellState.player1
-        self.cells[size // 2 - 1][size // 2].state = CellState.player1
-        self.cells[size // 2 - 1][size // 2 - 1].state = CellState.player2
-        self.cells[size // 2][size // 2].state = CellState.player2
 
     def get_state(self) -> List[List[CellState]]:
         """

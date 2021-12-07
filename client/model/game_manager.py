@@ -31,6 +31,11 @@ class GameManager:
             p1_first_move=p1_first_move,
             save=save,
         )
+        # Make a move if an AI is going first
+        if (isinstance(self.__players[0], AI) and p1_first_move) or (
+            isinstance(self.__players[1], AI) and not p1_first_move
+        ):
+            self.make_move()
 
     def make_move(self) -> None:
         self.__players[self.game.get_curr_player() - 1].place_tile(self.game)

@@ -6,7 +6,7 @@ from client.controllers.home_button_page_controller import HomeButtonPageControl
 from client.server_comms.create_game_server_request import CreateGameServerRequest
 from client.server_comms.get_game_server_request import GetGameServerRequest
 from client.views.pick_game_page_view import PickGamePageView
-from client.model.game import Game, UpdatedGameInfo
+from client.model.game import UpdatedGameInfo
 from client.model.user import User
 from client.model.game_manager import GameManager
 from client.model.player import Player
@@ -39,12 +39,23 @@ class PickGamePageController(HomeButtonPageController):
         self._task_execute_dict[
             "manage_preferences"
         ] = self.__execute_change_preferences
+        self._task_execute_dict["resume_game"] = self.__execute_resume_game
 
         self._game_picked_callback: Callable[[GameManager], None] = game_picked_callback
         self._manage_preferences_callback: Callable[
             [User], None
         ] = manage_preferences_callback
         self._main_user: User = main_user
+
+        self._resume_game_manager: Union[
+            GameManager, UpdatedGameInfo, None
+        ] = self.__get_saved_game_for_resuming()
+        resume_game_callback: Optional[Callable[[], None]] = (
+            self._handle_resume_game
+            if isinstance(self._resume_game_manager, GameManager)
+            else None
+        )
+
         self._view: PickGamePageView = PickGamePageView(
             self._handle_local_single_player_game,
             self._handle_local_multiplayer_game,
@@ -52,6 +63,7 @@ class PickGamePageController(HomeButtonPageController):
             self._handle_change_preferences,
             go_home_callback=self.handle_home_button,
             username=self._main_user.get_username(),
+            resume_game_callback=resume_game_callback,
         )
 
     def _handle_local_single_player_game(self) -> None:
@@ -77,6 +89,12 @@ class PickGamePageController(HomeButtonPageController):
         Handles change preferences selection from user
         """
         self.queue(task_name="manage_preferences")
+
+    def _handle_resume_game(self) -> None:
+        """
+        Handles resume game selection from user
+        """
+        self.queue(task_name="resume_game")
 
     def __execute_local_single_player_game(self):
         """
@@ -132,6 +150,14 @@ class PickGamePageController(HomeButtonPageController):
         Notifies upper level that preferences should be changed
         """
         self._manage_preferences_callback(self._main_user)
+
+    def __execute_resume_game(self) -> None:
+        """
+        Resumes previous game
+        """
+        if isinstance(self._resume_game_manager, GameManager):
+            self._game_picked_callback(self._resume_game_manager)
+            self._view.destroy()
 
     def __create_game_in_database(self, game_manager: GameManager) -> None:
         """

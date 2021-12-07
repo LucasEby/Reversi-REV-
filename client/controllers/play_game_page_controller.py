@@ -28,7 +28,7 @@ class PlayGamePageController(BasePageController):
         self._task_execute_dict["forfeit"] = self.__execute_task_forfeit
 
         self._end_game_callback: Callable[[GameManager], None] = end_game_callback
-        self._game_manager = game_manager
+        self._game_manager: GameManager = game_manager
         self._game: Game = game_manager.game
         self._main_user: User = game_manager.main_user
         self._view: PlayGamePageView = PlayGamePageView(
