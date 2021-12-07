@@ -72,7 +72,7 @@ class CreateAccountPageView(HomeButtonPageView):
 
         :returns: tkinter entry
         """
-        return tk.Entry(self._frame, textvariable=self._password_entry, show='*')
+        return tk.Entry(self._frame, textvariable=self._password_entry, show="*")
 
     def __submit_button(self) -> tk.Button:
         """

@@ -8,7 +8,9 @@ from client.model.account import Account
 from client.model.calculate_new_elos import CalculateNewELOs
 from client.model.password_crypter import PasswordCrypter
 from client.model.user import User
-from client.server_comms.credential_check_server_request import CredentialCheckServerRequest
+from client.server_comms.credential_check_server_request import (
+    CredentialCheckServerRequest,
+)
 from client.server_comms.get_top_elos_server_request import GetTopELOsServerRequest
 from client.views.welcome_page_view import WelcomePageView
 
@@ -92,7 +94,9 @@ class WelcomePageController(BasePageController):
         account_id: Optional[int] = None
         encrypted_password: Optional[str] = None
         try:
-            server_request: CredentialCheckServerRequest = CredentialCheckServerRequest(username=username)
+            server_request: CredentialCheckServerRequest = CredentialCheckServerRequest(
+                username=username
+            )
             server_request.send()
             start_time: float = time.time()
             while server_request.is_response_success() is None:
@@ -113,14 +117,20 @@ class WelcomePageController(BasePageController):
         password_correct: bool = False
         if encrypted_password is not None and account_id is not None:
             password_correct = entered_password == encrypted_password
-            #password_correct = PasswordCrypter.is_match(
+            # password_correct = PasswordCrypter.is_match(
             #    entered_password, encrypted_password.encode("utf-8")
-            #)
+            # )
 
         # If passwords match, create account
         if password_correct:
             self._view.destroy()
-            self._user_created_callback(Account(username=username, elo=CalculateNewELOs.DEFAULT_ELO, account_id=account_id))
+            self._user_created_callback(
+                Account(
+                    username=username,
+                    elo=CalculateNewELOs.DEFAULT_ELO,
+                    account_id=account_id,
+                )
+            )
 
     def __execute_task_create_account(self) -> None:
         """

@@ -53,8 +53,8 @@ class CreateAccountPageController(HomeButtonPageController):
 
         # Encrypt password
         # encrypted_password: bytes = PasswordCrypter.encrypt(password=password)
-        encrypted_password: bytes = password.encode('utf-8')
-        string_password: str = ''.join(map(chr, encrypted_password))
+        encrypted_password: bytes = password.encode("utf-8")
+        string_password: str = "".join(map(chr, encrypted_password))
 
         try:
             server_request: CreateAccountServerRequest = CreateAccountServerRequest(
@@ -71,7 +71,9 @@ class CreateAccountPageController(HomeButtonPageController):
                 raise ConnectionError("Server could not properly create account")
             else:
                 account = Account(
-                    username, CalculateNewELOs.DEFAULT_ELO, server_request.get_account_id()
+                    username,
+                    CalculateNewELOs.DEFAULT_ELO,
+                    server_request.get_account_id(),
                 )
         except ConnectionError as e:
             # TODO: Notify view of server error
