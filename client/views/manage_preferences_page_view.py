@@ -3,6 +3,7 @@ from typing import Callable
 from client.model.preference import Preference
 from client.model.user import User
 from client.views.home_button_page_view import HomeButtonPageView
+import tkinter as tk
 
 
 class ManagePreferencesPageView(HomeButtonPageView):
@@ -18,6 +19,16 @@ class ManagePreferencesPageView(HomeButtonPageView):
         :param user: the user object
         """
         super().__init__(go_home_callback=go_home_callback)
+
+        self.color_options = ["white", "black", "red", "green", "blue", "cyan", "yellow", "magenta"]
+        self.value_inside = tk.StringVar(self._frame)
+        self.value_inside.set(self.options_list[0])
+        question_menu = tk.OptionMenu(self._frame, self.value_inside, *self.options_list)
+        print("Selected Option: {}".format(self.value_inside.get()))
+        self.board_size_box = self.__spin_box()
+
+        question_menu.pack()
+
         self.__user: User = user
         self.__preference: Preference = self.__user.get_preference()
         self.display()
@@ -61,15 +72,6 @@ class ManagePreferencesPageView(HomeButtonPageView):
         """
         print("Current rule: " + str(self.__preference.get_rule()))
 
-    def display_tile_move_confirmation(self) -> None:
-        """
-        Display the current tile move confirmation status.
-        """
-        if self.__preference.get_tile_move_confirmation():
-            print("Current tile move confirmation: On")
-        else:
-            print("Current tile move confirmation: Off")
-
     def destroy(self) -> None:
         """
         Destroy all widgets in this view
@@ -97,3 +99,9 @@ class ManagePreferencesPageView(HomeButtonPageView):
         self.display_tile_move_confirmation()
         print("7. Exit preference setting")
         # back to home page command
+
+    def __spin_box(self, from_: float, to: float, increment: float, command) -> tk.Spinbox:
+        """
+        Creates label to display the game's score.
+        """
+        return tk.Spinbox(from_=from_, to=to, incement=increment, command=command)
