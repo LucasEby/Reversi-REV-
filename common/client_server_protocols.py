@@ -155,3 +155,37 @@ create_account_server_schema = Schema(
         "account_id": int,
     }
 )
+
+matchmaker_client_schema = Schema(
+    {
+        "protocol_type": "matchmaker",
+        "my_account_id": int,
+        "pref_rule": str,
+        "pref_board_size": int,
+    }
+)
+
+matchmaker_server_schema = Schema(
+    {
+        "protocol_type": "matchmaker",
+        "success": bool,
+        "game_id": int,
+        "opp_username": str,
+        "opp_elo": int,
+        "player_term": int,
+    }
+)
+
+cancel_match_client_schema = Schema(
+    {
+        "protocol_type": "cancel_match",
+        "my_account_id": int,
+    }
+)
+
+cancel_match_server_schema = Schema(
+    {
+        "protocol_type": "cancel_match",
+        "success": bool,
+    }
+)
