@@ -49,7 +49,7 @@ class PlayGamePageView(BasePageView):
             text="Forfeit",
             height=self._button_height,
             width=self._button_width,
-            fg="black",
+            fg="white",
             bg="purple",
             command=self._forfeit_cb,
         )
