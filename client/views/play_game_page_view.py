@@ -3,6 +3,7 @@ from typing import List, Callable, Tuple, Optional
 
 from client.model.cell import CellState
 from client.model.game import Game
+from client.model.game_manager import GameManager
 from client.model.preference import Preference
 from client.model.user import User
 from client.views.base_page_view import BasePageView
@@ -15,7 +16,7 @@ class PlayGamePageView(BasePageView):
 
     def __init__(
         self,
-        game: Game,
+        game_manager: GameManager,
         preferences: Preference,
         place_tile_cb: Callable[[Tuple[int, int]], None],
         forfeit_cb: Callable[[], None],
@@ -29,8 +30,9 @@ class PlayGamePageView(BasePageView):
         :param forfeit_cb: Callback function to call when a player forfeits
         """
         super().__init__()
-        self._game: Game = game
-        self._size: int = game.board.size
+        self._game_manager: GameManager = game_manager
+        self._game: Game = self._game_manager.game
+        self._size: int = self._game.board.size
         self._place_tile_cb: Callable[[Tuple[int, int]], None] = place_tile_cb
         self._forfeit_cb: Callable[[], None] = forfeit_cb
         self._preferences: Preference = preferences
@@ -145,8 +147,8 @@ class PlayGamePageView(BasePageView):
         temp_tuple: Tuple[int, int] = self._game.get_score()
         p1_str: str
         p2_str: str
-        p1_user: Optional[User] = self._game.get_player1().get_user()
-        p2_user: Optional[User] = self._game.get_player2().get_user()
+        p1_user: Optional[User] = self._game_manager.get_player1().get_user()
+        p2_user: Optional[User] = self._game_manager.get_player2().get_user()
         if p1_user is not None:
             p1_str = f"{p1_user.get_username()}'s score: {temp_tuple[0]}"
         else:

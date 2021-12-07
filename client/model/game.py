@@ -4,8 +4,6 @@ from typing import List, Tuple, Optional
 from client.model.abstract_rule import AbstractRule
 from client.model.board import Board
 from client.model.cell import CellState
-from client.model.player import Player
-from client.model.user import User
 
 
 @dataclass
@@ -17,35 +15,25 @@ class UpdatedGameInfo:
 class Game:
     def __init__(
         self,
-        user1: User,
-        user2: Optional[User],
+        board_size: int,
+        rules: AbstractRule,
         p1_first_move: bool = True,
         save: bool = False,
         saved_board: Board = None,
     ) -> None:
         """
         Initializes a game with the given parameters
-
-        :param user1: User correlating to player 1 (playing first)
-        :param user2: User correlating to player 2 (playing second)
+        :param board_size: The size of the board as specified by the main user's preferences
+        :param rules: The set of rules the game will be running on
         :param p1_first_move: True if user1 has first move, false if user2 has first move
         :param save: Whether to save game after every turn
-        :param saved_board: A board that may already have had moves on it
         """
         self._id: Optional[int] = None
-        self._player1: Player = Player(1, user1)
-        self._player2: Player = Player(2, user2)
-        active_user: User = user1 if (p1_first_move or user2 is None) else user2
-        # Use the size and rule preference of active user, since both users must use the same size
-        if saved_board is None:
-            self.board: Board = Board(active_user.get_preference().get_board_size())
-        else:
-            self.board = saved_board
-        self._rules: AbstractRule = active_user.get_preference().get_rule()
+        # Use the size and rule preference of active user, since both users must use the same size and rules
+        self.board: Board = Board(board_size)
+        self.rules: AbstractRule = rules
         self.save: bool = save
         self.curr_player: int = 1 if p1_first_move else 2
-        self._user1 = user1
-        self._user2 = user2
         self._forfeited_player: Optional[int] = None
 
     def is_game_over(self) -> bool:
@@ -76,7 +64,7 @@ class Game:
         """
         if not self.board.is_valid_posn(posn[0], posn[1]):
             raise Exception("out-of bounds move attempted")
-        if not self._rules.is_valid_move(self.curr_player, posn, self.board):
+        if not self.rules.is_valid_move(self.curr_player, posn, self.board):
             return False
         self.board.cells[posn[0]][posn[1]].fill(self.curr_player)
 
@@ -148,7 +136,7 @@ class Game:
         ]
         for i in range(self.board.size):
             for j in range(self.board.size):
-                valid_moves[i][j] = self._rules.is_valid_move(
+                valid_moves[i][j] = self.rules.is_valid_move(
                     self.curr_player, (i, j), self.board
                 )
         return valid_moves
@@ -168,18 +156,21 @@ class Game:
         (1 for player1, 2 for player2)
 
         :raises Exception: Thrown when the method is called before the game has ended
-        :return: the number representing the winning player
+        :return: the number representing the winning player or 0 if it is a tie.
         """
         if not self.is_game_over():
             raise Exception("cannot get winner until game is over")
-        if self._forfeited_player is not None:
-            return 2 if self._forfeited_player == 1 else 1
-        elif self.board.get_num_type(CellState.player1) > self.board.get_num_type(
+        if self.board.get_num_type(CellState.player1) > self.board.get_num_type(
             CellState.player2
         ):
             return 1
-        else:
+        elif self.board.get_num_type(CellState.player2) > self.board.get_num_type(
+            CellState.player1
+        ):
             return 2
+        else:
+            # Players tied.
+            return 0
 
     def get_score(self) -> Tuple[int, int]:
         """
@@ -191,27 +182,6 @@ class Game:
             CellState.player2
         )
 
-    def get_rules(self) -> AbstractRule:
-        """
-        Get the current rules of the game
-        :return: Rule that is being played in the game
-        """
-        return self._rules
-
-    def get_player1(self) -> Player:
-        """
-        Get information about player 1
-        :return: Player 1
-        """
-        return self._player1
-
-    def get_player2(self) -> Player:
-        """
-        Get information about player 2
-        :return: Player 2
-        """
-        return self._player2
-
     def get_id(self) -> Optional[int]:
         """
         Returns ID of game
@@ -222,7 +192,6 @@ class Game:
     def set_id(self, id: int) -> None:
         """
         Sets the ID of the game
-
         :param id: ID of the game
         """
         self._id = id
@@ -230,15 +199,27 @@ class Game:
     def get_curr_player(self) -> int:
         """
         Returns the current player (next to play)
-
         :return: Next player as an integer
         """
         return self.curr_player
 
+    def check_placement(self, posn: Tuple[int, int]) -> bool:
+        """
+        Checks the tile placement.
+
+        :param posn: the position on the board to place a disk
+        :raises Exception: Thrown when the given position is not on the board
+        :return: True if the move is possible, False if not.
+        """
+        if not self.board.is_valid_posn(posn[0], posn[1]):
+            return False
+        if not self.rules.is_valid_move(self.curr_player, posn, self.board):
+            return False
+        return True
+
     def forfeit(self, forfeit_player: int) -> None:
         """
         Sets game internals so given player forfeits
-
         :param forfeit_player: Number of player who is forfeiting (1 or 2)
         """
         if 1 <= forfeit_player <= 2:

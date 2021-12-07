@@ -2,7 +2,11 @@ from typing import Optional, Union, List, Dict, Any
 
 from client.model.account import Account
 from client.model.board import Board
-from client.model.game import Game, UpdatedGameInfo
+
+from client.model.game_manager import GameManager
+from client.model.user import User
+from client.model.player import Player
+from client.model.game import UpdatedGameInfo
 from client.server_comms.base_server_request import BaseServerRequest
 from common.client_server_protocols import get_game_server_schema
 
@@ -32,7 +36,9 @@ class GetGameServerRequest(BaseServerRequest):
         else:
             return self._response_message["success"]
 
-    def get_game(self) -> Optional[Union[Game, UpdatedGameInfo]]:
+    def get_game(
+        self, main_user: User
+    ) -> Optional[Union[GameManager, UpdatedGameInfo]]:
         """
         Retrieves changed game from the server response if available
         :return: New game or updated game info, None otherwise
@@ -54,10 +60,10 @@ class GetGameServerRequest(BaseServerRequest):
             else:
                 account2 = None
             new_board: Board = Board(size, board_state)
-            p1: Optional[Account] = None
-            p2: Optional[Account] = None
             ai_difficulty: int = 0
-            new_game: Optional[Game] = None
+            p1: User = User("p1")
+            p2: User = User("p2")
+            new_game_manager: Optional[GameManager] = None
             if account1 is not None:
                 p1_id: int = account1["p1_account_id"]
                 p1_username: str = account1["p1_username"]
@@ -71,15 +77,16 @@ class GetGameServerRequest(BaseServerRequest):
             if "ai_difficulty" in self._response_message:
                 ai_difficulty = self._response_message["ai_difficulty"]
             if p1 is not None:
-                new_game = Game(
-                    p1,
-                    p2,
+                new_game_manager = GameManager(
+                    main_user=main_user,
+                    player1=Player(p1),
+                    player2=Player(p2),
                     save=True,
-                    saved_board=new_board,
                     p1_first_move=not bool(next_turn - 1),
                 )
-                new_game.set_id(game_id)
-            return new_game
+                new_game_manager.game.set_id(game_id)
+                new_game_manager.game.board = new_board
+            return new_game_manager
         elif (
             self.is_response_success() is True and not self._send_message["resume_game"]
         ):

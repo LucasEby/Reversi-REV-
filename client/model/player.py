@@ -1,19 +1,35 @@
-from typing import Optional
+from typing import Tuple
 
 from client.model.user import User
+from client.model.game import Game
 
 
 class Player:
-    def __init__(self, player_num: int, user: Optional[User] = None) -> None:
-        self._user: Optional[User] = user
-        # Else, create an AI player
-        if (player_num != 1) and (player_num != 2):
-            raise Exception("Player num must be valid (1 or 2)")
-        self._player_num: int = player_num
+    def __init__(self, user: User) -> None:
+        self._user: User = user
+        self.__next_move: Tuple[int, int] = (0, 0)
 
-    def get_user(self) -> Optional[User]:
+    def get_user(self) -> User:
         """
         Returns the user of the player
         :return: User or None if the Player isn't also a User
         """
         return self._user
+
+    def place_tile(self, game: Game) -> None:
+        """
+        This allows the player to place a tile. (We had to add this functionality
+        after adding the AI).
+        """
+        game.place_tile(self.__next_move)
+
+    def set_next_move(self, posn: Tuple[int, int]) -> None:
+        self.__next_move = posn
+
+    # Might need this?
+    def get_next_move(self) -> Tuple[int, int]:
+        """
+        Returns the next move the player wants to play
+        :return a Tuple representing the coordinates of the move.
+        """
+        return self.__next_move

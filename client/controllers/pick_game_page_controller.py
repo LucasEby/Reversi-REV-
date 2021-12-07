@@ -5,13 +5,17 @@ from client.controllers.home_button_page_controller import HomeButtonPageControl
 from client.views.pick_game_page_view import PickGamePageView
 from client.model.game import Game
 from client.model.user import User
+from client.model.game_manager import GameManager
+from client.model.player import Player
+from client.model.ai import AI
+from client.model.account import Account
 
 
 class PickGamePageController(HomeButtonPageController):
     def __init__(
         self,
         go_home_callback: Callable[[], None],
-        game_picked_callback: Callable[[Game, User], None],
+        game_picked_callback: Callable[[GameManager], None],
         manage_preferences_callback: Callable[[User], None],
         main_user: User,
     ) -> None:
@@ -32,7 +36,7 @@ class PickGamePageController(HomeButtonPageController):
         ] = self.__execute_change_preferences
 
         self._go_home_callback: Callable[[], None] = go_home_callback
-        self._game_picked_callback: Callable[[Game, User], None] = game_picked_callback
+        self._game_picked_callback: Callable[[GameManager], None] = game_picked_callback
         self._manage_preferences_callback: Callable[
             [User], None
         ] = manage_preferences_callback
@@ -75,25 +79,30 @@ class PickGamePageController(HomeButtonPageController):
         Create local single player game
         """
         self._view.destroy()
-        # TODO:
-        # We need to incorporate the AI functionality here.
-        # We need to also change "User(2, Guest) to be an AI
-        player2_username: str = "Guest"
-        game_obj: Game = Game(self._main_user, User(player2_username))
-        self._game_picked_callback(game_obj, self._main_user)
+        ai = AI()
+        ai.set_difficulty(1)
+        game_manager = GameManager(
+            Player(self._main_user),
+            ai,
+            self._main_user,
+            p1_first_move=bool(random.getrandbits(1)),
+            save=isinstance(self._main_user, Account),
+        )
+        self._game_picked_callback(game_manager)
 
     def __execute_local_multiplayer_game(self):
         """
         Create local multiplayer game
         """
         self._view.destroy()
-        player2_username: str = "Guest"
-        game_obj: Game = Game(
+        game_manager = GameManager(
+            Player(self._main_user),
+            Player(user=User(username="Guest")),
             self._main_user,
-            User(player2_username),
             p1_first_move=bool(random.getrandbits(1)),
+            save=isinstance(self._main_user, Account),
         )
-        self._game_picked_callback(game_obj, self._main_user)
+        self._game_picked_callback(game_manager)
 
     def __execute_online_game(self):
         """
