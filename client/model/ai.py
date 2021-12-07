@@ -53,7 +53,7 @@ class AI(Player):
         half: int = int(board_size / 2)
         if (row == 0 or row == board_edge) and (col == 0 or col == board_edge):
             # position is located in the corner.
-            position_weight = 10
+            position_weight = 1000
         elif (row >= board_edge - 1 or row <= 1) and (
             row >= board_edge - 1 or col <= 1
         ):
@@ -63,10 +63,10 @@ class AI(Player):
             ((col == 0) or (col == board_edge)) and (2 >= row < board_edge - 1)
         ):
             # position is located on an edge. It is not a corner and is not next to a corner.
-            position_weight = 4
+            position_weight = 50
         elif (half - 1 <= row <= half) and (half - 1 <= col <= half):
             # position is located in the 4 middle cells in the center of the board.
-            position_weight = 3
+            position_weight = 20
         else:
             # position is located somewhere else on the board.
             position_weight = 1
