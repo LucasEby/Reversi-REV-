@@ -6,6 +6,9 @@ from client.controllers.manage_preferences_page_controller import (
     ManagePreferencesPageController,
 )
 from client.controllers.welcome_page_controller import WelcomePageController
+from client.controllers.create_account_page_controller import (
+    CreateAccountPageController,
+)
 
 from client.model.game import Game
 from client.model.user import User
@@ -21,6 +24,12 @@ class PageMachine:
             user_created_callback=self.user_created_callback,
             create_account_callback=self.create_account_callback,
         )
+        # self.current_page_controller: BasePageController = PickGamePageController(
+        #    go_home_callback=self.go_home_callback,
+        #    game_picked_callback=self.game_picked_callback,
+        #    manage_preferences_callback=self.manage_preferences_callback,
+        #    main_user=main_user,
+        # )
 
     def run(self) -> None:
         """
@@ -55,7 +64,10 @@ class PageMachine:
         """
         Goes to create account page when requested
         """
-        # TODO: Go to create account page
+        self.current_page_controller = CreateAccountPageController(
+            go_home_callback=self.go_home_callback,
+            login_callback=self.login_callback,
+        )
         pass
 
     def end_game_callback(self, game: Game, main_user: User) -> None:
@@ -122,4 +134,12 @@ class PageMachine:
             game_picked_callback=self.game_picked_callback,
             manage_preferences_callback=self.manage_preferences_callback,
             main_user=main_user,
+        )
+
+    def login_callback(self, user: User):
+        self.current_page_controller = PickGamePageController(
+            go_home_callback=self.go_home_callback,
+            game_picked_callback=self.game_picked_callback,
+            manage_preferences_callback=self.manage_preferences_callback,
+            main_user=user,
         )

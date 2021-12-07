@@ -1,28 +1,30 @@
 import tkinter as tk
-from typing import List, Callable, Tuple
+from typing import Callable
 
-from client.model.cell import Cell, CellState
-from client.model.game import Game
-from client.views.base_page_view import BasePageView
+from client.views.home_button_page_view import HomeButtonPageView
 
 
-class CreateAccountPageView(BasePageView):
+class CreateAccountPageView(HomeButtonPageView):
     def __init__(
-        self, go_home_cb: Callable[[], None], login_cb: Callable[[str, str], None]
+        self,
+        go_home_cb: Callable[[], None],
+        login_cb: Callable[[str, str], None],
     ) -> None:
         """
         View to create a new account
-        :param go_home_callback: Callback to call when user requested going to the home screen
-        :param login_callback: Callback to handle creating a new account
+        :param go_home_cb: Callback to call when user requested going to the home screen
+        :param login_cb: Callback to handle creating a new account
         """
         super().__init__(go_home_callback=go_home_cb)
         self._go_home_callback = go_home_cb
         self._login_callback = login_cb
-        self._username_entry = ""
-        self._password_entry = ""
+        self._username_entry = tk.StringVar()
+        self._password_entry = tk.StringVar()
 
         self._title_label: tk.Label = self.__title_label()
+        self._username_label: tk.Label = self.__label("Username: ")
         self._username_field: tk.Entry = self.__username_field()
+        self._password_label: tk.Label = self.__label("Password: ")
         self._password_field: tk.Entry = self.__password_field()
         self._submit_button: tk.Button = self.__submit_button()
 
@@ -34,7 +36,9 @@ class CreateAccountPageView(BasePageView):
         """
         super().display()
         self._title_label.pack()
+        self._username_label.pack()
         self._username_field.pack()
+        self._password_label.pack()
         self._password_field.pack()
         self._submit_button.pack()
 
@@ -80,9 +84,15 @@ class CreateAccountPageView(BasePageView):
             text="Submit",
             width=25,
             height=5,
-            bg="blue",
-            fg="yellow",
+            bg="Blue",
+            fg="Black",
             command=lambda: self._login_callback(
-                self._username_entry, self._password_entry
+                self._username_entry.get(), self._password_entry.get()
             ),
         )
+
+    def __label(self, message: str) -> tk.Label:
+        """
+        Creates label to display the game's score.
+        """
+        return tk.Label(self._frame, text=message)
