@@ -10,7 +10,7 @@ class CreateAccountServerRequest(BaseServerRequest):
         """
         Create server request for creating account.
         :param account:    the account created for the user with preferences and elo initialized
-        :param password:    the password that the user gives in
+        :param password:    the encrypted password that the user gives in
         """
         super().__init__()
         self._response_schema = create_account_server_schema
