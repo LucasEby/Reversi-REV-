@@ -87,8 +87,12 @@ class AI(Player):
         position_weight: int = self.__apply_weight_to_pos(
             row=row, col=col, board_size=board_size
         )
-        cs_state_1: CellState = CellState.player1 if self.__ai_player == 1 else CellState.player2
-        cs_state_2: CellState = CellState.player2 if self.__ai_player == 1 else CellState.player1
+        cs_state_1: CellState = (
+            CellState.player1 if self.__ai_player == 1 else CellState.player2
+        )
+        cs_state_2: CellState = (
+            CellState.player2 if self.__ai_player == 1 else CellState.player1
+        )
         for row2 in range(0, board_size):
             for col2 in range(0, board_size):
                 if board_state[row][col] == cs_state_1:
