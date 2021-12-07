@@ -102,7 +102,7 @@ class PickGamePageController(HomeButtonPageController):
         """
         self._view.destroy()
         ai: AI = AI()
-        ai.difficulty = 1
+        ai.difficulty = 0
         game_manager = GameManager(
             Player(self._main_user),
             ai,

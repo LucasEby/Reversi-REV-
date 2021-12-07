@@ -81,6 +81,9 @@ class PlayGamePageController(BasePageController):
         self._view.display()
         self._game_manager.make_move()
         self._view.display()
+        if self._game.is_game_over():
+            self.__end_game()
+            return
 
     def __execute_task_forfeit(self) -> None:
         """
