@@ -105,9 +105,7 @@ class PlayGamePageController(BasePageController):
         Saves an active game in the server
         """
         try:
-            server_request: SaveGameServerRequest = SaveGameServerRequest(
-                self._game
-            )
+            server_request: SaveGameServerRequest = SaveGameServerRequest(self._game)
             server_request.send()
             start_time: float = time.time()
             while server_request.is_response_success() is None:

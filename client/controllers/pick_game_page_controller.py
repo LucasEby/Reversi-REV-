@@ -159,7 +159,6 @@ class PickGamePageController(HomeButtonPageController):
             # TODO: Notify view of server error
             print(e)
 
-
     def __get_saved_game_for_resuming(
         self,
     ) -> Union[GameManager, UpdatedGameInfo, None]:
