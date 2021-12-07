@@ -46,7 +46,9 @@ class CreateAccountPageController(HomeButtonPageController):
         Notifies upper level to create a new account and login that account
         """
         username, password = next_task_info
-        account: Account = Account(username=username, elo=self._DEFAULT_ELO, account_id=0)
+        account: Account = Account(
+            username=username, elo=self._DEFAULT_ELO, account_id=0
+        )
         # Create an account in the database
         try:
             server_request: CreateAccountServerRequest = CreateAccountServerRequest(

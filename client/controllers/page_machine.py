@@ -137,6 +137,11 @@ class PageMachine:
         )
 
     def login_callback(self, user: User):
+        """
+        Goes to play a different game mode
+
+        :param user: The user in the application
+        """
         self.current_page_controller = PickGamePageController(
             go_home_callback=self.go_home_callback,
             game_picked_callback=self.game_picked_callback,
