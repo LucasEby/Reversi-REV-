@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 import time
 
 from client.controllers.home_button_page_controller import HomeButtonPageController
@@ -127,7 +127,7 @@ class EndGamePageController(HomeButtonPageController):
         )
 
         # Create game in database if necessary
-        if self._game_manager.game.save:
+        if new_game_manager.game.save:
             try:
                 server_request: CreateGameServerRequest = CreateGameServerRequest(
                     game_manager=new_game_manager
@@ -141,6 +141,9 @@ class EndGamePageController(HomeButtonPageController):
                         )
                 if server_request.is_response_success() is False:
                     raise ConnectionError("Server could not properly create game")
+                game_id: Optional[int] = server_request.get_game_id()
+                if game_id is not None:
+                    new_game_manager.game.set_id(game_id)
             except ConnectionError as e:
                 # TODO: Notify view of server error
                 print(e)

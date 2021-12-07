@@ -1,6 +1,6 @@
 import random
 import time
-from typing import Callable, Union
+from typing import Callable, Union, Optional
 
 from client.controllers.home_button_page_controller import HomeButtonPageController
 from client.server_comms.create_game_server_request import CreateGameServerRequest
@@ -84,7 +84,7 @@ class PickGamePageController(HomeButtonPageController):
         """
         self._view.destroy()
         ai: AI = AI()
-        ai.set_difficulty(1)
+        ai.difficulty = 1
         game_manager = GameManager(
             Player(self._main_user),
             ai,
@@ -152,9 +152,13 @@ class PickGamePageController(HomeButtonPageController):
                     )
             if server_request.is_response_success() is False:
                 raise ConnectionError("Server could not properly create game")
+            game_id: Optional[int] = server_request.get_game_id()
+            if game_id is not None:
+                game_manager.game.set_id(game_id)
         except ConnectionError as e:
             # TODO: Notify view of server error
             print(e)
+
 
     def __get_saved_game_for_resuming(
         self,
