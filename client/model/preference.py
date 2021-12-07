@@ -11,10 +11,10 @@ class Preference:
 
     def __init__(self) -> None:
         self.__board_size: int = 8
-        self.__board_color: Color = Color.GREEN
-        self.__my_disk_color: Color = Color.WHITE
-        self.__opp_disk_color: Color = Color.BLACK
-        self.__line_color: Color = Color.BLACK
+        self.__board_color: str = "green"
+        self.__my_disk_color: str = "white"
+        self.__opp_disk_color: str = "black"
+        self.__line_color: str = "black"
         self.__rule: AbstractRule = StandardRule()
         self.__tile_move_confirmation: bool = True
 
@@ -43,14 +43,7 @@ class Preference:
         :return:        False if the color is the same as other components in the game; True if color changed
                         successfully
         """
-        record: Color = self.__board_color
-        self.__board_color = color
-
-        # check redundancy
-        if not self._check_color_validity():
-            self.__board_color = record
-            return False
-
+        self.__board_color = str(color)
         return True
 
     def get_board_color(self) -> str:
@@ -58,7 +51,7 @@ class Preference:
         Get the color of the board.
         :return:    the color of the base board
         """
-        return str(self.__board_color.value)
+        return str(self.__board_color)
 
     def set_my_disk_color(self, color: Color) -> bool:
         """
@@ -67,14 +60,7 @@ class Preference:
         :return:        False if the color is the same as other components in the game; True if color changed
                         successfully
         """
-        record: Color = self.__my_disk_color
-        self.__my_disk_color = color
-
-        # check redundancy
-        if not self._check_color_validity():
-            self.__my_disk_color = record
-            return False
-
+        self.__my_disk_color = str(color)
         return True
 
     def get_my_disk_color(self) -> str:
@@ -82,7 +68,7 @@ class Preference:
         Get the color of the disk using by the user.
         :return:    the color the user's disk
         """
-        return str(self.__my_disk_color.value)
+        return str(self.__my_disk_color)
 
     def set_opp_disk_color(self, color: Color) -> bool:
         """
@@ -91,14 +77,7 @@ class Preference:
         :return:        False if the color is the same as other components in the game; True if color changed
                         successfully
         """
-        record: Color = self.__opp_disk_color
-        self.__opp_disk_color = color
-
-        # check redundancy
-        if not self._check_color_validity():
-            self.__opp_disk_color = record
-            return False
-
+        self.__opp_disk_color = str(color)
         return True
 
     def get_opp_disk_color(self) -> str:
@@ -106,7 +85,7 @@ class Preference:
         Get the color of the disk shown on the board as opponent.
         :return:    the color of opponent's disk
         """
-        return str(self.__opp_disk_color.value)
+        return str(self.__opp_disk_color)
 
     def set_line_color(self, color: Color) -> bool:
         """
@@ -115,14 +94,7 @@ class Preference:
         :return:        False if the color is the same as other components in the game; True if color changed
                         successfully
         """
-        record: Color = self.__line_color
-        self.__line_color = color
-
-        # check redundancy
-        if not self._check_color_validity():
-            self.__line_color = record
-            return False
-
+        self.__line_color = str(color)
         return True
 
     def get_line_color(self) -> str:
@@ -130,7 +102,7 @@ class Preference:
         Get the color of the lines in the board.
         :return:    the color of the lines in the board
         """
-        return str(self.__line_color.value)
+        return str(self.__line_color)
 
     def set_rule(self, rule: AbstractRule) -> None:
         """

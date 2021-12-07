@@ -129,6 +129,14 @@ credential_check_server_schema = Schema(
         "success": bool,
         "encrypted_password": str,
         "account_id": int,
+        "elo": int,
+        "pref_board_length": int,
+        "pref_board_color": str,
+        "pref_disk_color": str,
+        "pref_opp_disk_color": str,
+        "pref_line_color": str,
+        "pref_rules": str,
+        "pref_tile_move_confirmation": bool,
     }
 )
 
