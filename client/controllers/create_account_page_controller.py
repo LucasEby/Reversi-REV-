@@ -1,11 +1,18 @@
 from typing import Callable
 import tkinter as tk
+import time
+
 from client.controllers.home_button_page_controller import HomeButtonPageController
+from client.model.account import Account
 from client.views.create_account_page_view import CreateAccountPageView
 from client.model.user import User
 
 
 class CreateAccountPageController(HomeButtonPageController):
+
+    _CREATE_ACCOUNT_TIMEOUT_SEC: float = 5
+    _DEFAULT_ELO: int = 500
+
     def __init__(
         self,
         go_home_callback: Callable[[], None],
@@ -40,7 +47,29 @@ class CreateAccountPageController(HomeButtonPageController):
         """
         Notifies upper level to create a new account and login that account
         """
-        u_name, p_word = next_task_info
-        # ADD SERVER COMM FOR MAKING NEW USER
-        self.__login_callback(User(str(u_name)))
+        username, password = next_task_info
+        account: Account = Account(username=username, elo=self._DEFAULT_ELO, account_id=0)
+        # Create an account in the database
+        try:
+            server_request: CreateAccountServerRequest = CreateAccountServerRequest(
+                account, password
+            )
+            server_request.send()
+            start_time: float = time.time()
+            while server_request.is_response_success() is None:
+                if time.time() - start_time > self._CREATE_ACCOUNT_TIMEOUT_SEC:
+                    raise ConnectionError(
+                        "Server unresponsive. Account could not be created"
+                    )
+            if server_request.is_response_success() is False:
+                raise ConnectionError("Server could not properly create account")
+            else:
+                account = Account(
+                    username, self._DEFAULT_ELO, server_request.get_account_id()
+                )
+        except ConnectionError as e:
+            # TODO: Notify view of server error
+            print(e)
+
+        self.__login_callback(account)
         self.__view.destroy()
