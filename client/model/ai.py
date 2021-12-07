@@ -53,7 +53,7 @@ class AI(Player):
         half: int = int(board_size / 2)
         if (row == 0 or row == board_edge) and (col == 0 or col == board_edge):
             # position is located in the corner.
-            position_weight = 1000
+            position_weight = 10
         elif (row >= board_edge - 1 or row <= 1) and (
             row >= board_edge - 1 or col <= 1
         ):
@@ -95,7 +95,7 @@ class AI(Player):
             CellState.player2 if self.__ai_player == 1 else CellState.player1
         )
         for row2 in range(0, board_size):
-            for col2 in range(0, board_size):
+           for col2 in range(0, board_size):
                 if board_state[row][col] == cs_state_1:
                     position_weight += self.__apply_weight_to_pos(
                         row=row2, col=col2, board_size=board_size
@@ -146,6 +146,7 @@ class AI(Player):
         calculating the human player's move.
         returns: an integer that represents the score of the end node.
         """
+
         if game.is_game_over():
             if game.get_winner() == 1:
                 return -int(sys.maxsize)
@@ -165,7 +166,7 @@ class AI(Player):
                     if (
                         (board_state[row][col] == CellState.empty)
                         and valid_moves[row][col]
-                        and (depth <= self._difficulty)
+                        and (depth < self._difficulty)
                     ):
                         copied_game = copy.deepcopy(game)
                         copied_game.place_tile((row, col))
@@ -186,7 +187,7 @@ class AI(Player):
                     if (
                         (board_state[row][col] == CellState.empty)
                         and valid_moves[row][col]
-                        and (depth <= self._difficulty)
+                        and (depth < self._difficulty)
                     ):
                         copied_game = copy.deepcopy(game)
                         copied_game.place_tile((row, col))
@@ -197,7 +198,7 @@ class AI(Player):
                     ][col]:
                         # we're at the terminal point that we want to go to.
                         # Negative was put here on purpose:
-                        score = -self.__weight_pos(row=row, col=col, game=game)
+                        score = self.__weight_pos(row=row, col=col, game=game)
                         best_score = min(score, best_score)
             return best_score
 
