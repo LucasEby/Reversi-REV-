@@ -110,5 +110,5 @@ class PageMachine:
             game_picked_callback=self.game_picked_callback,
             go_home_callback=self.go_home_callback,
             main_user=main_user,
-            manage_preferences_callback=self.manage_preferences_callback
+            manage_preferences_callback=self.manage_preferences_callback,
         )

@@ -14,11 +14,12 @@ class ManagePreferencesPageView(HomeButtonPageView):
     The class represents the view for Manage Preferences Page. It will display the preference choice for the given user.
     """
 
-    def __init__(self,
-                 go_home_callback: Callable[[], None],
-                 user: User,
-                 set_preferences_cb: Callable[[Preference], None]
-            ) -> None:
+    def __init__(
+        self,
+        go_home_callback: Callable[[], None],
+        user: User,
+        set_preferences_cb: Callable[[Preference], None],
+    ) -> None:
         """
         Construct a new ManagePreferencesPageView with given user object.
 
@@ -26,17 +27,29 @@ class ManagePreferencesPageView(HomeButtonPageView):
         :param user: the user object
         """
         super().__init__(go_home_callback=go_home_callback)
-        self._color_options: List[tk.StringVar] = [Color.BLACK.value, Color.WHITE.value, Color.RED.value, Color.ORANGE.value,
-                                              Color.YELLOW.value, Color.GREEN.value, Color.BLUE.value, Color.PURPLE.value]
-        self._rule_options: [tk.StringVar] = ["Standard"]
+        self._color_options: List[str] = [
+            Color.BLACK.value,
+            Color.WHITE.value,
+            Color.RED.value,
+            Color.ORANGE.value,
+            Color.YELLOW.value,
+            Color.GREEN.value,
+            Color.BLUE.value,
+            Color.PURPLE.value,
+        ]
+        self._rule_options: List[str] = ["Standard"]
         self._rule: AbstractRule = StandardRule()
         self._board_size_label = tk.Label(self._frame, text="Board size: ")
-        self._board_size_box: tk.Spinbox = self.__board_size_spin_box(from_=4, to=12, increment=2)
+        self._board_size_box: tk.Spinbox = self.__board_size_spin_box(
+            from_=4, to=12, increment=2
+        )
         self._board_color_label = tk.Label(self._frame, text="Board color: ")
         self._board_color_menu: tk.OptionMenu = self.__board_color()
         self._your_disk_color_label = tk.Label(self._frame, text="Your Disk Color: ")
         self._main_user_disk_color_menu: tk.OptionMenu = self.__main_user_disk_color()
-        self._opponent_disk_color_label = tk.Label(self._frame, text="Your opponent's Disk Color: ")
+        self._opponent_disk_color_label = tk.Label(
+            self._frame, text="Your opponent's Disk Color: "
+        )
         self._opponent_disk_color_menu: tk.OptionMenu = self.__opponent_disk_color()
         self._change_rules_label = tk.Label(self._frame, text="Change Rules: ")
         self._change_rules_menu: tk.OptionMenu = self.__change_rules()
@@ -62,12 +75,19 @@ class ManagePreferencesPageView(HomeButtonPageView):
         self._change_rules_menu.pack()
         self._set_preferences_btn.pack()
 
-    def __board_size_spin_box(self, from_: float, to: float, increment: float) -> tk.Spinbox:
+    def __board_size_spin_box(
+        self, from_: float, to: float, increment: float
+    ) -> tk.Spinbox:
         """
         Creates a spinbox for the preferences page
         """
-        return tk.Spinbox(self._frame, from_=from_, to=to, increment=increment,
-                          command=lambda: self._handle_spinbox(self._board_size_box.get()))
+        return tk.Spinbox(
+            self._frame,
+            from_=from_,
+            to=to,
+            increment=increment,
+            command=lambda: self._handle_spinbox(self._board_size_box.get()),
+        )
 
     def __board_color(self) -> tk.OptionMenu:
         """
@@ -75,8 +95,12 @@ class ManagePreferencesPageView(HomeButtonPageView):
         """
         variable = tk.StringVar()
         variable.set(self._color_options[3])
-        return tk.OptionMenu(self._frame, variable, *self._color_options,
-                             command=lambda: self._handle_board_color(variable.get()))
+        return tk.OptionMenu(
+            self._frame,
+            variable,
+            *self._color_options,
+            command=lambda: self._handle_board_color(variable.get())
+        )
 
     def __main_user_disk_color(self) -> tk.OptionMenu:
         """
@@ -84,8 +108,12 @@ class ManagePreferencesPageView(HomeButtonPageView):
         """
         variable = tk.StringVar()
         variable.set(self._color_options[4])
-        return tk.OptionMenu(self._frame, variable, *self._color_options,
-                             command=lambda: self._handle_main_user_disk_color(variable.get()))
+        return tk.OptionMenu(
+            self._frame,
+            variable,
+            *self._color_options,
+            command=lambda: self._handle_main_user_disk_color(variable.get())
+        )
 
     def __opponent_disk_color(self) -> tk.OptionMenu:
         """
@@ -93,8 +121,12 @@ class ManagePreferencesPageView(HomeButtonPageView):
         """
         variable = tk.StringVar()
         variable.set(self._color_options[2])
-        return tk.OptionMenu(self._frame, variable, *self._color_options,
-                             command=lambda: self._handle_opponent_disk_color(variable.get()))
+        return tk.OptionMenu(
+            self._frame,
+            variable,
+            *self._color_options,
+            command=lambda: self._handle_opponent_disk_color(variable.get())
+        )
 
     def __change_rules(self) -> tk.OptionMenu:
         """
@@ -102,8 +134,12 @@ class ManagePreferencesPageView(HomeButtonPageView):
         """
         variable = tk.StringVar()
         variable.set(self._rule_options[0])
-        return tk.OptionMenu(self._frame, variable, *self._rule_options,
-                             command=lambda: self._handle_rules(variable.get()))
+        return tk.OptionMenu(
+            self._frame,
+            variable,
+            *self._rule_options,
+            command=lambda: self._handle_rules(variable.get())
+        )
 
     def __set_preferences(self) -> tk.Button:
         """
@@ -157,8 +193,12 @@ class ManagePreferencesPageView(HomeButtonPageView):
         if self._rules == "StandardRule":
             self._chosen_rule: AbstractRule = StandardRule()
             self.new_preference.set_rule(self._chosen_rule)
-        self.new_preference.set_opp_disk_color(self._convert_color(self._opponent_disk_color))
-        self.new_preference.set_my_disk_color(self._convert_color(self._main_user_disk_color))
+        self.new_preference.set_opp_disk_color(
+            self._convert_color(self._opponent_disk_color)
+        )
+        self.new_preference.set_my_disk_color(
+            self._convert_color(self._main_user_disk_color)
+        )
         self.new_preference.set_board_color(self._convert_color(self._board_color))
         self.new_preference.set_board_size(self._board_size)
         self._set_preferences_cb(self.new_preference)

@@ -38,13 +38,15 @@ class ManagePreferencesPageController(HomeButtonPageController):
         self._opponent_disk_color: str = user.get_preference().get_opp_disk_color()
         self._chosen_rule: AbstractRule = user.get_preference().get_rule()
         self._end_home_callback: Callable[[], None] = preferences_complete_callback
-        self._back_to_pick_game_callback: Callable[[User], None] = back_to_pick_game_callback
+        self._back_to_pick_game_callback: Callable[
+            [User], None
+        ] = back_to_pick_game_callback
 
         self._user: User = user
         self._view: ManagePreferencesPageView = ManagePreferencesPageView(
             go_home_callback=go_home_callback,
             user=user,
-            set_preferences_cb=self.execute_change_preferences
+            set_preferences_cb=self.execute_change_preferences,
         )
 
     def execute_change_preferences(self, preference: Preference):
