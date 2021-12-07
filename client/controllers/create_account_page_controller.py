@@ -39,8 +39,6 @@ class CreateAccountPageController(HomeButtonPageController):
         """
         Handles login button action from the user by queueing task
         """
-        print(str(u_name))
-        print(str(p_word))
         self.queue(task_name="login_button", task_info=(u_name, p_word))
 
     def __execute_task_login_button(self, next_task_info) -> None:
