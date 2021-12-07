@@ -43,7 +43,7 @@ class HomeButtonPageView(BasePageView):
             text="Go Home",
             padx=padx,
             pady=padx,
-            fg="black",
+            fg="white",
             bg="green",
             command=self._handle_home_button_callback,
         )

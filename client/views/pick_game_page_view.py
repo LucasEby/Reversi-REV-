@@ -56,7 +56,7 @@ class PickGamePageView(HomeButtonPageView):
             text=label,
             padx=20,
             pady=20,
-            fg="black",
+            fg="white",
             bg="green",
             command=command,
         )
