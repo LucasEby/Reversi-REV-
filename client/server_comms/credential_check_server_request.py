@@ -1,4 +1,3 @@
-import json
 from typing import Optional
 
 from schema import Schema  # type: ignore
@@ -11,6 +10,7 @@ class CredentialCheckServerRequest(BaseServerRequest):
     def __init__(self, username: str) -> None:
         """
         Create server request for credential checking.
+
         :param username:    the username that the user gives in
         """
         super().__init__()
@@ -25,6 +25,7 @@ class CredentialCheckServerRequest(BaseServerRequest):
     def is_response_success(self) -> Optional[bool]:
         """
         Returns whether the response was a success
+
         :return: True if success, false if failure, None if response is expected but hasn't arrived yet
         """
         if self._response_success is None:
@@ -37,9 +38,9 @@ class CredentialCheckServerRequest(BaseServerRequest):
     def get_encrypted_password(self) -> Optional[str]:
         """
         Retrieves encrypted password from the server response if available
+
         :return: Encrypted password if available, None otherwise
         """
-        print(self._response_message)
         if self.is_response_success() is True:
             return self._response_message["encrypted_password"]
         else:
@@ -48,6 +49,7 @@ class CredentialCheckServerRequest(BaseServerRequest):
     def get_account_id(self) -> Optional[int]:
         """
         Retrieves account ID from the server response if available
+
         :return: Account ID if available, None otherwise
         """
         if self.is_response_success() is True:

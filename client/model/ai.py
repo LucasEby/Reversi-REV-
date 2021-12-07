@@ -18,7 +18,17 @@ class AI(Player):
         self._difficulty: int = 0
         self.__ai_player = 0
 
-    def set_difficulty(self, difficulty: int) -> None:
+    @property
+    def difficulty(self) -> int:
+        """
+        Returns the current difficulty level of the AI
+
+        :return: an integer difficulty
+        """
+        return self._difficulty
+
+    @difficulty.setter
+    def difficulty(self, difficulty: int) -> None:
         """
         Set the difficulty level of the AI
 
@@ -26,14 +36,6 @@ class AI(Player):
         """
         if difficulty >= 0:
             self._difficulty = difficulty
-
-    def get_difficulty(self) -> int:
-        """
-        Returns the current difficulty level of the AI
-
-        :return: an integer difficulty
-        """
-        return self._difficulty
 
     def place_tile(self, game: Game) -> None:
         """
@@ -68,7 +70,6 @@ class AI(Player):
         else:
             # position is located somewhere else on the board.
             position_weight = 1
-        print("row: " + str(row) + " col: " + str(col) + " " + str(position_weight))
         return position_weight
 
     def __weight_pos(self, row: int, col: int, game: Game) -> int:
@@ -96,11 +97,11 @@ class AI(Player):
         for row2 in range(0, board_size):
             for col2 in range(0, board_size):
                 if board_state[row][col] == cs_state_1:
-                    position_weight = position_weight + self.__apply_weight_to_pos(
+                    position_weight += self.__apply_weight_to_pos(
                         row=row2, col=col2, board_size=board_size
                     )
                 elif board_state[row][col] == cs_state_2:
-                    position_weight = position_weight - self.__apply_weight_to_pos(
+                    position_weight -= self.__apply_weight_to_pos(
                         row=row2, col=col2, board_size=board_size
                     )
         # This is in case we want to add the score as additional weight to the position:

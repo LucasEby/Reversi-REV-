@@ -67,24 +67,8 @@ class PlayGamePageController(BasePageController):
             valid_placement = False
 
         # Save game if it should be saved, waiting for save to be successful with a timeout
-        if valid_placement is True:
-            try:
-                if self._game.save is True:
-                    server_request: SaveGameServerRequest = SaveGameServerRequest(
-                        self._game
-                    )
-                    server_request.send()
-                    start_time: float = time.time()
-                    while server_request.is_response_success() is None:
-                        if time.time() - start_time > self._SAVE_GAME_TIMEOUT_SEC:
-                            raise ConnectionError(
-                                "Server unresponsive. Game could not be saved"
-                            )
-                    if server_request.is_response_success() is False:
-                        raise ConnectionError("Server could not properly save game")
-            except ConnectionError:
-                # TODO: Notify view of server error
-                valid_placement = True
+        if self._game.save is True and valid_placement is True:
+            self.__save_game()
 
         # If game is over, notify parent via callback
         if self._game.is_game_over():
@@ -104,6 +88,9 @@ class PlayGamePageController(BasePageController):
         """
         # Notify model who forfeited and notify parent game is over
         self._game.forfeit(self._game.curr_player)
+
+        # Save game and end
+        self.__save_game()
         self.__end_game()
 
     def __end_game(self) -> None:
@@ -112,3 +99,22 @@ class PlayGamePageController(BasePageController):
         """
         self._view.destroy()
         self._end_game_callback(self._game_manager)
+
+    def __save_game(self):
+        """
+        Saves an active game in the server
+        """
+        try:
+            server_request: SaveGameServerRequest = SaveGameServerRequest(self._game)
+            server_request.send()
+            start_time: float = time.time()
+            while server_request.is_response_success() is None:
+                if time.time() - start_time > self._SAVE_GAME_TIMEOUT_SEC:
+                    raise ConnectionError(
+                        "Server unresponsive. Game could not be saved"
+                    )
+            if server_request.is_response_success() is False:
+                raise ConnectionError("Server could not properly save game")
+        except ConnectionError:
+            # TODO: Notify view of server error
+            pass
