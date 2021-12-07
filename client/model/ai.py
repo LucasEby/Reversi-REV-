@@ -95,7 +95,7 @@ class AI(Player):
             CellState.player2 if self.__ai_player == 1 else CellState.player1
         )
         for row2 in range(0, board_size):
-           for col2 in range(0, board_size):
+            for col2 in range(0, board_size):
                 if board_state[row][col] == cs_state_1:
                     position_weight += self.__apply_weight_to_pos(
                         row=row2, col=col2, board_size=board_size
