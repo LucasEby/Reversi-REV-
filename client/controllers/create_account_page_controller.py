@@ -27,12 +27,11 @@ class CreateAccountPageController(HomeButtonPageController):
         """
         super().__init__(go_home_callback=go_home_callback)
 
-        self.__go_home_callback: Callable[[], None] = go_home_callback
         self.__login_callback: Callable[[User], None] = login_callback
 
         self._task_execute_dict["login_button"] = self.__execute_task_login_button
         self.__view = CreateAccountPageView(
-            go_home_cb=self.__go_home_callback,
+            go_home_cb=self.handle_home_button,
             login_cb=self.__handle_login_button,
         )
 

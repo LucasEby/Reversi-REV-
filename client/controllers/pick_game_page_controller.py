@@ -35,7 +35,6 @@ class PickGamePageController(HomeButtonPageController):
             "manage_preferences"
         ] = self.__execute_change_preferences
 
-        self._go_home_callback: Callable[[], None] = go_home_callback
         self._game_picked_callback: Callable[[GameManager], None] = game_picked_callback
         self._manage_preferences_callback: Callable[
             [User], None
@@ -46,7 +45,7 @@ class PickGamePageController(HomeButtonPageController):
             self._handle_local_multiplayer_game,
             self._handle_online_game,
             self._handle_change_preferences,
-            go_home_callback=go_home_callback,
+            go_home_callback=self.handle_home_button,
             username=self._main_user.get_username(),
         )
 
@@ -112,9 +111,6 @@ class PickGamePageController(HomeButtonPageController):
         self._view.destroy()
         # TODO: Do similar queue as above but add the matchmaker into it somehow
         # need to incorporate the MatchMakerRequest class when it is made.
-        player2_username: str = "Guest"
-        game_obj: Game = Game(self._main_user, User(player2_username))
-        self._game_picked_callback(game_obj, self._main_user)
 
     def __execute_change_preferences(self) -> None:
         """
