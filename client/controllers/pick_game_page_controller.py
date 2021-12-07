@@ -110,4 +110,5 @@ class PickGamePageController(HomeButtonPageController):
         """
         Notifies upper level that preferences should be changed
         """
+        self._view.destroy()
         self._manage_preferences_callback(self._main_user)

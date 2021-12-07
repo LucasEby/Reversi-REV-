@@ -75,6 +75,7 @@ class PageMachine:
         self.current_page_controller = ManagePreferencesPageController(
             go_home_callback=self.go_home_callback,
             preferences_complete_callback=self.go_home_callback,
+            back_to_pick_game_callback=self.back_to_pick_game_callback,
             user=user,
         )
 
@@ -104,4 +105,10 @@ class PageMachine:
             main_user=main_user,
         )
 
-    def change_preferences_callback(self):
+    def back_to_pick_game_callback(self, main_user: User):
+        self.current_page_controller: BasePageController = PickGamePageController(
+            game_picked_callback=self.game_picked_callback,
+            go_home_callback=self.go_home_callback,
+            main_user=main_user,
+            manage_preferences_callback=self.manage_preferences_callback
+        )
