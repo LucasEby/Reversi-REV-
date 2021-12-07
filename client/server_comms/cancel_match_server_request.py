@@ -32,6 +32,8 @@ class CancelMatchServerRequest(BaseServerRequest):
         if self._response_success is None:
             return None
         elif self._response_success is False:
+            print("here self._response_success")
             return False
         else:
+            print("here self._response_message")
             return self._response_message["success"]

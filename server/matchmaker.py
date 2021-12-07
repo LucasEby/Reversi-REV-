@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from threading import Lock, Condition
 from typing import List, Tuple, Callable, Optional
 
@@ -18,11 +19,13 @@ class Matchmaker:
     _singleton = None
     _lock: Lock = Lock()
     _users: List[MatchmakingUser] = []
+    _pref_board_size: Optional[int] = None
     _match_lock: Lock = Lock()
     _db_complete_cv: Condition = Condition()
     _db_matchmaker_create_game_success: Optional[bool] = None
     _db_matchmaker_retrieve_game_success: Optional[bool] = None
-    _retrieved_dbg: Optional[DatabaseGame] = None
+    # _retrieved_dbg: Optional[DatabaseGame] = None
+    _db_game_id: int = 0
 
     def __new__(cls, *args, **kwargs):
         """
@@ -51,6 +54,7 @@ class Matchmaker:
         :param callback: Callback to call when match is successfully made
         """
         with self._match_lock:
+            self._pref_board_size = board_size
             compatible_users: List[Tuple[int, MatchmakingUser]] = [
                 (i, user)
                 for i, user in enumerate(self._users)
@@ -67,23 +71,27 @@ class Matchmaker:
                         callback=callback,
                     )
                 )
+                print("account_id: " + str(account_id))
+                print("pref_rules: " + str(rules))
+                print("pref_board_size: " + str(board_size))
                 return None
 
             # If there are users to match, notify their callbacks
             pop_index, match_user = compatible_users[0]
 
-            # Creating the game with matched user
-            game_id: Optional[int] = self._create_game(
-                account_id, match_user.account_id, rules
-            )
+        # Creating the game with matched user
+        game_id: int = self._create_game(account_id, match_user.account_id, rules)
+        print("after create_game game_id: " + str(game_id))
+        print("after create_game self._db_game_id: " + str(self._db_game_id))
 
-            match_user.callback(game_id, account_id, 2)
-            callback(game_id, match_user.account_id, 1)
+        match_user.callback(game_id, account_id, 2)
+        callback(game_id, match_user.account_id, 1)
 
+        with self._match_lock:
             # Remove matched user from users list
             self._users.pop(pop_index)
 
-    def remove_user(self, account_id: int) -> bool:
+    def remove_user(self, account_id: int) -> None:
         """
         Removes a user from matchmaking consideration.
 
@@ -96,8 +104,19 @@ class Matchmaker:
             for i, user in enumerate(reversed_users):
                 if user.account_id == account_id:
                     self._users.pop(len(self._users) - 1 - i)
-                    return True
-        return False
+
+    def check_user_removed(self, account_id: int) -> bool:
+        """
+
+        :param account_id:
+        :return: True if the user is not in the list anymore; False if the user is still in the waiting list
+        """
+        with self._match_lock:
+            reversed_users = reversed(self._users)
+            for i, user in enumerate(reversed_users):
+                if user.account_id == account_id:
+                    return False
+            return True
 
     def _create_game(
         self, p1_account_id: int, p2_account_id: int, rule: str
@@ -112,9 +131,13 @@ class Matchmaker:
         """
         # Add rule and account ids to DatabaseGame for creating game
         dbg: DatabaseGame = DatabaseGame(
+            complete=False,
+            board_state=self.__matchmaker_initialize_board(),
             rules=rule,
+            next_turn=1,
             p1_account_id=p1_account_id,
             p2_account_id=p2_account_id,
+            last_save=datetime.now(),
         )
         DatabaseManager().create_game(
             callback=self.__matchmaker_game_created_callback,
@@ -123,6 +146,8 @@ class Matchmaker:
         DatabaseManager().get_game(
             key=p1_account_id,
             callback=self.__matchmaker_game_retrieved_callback,
+            last_game=True,
+            get_game_id=True,
         )
 
         # Wait for database manager to complete task
@@ -133,12 +158,15 @@ class Matchmaker:
             ):
                 self._db_complete_cv.wait()
 
+        print("in create_game: " + str(self._db_matchmaker_create_game_success))
+        print("in create_game: " + str(self._db_matchmaker_retrieve_game_success))
+        print("in create_game: " + str(self._db_game_id))
         if (
             self._db_matchmaker_create_game_success
             and self._db_matchmaker_retrieve_game_success
-            and self._retrieved_dbg is not None
+            and self._db_game_id != 0
         ):
-            return self._retrieved_dbg.game_id
+            return self._db_game_id
 
         return None
 
@@ -166,5 +194,16 @@ class Matchmaker:
         with self._db_complete_cv:
             self._db_matchmaker_retrieve_game_success = success
             if success is True:
-                self._retrieved_dbg = dbg
+                self._db_game_id = dbg.game_id
+                print("game_id in matchmaker: " + str(dbg.game_id))
             self._db_complete_cv.notify()
+
+    def __matchmaker_initialize_board(self) -> [[int]]:
+        size: int = self._pref_board_size
+        cells: [[int]] = [[0] * size for _ in range(size)]
+        # initialize the four starting disks at the center of the board
+        cells[size // 2][size // 2 - 1] = 1
+        cells[size // 2 - 1][size // 2] = 1
+        cells[size // 2 - 1][size // 2 - 1] = 2
+        cells[size // 2][size // 2] = 2
+        return cells

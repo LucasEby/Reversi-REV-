@@ -610,7 +610,8 @@ class DatabaseManager:
                 raise DatabaseConnectionException("Database not connected")
             self._db_cursor.execute(query_str, query_args)
             self._db_connection.commit()
-        except Exception:
+        except Exception as e:
+            print(e)
             success = False
         # Callback called with correct success boolean
         request_info.callback(success)
@@ -719,7 +720,8 @@ class DatabaseManager:
                             temp_dbg[i] = result[result_cnt]
                         result_cnt += 1
                 dbg = DatabaseGame(*temp_dbg)
-        except Exception:
+        except Exception as e:
+            print(e)
             success = False
         # Callback called with correct success boolean and database game
         request_info.callback(success, dbg)

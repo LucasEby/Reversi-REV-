@@ -49,7 +49,7 @@ class MatchmakerServerRequest(BaseServerRequest):
         else:
             return None
 
-    def get_opp_username(self) -> Optional[int]:
+    def get_opp_username(self) -> Optional[str]:
         """
         Retrieves opponent's username from the server response if available.
 

@@ -11,6 +11,23 @@ class TestMatchmaking(unittest.TestCase):
     def test_connection(self):
         # Create, connect and disconnect database with no errors
         DatabaseManager().connect_database()
+        DatabaseManager().disconnect_database()
+        # Ensure execution of query no longer works after disconnect
+        with self.assertRaises(Exception):
+            DatabaseManager()._db_cursor.execute("use reversi")
+
+    def test_create_account(self):
+        # Create, connect and disconnect database with no errors
+        DatabaseManager().connect_database()
+
+        DatabaseManager().disconnect_database()
+        # Ensure execution of query no longer works after disconnect
+        with self.assertRaises(Exception):
+            DatabaseManager()._db_cursor.execute("use reversi")
+
+    def test_matchmaking(self):
+        # Create, connect and disconnect database with no errors
+        DatabaseManager().connect_database()
 
         message1: Dict[str, Any] = {
             "protocol_type": "matchmaker",
