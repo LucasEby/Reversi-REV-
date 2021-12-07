@@ -5,8 +5,6 @@ from client.model.user import User
 from client.model.colors import Color
 from client.views.home_button_page_view import HomeButtonPageView
 from client.model.preference import Preference
-from client.model.abstract_rule import AbstractRule
-from client.model.standard_rule import StandardRule
 
 
 class ManagePreferencesPageView(HomeButtonPageView):
@@ -17,16 +15,18 @@ class ManagePreferencesPageView(HomeButtonPageView):
     def __init__(
         self,
         go_home_callback: Callable[[], None],
-        user: User,
         set_preferences_cb: Callable[[Preference], None],
+        user: User,
     ) -> None:
         """
         Construct a new ManagePreferencesPageView with given user object.
 
         :param go_home_callback: Function to call when attempting to go home
         :param user: the user object
+        :param set_preferences_cb: Function to call when going home
         """
         super().__init__(go_home_callback=go_home_callback)
+        self._user = user
         self._color_options: List[str] = [
             Color.BLACK.value,
             Color.WHITE.value,
@@ -37,32 +37,56 @@ class ManagePreferencesPageView(HomeButtonPageView):
             Color.BLUE.value,
             Color.PURPLE.value,
         ]
-        self._rule_options: List[str] = ["Standard"]
-        self._rule: AbstractRule = StandardRule()
+
+        # Set up board size
         self._board_size_label = tk.Label(self._frame, text="Board size: ")
+        self._board_size_var: tk.IntVar = tk.IntVar()
         self._board_size_box: tk.Spinbox = self.__board_size_spin_box(
-            from_=4, to=12, increment=2
+            from_=4, to=20, increment=2, variable=self._board_size_var
         )
-        self._board_color_label = tk.Label(self._frame, text="Board color: ")
-        self._board_color_menu: tk.OptionMenu = self.__board_color()
-        self._your_disk_color_label = tk.Label(self._frame, text="Your Disk Color: ")
-        self._main_user_disk_color_menu: tk.OptionMenu = self.__main_user_disk_color()
-        self._opponent_disk_color_label = tk.Label(
+
+        # Set up board color
+        self._board_color_label: tk.Label = tk.Label(self._frame, text="Board color: ")
+        self._board_color_var: tk.StringVar = tk.StringVar()
+        self._board_color_menu: tk.OptionMenu = self.__board_color(
+            variable=self._board_color_var
+        )
+
+        # Set up user disk color
+        self._your_disk_color_label: tk.Label = tk.Label(
+            self._frame, text="Your Disk Color: "
+        )
+        self._main_user_disk_color_var: tk.StringVar = tk.StringVar()
+        self._main_user_disk_color_menu: tk.OptionMenu = self.__main_user_disk_color(
+            variable=self._main_user_disk_color_var
+        )
+
+        # Set up opp disk color
+        self._opponent_disk_color_label: tk.Label = tk.Label(
             self._frame, text="Your opponent's Disk Color: "
         )
-        self._opponent_disk_color_menu: tk.OptionMenu = self.__opponent_disk_color()
+        self._opp_disk_color_var: tk.StringVar = tk.StringVar()
+        self._opponent_disk_color_menu: tk.OptionMenu = self.__opponent_disk_color(
+            variable=self._opp_disk_color_var
+        )
+
+        # Set up rules
+        self._rule_options: List[str] = ["Standard"]
         self._change_rules_label = tk.Label(self._frame, text="Change Rules: ")
-        self._change_rules_menu: tk.OptionMenu = self.__change_rules()
+        self._change_rules_var: tk.StringVar = tk.StringVar()
+        self._change_rules_menu: tk.OptionMenu = self.__change_rules(
+            variable=self._change_rules_var
+        )
+
         self._set_preferences_btn: tk.Button = self.__set_preferences()
-        self._user = user
         self._set_preferences_cb: Callable[[Preference], None] = set_preferences_cb
-        self.new_preference = Preference()
         self.display()
 
     def display(self) -> None:
         """
         Display the menu for preference. Initial page that display to the user.
         """
+        super().display()
         self._board_size_label.pack()
         self._board_size_box.pack()
         self._board_color_label.pack()
@@ -76,69 +100,62 @@ class ManagePreferencesPageView(HomeButtonPageView):
         self._set_preferences_btn.pack()
 
     def __board_size_spin_box(
-        self, from_: float, to: float, increment: float
+        self, from_: float, to: float, increment: float, variable: tk.IntVar
     ) -> tk.Spinbox:
         """
         Creates a spinbox for the preferences page
         """
+        variable.set(self._user.get_preference().get_board_size())
         return tk.Spinbox(
             self._frame,
             from_=from_,
             to=to,
             increment=increment,
-            command=lambda: self._handle_spinbox(self._board_size_box.get()),
+            textvariable=variable,
         )
 
-    def __board_color(self) -> tk.OptionMenu:
+    def __board_color(self, variable: tk.StringVar) -> tk.OptionMenu:
         """
         Creates an option menu to give the user the choice of a wide variety of options
         """
-        variable = tk.StringVar()
-        variable.set(self._color_options[3])
+        variable.set(self._user.get_preference().get_board_color())
         return tk.OptionMenu(
             self._frame,
             variable,
             *self._color_options,
-            command=lambda: self._handle_board_color(variable.get())
         )
 
-    def __main_user_disk_color(self) -> tk.OptionMenu:
+    def __main_user_disk_color(self, variable: tk.StringVar) -> tk.OptionMenu:
         """
         Creates an option menu to give the user the choice of a wide variety of options
         """
-        variable = tk.StringVar()
-        variable.set(self._color_options[4])
+        variable.set(self._user.get_preference().get_my_disk_color())
         return tk.OptionMenu(
             self._frame,
             variable,
             *self._color_options,
-            command=lambda: self._handle_main_user_disk_color(variable.get())
         )
 
-    def __opponent_disk_color(self) -> tk.OptionMenu:
+    def __opponent_disk_color(self, variable: tk.StringVar) -> tk.OptionMenu:
         """
         Creates an option menu to give the user the choice of a wide variety of options
         """
-        variable = tk.StringVar()
-        variable.set(self._color_options[2])
+        variable.set(self._user.get_preference().get_opp_disk_color())
         return tk.OptionMenu(
             self._frame,
             variable,
             *self._color_options,
-            command=lambda: self._handle_opponent_disk_color(variable.get())
         )
 
-    def __change_rules(self) -> tk.OptionMenu:
+    def __change_rules(self, variable: tk.StringVar) -> tk.OptionMenu:
         """
         Creates an option menu to give the user the choice of a wide variety of options
         """
-        variable = tk.StringVar()
-        variable.set(self._rule_options[0])
+        variable.set(str(self._user.get_preference().get_rule()))
         return tk.OptionMenu(
             self._frame,
             variable,
             *self._rule_options,
-            command=lambda: self._handle_rules(variable.get())
         )
 
     def __set_preferences(self) -> tk.Button:
@@ -155,85 +172,30 @@ class ManagePreferencesPageView(HomeButtonPageView):
             command=self._handle_set_preferences,
         )
 
-    def _handle_spinbox(self, board_size: int):
-        """
-        Handles the operations of the board size spinbox.
-        """
-        self._board_size = board_size
-
-    def _handle_board_color(self, color: str):
-        """
-        Handles the operations of the board color option menu
-        """
-        self._board_color = color
-
-    def _handle_main_user_disk_color(self, color: str):
-        """
-        Handles the operations of the main user disk color option menu
-        """
-        self._main_user_disk_color = color
-
-    def _handle_opponent_disk_color(self, color: str):
-        """
-        Handles the operation of the opponent disk color option menu
-        """
-        self._opponent_disk_color = color
-
-    def _handle_rules(self, chosen_rule: str):
-        """
-        Handles the operation of the rules option menu
-        """
-        self._rules = chosen_rule
-
     def _handle_set_preferences(self):
         """
         Handles the operation of the preferences button.
         """
-
-        if self._rules == "StandardRule":
-            self._chosen_rule: AbstractRule = StandardRule()
-            self.new_preference.set_rule(self._chosen_rule)
-        self.new_preference.set_opp_disk_color(
-            self._convert_color(self._opponent_disk_color)
-        )
-        self.new_preference.set_my_disk_color(
-            self._convert_color(self._main_user_disk_color)
-        )
-        self.new_preference.set_board_color(self._convert_color(self._board_color))
-        self.new_preference.set_board_size(self._board_size)
-        self._set_preferences_cb(self.new_preference)
+        new_pref: Preference = Preference()
+        new_pref.set_board_size(self._board_size_var.get())
+        new_pref.set_board_color(self._board_color_var.get())
+        new_pref.set_my_disk_color(self._main_user_disk_color_var.get())
+        new_pref.set_opp_disk_color(self._opp_disk_color_var.get())
+        self._set_preferences_cb(new_pref)
 
     def destroy(self) -> None:
         """
         Destroy all widgets in this view
         """
         super().destroy()
+        self._board_size_label.destroy()
         self._board_size_box.destroy()
+        self._board_color_label.destroy()
         self._board_color_menu.destroy()
+        self._your_disk_color_label.destroy()
         self._main_user_disk_color_menu.destroy()
+        self._opponent_disk_color_label.destroy()
         self._opponent_disk_color_menu.destroy()
+        self._change_rules_label.destroy()
         self._change_rules_menu.destroy()
-
-    @staticmethod
-    def _convert_color(color: str) -> Color:
-        """
-        Used to convert the color strings into Color Enums
-
-        :param color represents a color string
-        """
-        if color == "black":
-            return Color.BLACK
-        elif color == "white":
-            return Color.WHITE
-        elif color == "red":
-            return Color.RED
-        elif color == "orange":
-            return Color.ORANGE
-        elif color == "yellow":
-            return Color.YELLOW
-        elif color == "green":
-            return Color.GREEN
-        elif color == "blue":
-            return Color.BLUE
-        else:
-            return Color.PURPLE
+        self._set_preferences_btn.destroy()

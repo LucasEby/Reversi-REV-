@@ -120,7 +120,7 @@ class PlayGamePageView(BasePageView):
                     row
                 ][col]:
                     self._board_buttons[row][col].configure(
-                        bg="green",
+                        bg=self._preferences.get_board_color(),
                         fg=self._game_color,
                         state=tk.DISABLED,
                     )
