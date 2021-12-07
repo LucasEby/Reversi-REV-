@@ -11,6 +11,7 @@ class PickGamePageView(HomeButtonPageView):
         online_callback: Callable[[], None],
         change_preferences_callback: Callable[[], None],
         go_home_callback: Callable[[], None],
+        username: str,
     ) -> None:
         """
         Creates the button window with the 3 buttons: a local single player button, a local multiplayer button,
@@ -24,6 +25,9 @@ class PickGamePageView(HomeButtonPageView):
         self._change_preferences_callback: Callable[
             [], None
         ] = change_preferences_callback
+        self._label_welcome: tk.Label = tk.Label(
+            self._frame, text=f"Hi, {username}!", font=("Arial", 18)
+        )
         self.__btn_local_single_player: tk.Button = self.__create_pick_game_button(
             label="Play local single player game", command=self._local_single_callback
         )
@@ -63,16 +67,18 @@ class PickGamePageView(HomeButtonPageView):
         """
         super().display()
         # Stick the buttons on the window
-        self.__btn_local_single_player.pack()
-        self.__btn_local_multiplayer_game.pack()
-        self.__btn_online_game.pack()
-        self.__btn_change_pref.pack()
+        self._label_welcome.pack()
+        self.__btn_local_single_player.pack(fill="x")
+        self.__btn_local_multiplayer_game.pack(fill="x")
+        self.__btn_online_game.pack(fill="x")
+        self.__btn_change_pref.pack(fill="x")
 
     def destroy(self) -> None:
         """
         Destroys the buttons
         """
         super().destroy()
+        self._label_welcome.destroy()
         self.__btn_local_single_player.destroy()
         self.__btn_local_multiplayer_game.destroy()
         self.__btn_online_game.destroy()
