@@ -93,8 +93,8 @@ class PickGamePageController(HomeButtonPageController):
             save=isinstance(self._main_user, Account),
         )
 
-        # Create game in database if main user is an account
-        if isinstance(self._main_user, Account):
+        # Create game in database if game should be saved
+        if game_manager.game.save:
             self.__create_game_in_database(game_manager)
 
         self._game_picked_callback(game_manager)
@@ -112,8 +112,8 @@ class PickGamePageController(HomeButtonPageController):
             save=isinstance(self._main_user, Account),
         )
 
-        # Create game in database if player 1 has an account
-        if isinstance(self._main_user, Account):
+        # Create game in database if game should be saved
+        if game_manager.game.save:
             self.__create_game_in_database(game_manager)
 
         self._game_picked_callback(game_manager)
@@ -140,7 +140,9 @@ class PickGamePageController(HomeButtonPageController):
         :param game_manager: The Game Manager to create with
         """
         try:
-            server_request: CreateGameServerRequest = CreateGameServerRequest(game_manager=game_manager)
+            server_request: CreateGameServerRequest = CreateGameServerRequest(
+                game_manager=game_manager
+            )
             server_request.send()
             start_time: float = time.time()
             while server_request.is_response_success() is None:
@@ -154,7 +156,9 @@ class PickGamePageController(HomeButtonPageController):
             # TODO: Notify view of server error
             print(e)
 
-    def __get_saved_game_for_resuming(self) -> Union[Game, UpdatedGameInfo, None]:
+    def __get_saved_game_for_resuming(
+        self,
+    ) -> Union[GameManager, UpdatedGameInfo, None]:
         if isinstance(self._main_user, Account) and self._main_user.id is not None:
             try:
                 server_request: GetGameServerRequest = GetGameServerRequest(

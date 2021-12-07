@@ -19,7 +19,6 @@ class Game:
         rules: AbstractRule,
         p1_first_move: bool = True,
         save: bool = False,
-        saved_board: Board = None,
     ) -> None:
         """
         Initializes a game with the given parameters
@@ -144,6 +143,7 @@ class Game:
     def valid_moves_exist(self) -> bool:
         """
         Return whether any valid moves exist for the active player
+
         :return: Moves exist (true) or not (false)
         """
         return any(
@@ -185,13 +185,15 @@ class Game:
     def get_id(self) -> Optional[int]:
         """
         Returns ID of game
-        : return: ID of game
+
+        :return: ID of game
         """
         return self._id
 
     def set_id(self, id: int) -> None:
         """
         Sets the ID of the game
+
         :param id: ID of the game
         """
         self._id = id
@@ -199,6 +201,7 @@ class Game:
     def get_curr_player(self) -> int:
         """
         Returns the current player (next to play)
+
         :return: Next player as an integer
         """
         return self.curr_player

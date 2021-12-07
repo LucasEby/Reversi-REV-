@@ -5,6 +5,7 @@ from client.controllers.home_button_page_controller import HomeButtonPageControl
 from client.model.account import Account
 from client.model.calculate_new_elos import CalculateNewELOs
 from client.model.user import User
+from client.server_comms.create_game_server_request import CreateGameServerRequest
 from client.server_comms.update_elo_server_request import UpdateELOServerRequest
 from client.views.end_game_page_view import EndGamePageView
 from client.model.game_manager import GameManager
@@ -12,7 +13,7 @@ from client.model.player import Player
 
 
 class EndGamePageController(HomeButtonPageController):
-    _UPDATE_ELO_TIMEOUT_SEC: float = 5
+    _SERVER_TIMEOUT_SEC: float = 5
 
     def __init__(
         self,
@@ -76,7 +77,7 @@ class EndGamePageController(HomeButtonPageController):
                 server_request1.send()
                 start_time: float = time.time()
                 while server_request1.is_response_success() is None:
-                    if time.time() - start_time > self._UPDATE_ELO_TIMEOUT_SEC:
+                    if time.time() - start_time > self._SERVER_TIMEOUT_SEC:
                         raise ConnectionError(
                             "Server unresponsive. P1 ELO could not be updated"
                         )
@@ -89,7 +90,7 @@ class EndGamePageController(HomeButtonPageController):
                 server_request2.send()
                 start_time = time.time()
                 while server_request2.is_response_success() is None:
-                    if time.time() - start_time > self._UPDATE_ELO_TIMEOUT_SEC:
+                    if time.time() - start_time > self._SERVER_TIMEOUT_SEC:
                         raise ConnectionError(
                             "Server unresponsive. P2 ELO could not be updated"
                         )
@@ -119,8 +120,31 @@ class EndGamePageController(HomeButtonPageController):
         old_p1: Player = self._game_manager.get_player1()
         old_p2: Player = self._game_manager.get_player2()
         new_game_manager = GameManager(
-            player1=old_p1, player2=old_p2, main_user=self._main_user
+            player1=old_p1,
+            player2=old_p2,
+            main_user=self._main_user,
+            save=self._game_manager.game.save,
         )
+
+        # Create game in database if necessary
+        if self._game_manager.game.save:
+            try:
+                server_request: CreateGameServerRequest = CreateGameServerRequest(
+                    game_manager=new_game_manager
+                )
+                server_request.send()
+                start_time: float = time.time()
+                while server_request.is_response_success() is None:
+                    if time.time() - start_time > self._SERVER_TIMEOUT_SEC:
+                        raise ConnectionError(
+                            "Server unresponsive. Game could not be created"
+                        )
+                if server_request.is_response_success() is False:
+                    raise ConnectionError("Server could not properly create game")
+            except ConnectionError as e:
+                # TODO: Notify view of server error
+                print(e)
+
         self._play_again_callback(new_game_manager)
 
     def __execute_task_play_different_mode(self) -> None:
