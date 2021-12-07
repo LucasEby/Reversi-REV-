@@ -59,9 +59,9 @@ class GetGameServerRequest(BaseServerRequest):
                 account2: Optional[Dict[str, Any]] = self._response_message["account2"]
             else:
                 account2 = None
-            p1: Optional[Account] = None
-            p2: Optional[Account] = None
             ai_difficulty: int = 0
+            p1: User = User("p1")
+            p2: User = User("p2")
             new_game_manager: Optional[GameManager] = None
             if account1 is not None:
                 p1_id: int = account1["p1_account_id"]

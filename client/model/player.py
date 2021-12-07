@@ -1,11 +1,11 @@
-from typing import Optional, Tuple
+from typing import Tuple
 
 from client.model.user import User
 from client.model.game import Game
 
 
 class Player:
-    def __init__(self, user: User = None) -> None:
+    def __init__(self, user: User) -> None:
         self._user: User = user
         self.__next_move: Tuple[int, int] = (0, 0)
 

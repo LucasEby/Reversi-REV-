@@ -7,6 +7,7 @@ import sys
 from client.model.player import Player
 from client.model.game import Game
 from client.model.cell import CellState
+from client.model.account import User
 
 
 class AI(Player):
@@ -14,7 +15,8 @@ class AI(Player):
         """
         Create an AI that can play as a player
         """
-        super().__init__(user=None)
+        user: User = User(username="AI")
+        super().__init__(user)
         self._difficulty: int = 0
         self.__ai_player = 0
 
@@ -25,7 +27,7 @@ class AI(Player):
         :param difficulty: Difficulty level (>0)
         """
         if difficulty >= 0:
-            self._difficulty: int = difficulty
+            self._difficulty = difficulty
 
     def get_difficulty(self) -> int:
         """
@@ -52,11 +54,14 @@ class AI(Player):
         if (row == 0 or row == board_edge) and (col == 0 or col == board_edge):
             # position is located in the corner.
             position_weight = 1000
-        elif (row >= board_edge - 1 or row <= 1) and (row >= board_edge - 1 or col <= 1):
+        elif (row >= board_edge - 1 or row <= 1) and (
+            row >= board_edge - 1 or col <= 1
+        ):
             # position is located next to a corner. This is THE WORST POSITION.
             position_weight = -1000
-        elif ((((row == 0) or (row == board_edge)) and (2 >= col < board_edge - 1))
-            or (((col == 0) or (col == board_edge)) and (2 >= row < board_edge - 1))):
+        elif (((row == 0) or (row == board_edge)) and (2 >= col < board_edge - 1)) or (
+            ((col == 0) or (col == board_edge)) and (2 >= row < board_edge - 1)
+        ):
             # position is located on an edge. It is not a corner and is not next to a corner.
             position_weight = 4
         elif (half - 1 <= row <= half) and (half - 1 <= col <= half):
@@ -81,23 +86,31 @@ class AI(Player):
         board_size = game.board.size
         # position_weight: weight of the position chosen as a result of its location on the board
         board_state: List[List[CellState]] = game.board.get_state()
-        position_weight: int = self.__apply_weight_to_pos(row=row, col=col, board_size=board_size)
+        position_weight: int = self.__apply_weight_to_pos(
+            row=row, col=col, board_size=board_size
+        )
         if self.__ai_player == 1:
             for row2 in range(0, board_size):
                 for col2 in range(0, board_size):
                     if board_state[row][col] == CellState.player1:
-                        position_weight = position_weight + self.__apply_weight_to_pos(row=row2, col=col2, board_size=board_size)
+                        position_weight = position_weight + self.__apply_weight_to_pos(
+                            row=row2, col=col2, board_size=board_size
+                        )
                     elif board_state[row][col] == CellState.player2:
-                        position_weight = position_weight - self.__apply_weight_to_pos(row=row2, col=col2, board_size=board_size)
+                        position_weight = position_weight - self.__apply_weight_to_pos(
+                            row=row2, col=col2, board_size=board_size
+                        )
         elif self.__ai_player == 2:
             for row2 in range(0, board_size):
                 for col2 in range(0, board_size):
                     if board_state[row][col] == CellState.player2:
-                        position_weight = position_weight + self.__apply_weight_to_pos(row=row2, col=col2,
-                                                                                       board_size=board_size)
+                        position_weight = position_weight + self.__apply_weight_to_pos(
+                            row=row2, col=col2, board_size=board_size
+                        )
                     elif board_state[row][col] == CellState.player1:
-                        position_weight = position_weight - self.__apply_weight_to_pos(row=row2, col=col2,
-                                                                                       board_size=board_size)
+                        position_weight = position_weight - self.__apply_weight_to_pos(
+                            row=row2, col=col2, board_size=board_size
+                        )
         # This is in case we want to add the score as additional weight to the position:
         # This variable is in case we need to scale the position_weight:
         # position_weight = position_weight * 10

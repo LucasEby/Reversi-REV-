@@ -80,8 +80,11 @@ class PickGamePageController(HomeButtonPageController):
         ai = AI()
         ai.set_difficulty(1)
         game_manager = GameManager(
-            Player(self._main_user), ai, self._main_user, p1_first_move=bool(random.getrandbits(1)),
-            save=False
+            Player(self._main_user),
+            ai,
+            self._main_user,
+            p1_first_move=bool(random.getrandbits(1)),
+            save=False,
         )
         self._game_picked_callback(game_manager)
 
@@ -91,8 +94,11 @@ class PickGamePageController(HomeButtonPageController):
         """
         self._view.destroy()
         game_manager = GameManager(
-            Player(self._main_user), Player(), self._main_user, p1_first_move=bool(random.getrandbits(1)),
-            save=False
+            Player(self._main_user),
+            Player(),
+            self._main_user,
+            p1_first_move=bool(random.getrandbits(1)),
+            save=False,
         )
         # player2_username: str = "Guest"
         # game_obj: Game = Game(

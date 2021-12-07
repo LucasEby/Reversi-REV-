@@ -1,5 +1,3 @@
-from typing import Optional, Tuple
-
 from client.model.user import User
 from client.model.game import Game
 from client.model.player import Player
@@ -8,7 +6,7 @@ from client.model.player import Player
 class OnlinePlayer(Player):
     def __init__(
         self,
-        user: User = None,
+        user: User,
     ) -> None:
         super().__init__(user=user)
 

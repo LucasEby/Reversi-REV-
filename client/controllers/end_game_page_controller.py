@@ -66,7 +66,9 @@ class EndGamePageController(HomeButtonPageController):
         self._view.destroy()
         old_p1: Player = self._game_manager.get_player1()
         old_p2: Player = self._game_manager.get_player2()
-        new_game_manager = GameManager(player1=old_p1, player2=old_p2, main_user=self._main_user)
+        new_game_manager = GameManager(
+            player1=old_p1, player2=old_p2, main_user=self._main_user
+        )
         self._play_again_callback(new_game_manager)
 
     def __execute_task_play_different_mode(self) -> None:
