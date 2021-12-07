@@ -8,64 +8,81 @@ from client.views.base_page_view import BasePageView
 
 class CreateAccountPageView(BasePageView):
     def __init__(
-        self,
-        go_home_cb: Callable[[], None],
-        frame,
+        self, go_home_cb: Callable[[], None], login_cb: Callable[[str, str], None]
     ) -> None:
         """
-        TODO add proper comment here
+        View to create a new account
         :param go_home_callback: Callback to call when user requested going to the home screen
+        :param login_callback: Callback to handle creating a new account
         """
+        super().__init__(go_home_callback=go_home_cb)
         self._go_home_callback = go_home_cb
+        self._login_callback = login_cb
+        self._username_entry = ""
+        self._password_entry = ""
 
-        self._frame = frame
+        self._title_label: tk.Label = self.__title_label()
+        self._username_field: tk.Entry = self.__username_field()
+        self._password_field: tk.Entry = self.__password_field()
+        self._submit_button: tk.Button = self.__submit_button()
 
-        super().__init__(window=frame)
+        self.display()
 
-    def __display(self) -> None:
+    def display(self) -> None:
         """
-        Packs/Grids the End Game frame and its 5 elements
+        Draws the Create Account window and its elements
         """
-        # TODO: ADD IN THE DISPLAY
-        self._frame.pack()
-        self._frame.lift()
+        super().display()
+        self._title_label.pack()
+        self._username_field.pack()
+        self._password_field.pack()
+        self._submit_button.pack()
+
+    def destroy(self) -> None:
+        """
+        Destroy everything in the Create Account Page
+        """
+        super().destroy()
+        self._title_label.destroy()
+        self._username_field.destroy()
+        self._password_field.destroy()
+        self._submit_button.destroy()
 
     def __title_label(self) -> tk.Label:
         """
-        Prints out the games's name
+        Displays the page's title, "Create an Account"
+        :returns: tkinter label
         """
         return tk.Label(self._frame, text="Create an Account")
 
     def __username_field(self) -> tk.Entry:
         """
         Creates the entry field for the username being attempted
-
-        :returns: tkinter entry object
+        :returns: tkinter entry
         """
-        return tk.Entry(self._topframe, textvariable=self._username_entry)
+        return tk.Entry(self._frame, textvariable=self._username_entry)
 
     def __password_field(self) -> tk.Entry:
         """
-        Creates the entry field for the apssword being attempted
+        Creates the entry field for the password being attempted
 
-        :returns: tkinter entry object
+        :returns: tkinter entry
         """
-        return tk.Entry(self._topframe, textvariable=self._password_entry)
-
-    def __default_preferences(self) -> tk.Entry:
-        # TODO what are the preferences
-        pass
+        return tk.Entry(self._frame, textvariable=self._password_entry)
 
     def __submit_button(self) -> tk.Button:
         """
-        Builds the rematch button
-        TODO: NEED TO PASS THE USERNAME AND PASSWORD TO THE SERVER HERE
+        Creates the button for the password being attempted
+        :returns: tkinter button
         """
         return tk.Button(
-            self._topframe,
+            self._frame,
             text="Submit",
             width=25,
             height=5,
-            # bg="blue",fg="yellow",
-            # command = ?????,
+            bg="blue",
+            fg="yellow",
+            command=lambda: self._login_callback(
+                self._username_entry, self._password_entry
+            ),
         )
