@@ -10,15 +10,12 @@ from common.client_server_protocols import (
     save_preferences_client_schema,
     create_account_client_schema,
     credential_check_client_schema,
-    matchmaker_client_schema,
-    cancel_match_client_schema,
 )
 from server.client_comms.base_client_response import BaseClientResponse
 from server.client_comms.create_game_client_response import CreateGameClientResponse
 from server.client_comms.credential_check_client_response import (
     CredentialCheckClientResponse,
 )
-from server.client_comms.matchmaker_client_response import MatchmakerClientResponse
 from server.client_comms.save_game_client_response import SaveGameClientResponse
 from server.client_comms.save_preferences_client_response import (
     SavePreferencesClientResponse,
@@ -26,7 +23,6 @@ from server.client_comms.save_preferences_client_response import (
 from server.client_comms.get_game_client_response import GetGameClientResponse
 from server.client_comms.get_top_elos_client_response import GetTopELOsClientResponse
 from server.client_comms.update_elo_client_response import UpdateELOClientResponse
-from server.client_comms.cancel_match_client_response import CancelMatchClientResponse
 from server.client_comms.create_account_client_response import (
     CreateAccountClientResponse,
 )
@@ -61,12 +57,6 @@ class ResponseManager:
         credential_check_client_schema.schema[
             "protocol_type"
         ]: CredentialCheckClientResponse.__name__,
-        matchmaker_client_schema.schema[
-            "protocol_type"
-        ]: MatchmakerClientResponse.__name__,
-        cancel_match_client_schema.schema[
-            "protocol_type"
-        ]: CancelMatchClientResponse.__name__,
     }
 
     def __new__(cls, *args, **kwargs):

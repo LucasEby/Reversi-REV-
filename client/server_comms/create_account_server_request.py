@@ -1,7 +1,5 @@
 from typing import Optional
 
-from schema import Schema  # type: ignore
-
 from client.model.account import Account
 from client.server_comms.base_server_request import BaseServerRequest
 from common.client_server_protocols import create_account_server_schema
