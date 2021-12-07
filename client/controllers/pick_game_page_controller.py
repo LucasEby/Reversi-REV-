@@ -8,6 +8,7 @@ from client.model.user import User
 from client.model.game_manager import GameManager
 from client.model.player import Player
 from client.model.ai import AI
+from client.model.account import Account
 
 
 class PickGamePageController(HomeButtonPageController):
@@ -84,7 +85,7 @@ class PickGamePageController(HomeButtonPageController):
             ai,
             self._main_user,
             p1_first_move=bool(random.getrandbits(1)),
-            save=False,
+            save=isinstance(self._main_user, Account),
         )
         self._game_picked_callback(game_manager)
 
@@ -95,17 +96,11 @@ class PickGamePageController(HomeButtonPageController):
         self._view.destroy()
         game_manager = GameManager(
             Player(self._main_user),
-            Player(),
+            Player(user=User(username="Guest")),
             self._main_user,
             p1_first_move=bool(random.getrandbits(1)),
-            save=False,
+            save=isinstance(self._main_user, Account),
         )
-        # player2_username: str = "Guest"
-        # game_obj: Game = Game(
-        #    self._main_user,
-        #    User(player2_username),
-        #    p1_first_move=bool(random.getrandbits(1)),
-        # )
         self._game_picked_callback(game_manager)
 
     def __execute_online_game(self):

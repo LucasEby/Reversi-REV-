@@ -1,13 +1,11 @@
 from typing import Tuple, List
-import math
 import copy
-
 import sys
 
 from client.model.player import Player
 from client.model.game import Game
-from client.model.cell import CellState
 from client.model.account import User
+from client.model.cell import CellState
 
 
 class AI(Player):
@@ -89,28 +87,18 @@ class AI(Player):
         position_weight: int = self.__apply_weight_to_pos(
             row=row, col=col, board_size=board_size
         )
-        if self.__ai_player == 1:
-            for row2 in range(0, board_size):
-                for col2 in range(0, board_size):
-                    if board_state[row][col] == CellState.player1:
-                        position_weight = position_weight + self.__apply_weight_to_pos(
-                            row=row2, col=col2, board_size=board_size
-                        )
-                    elif board_state[row][col] == CellState.player2:
-                        position_weight = position_weight - self.__apply_weight_to_pos(
-                            row=row2, col=col2, board_size=board_size
-                        )
-        elif self.__ai_player == 2:
-            for row2 in range(0, board_size):
-                for col2 in range(0, board_size):
-                    if board_state[row][col] == CellState.player2:
-                        position_weight = position_weight + self.__apply_weight_to_pos(
-                            row=row2, col=col2, board_size=board_size
-                        )
-                    elif board_state[row][col] == CellState.player1:
-                        position_weight = position_weight - self.__apply_weight_to_pos(
-                            row=row2, col=col2, board_size=board_size
-                        )
+        cs_state_1: CellState = CellState.player1 if self.__ai_player == 1 else CellState.player2
+        cs_state_2: CellState = CellState.player2 if self.__ai_player == 1 else CellState.player1
+        for row2 in range(0, board_size):
+            for col2 in range(0, board_size):
+                if board_state[row][col] == cs_state_1:
+                    position_weight = position_weight + self.__apply_weight_to_pos(
+                        row=row2, col=col2, board_size=board_size
+                    )
+                elif board_state[row][col] == cs_state_2:
+                    position_weight = position_weight - self.__apply_weight_to_pos(
+                        row=row2, col=col2, board_size=board_size
+                    )
         # This is in case we want to add the score as additional weight to the position:
         # This variable is in case we need to scale the position_weight:
         # position_weight = position_weight * 10

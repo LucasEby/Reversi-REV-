@@ -59,6 +59,7 @@ class GetGameServerRequest(BaseServerRequest):
                 account2: Optional[Dict[str, Any]] = self._response_message["account2"]
             else:
                 account2 = None
+            new_board: Board = Board(size, board_state)
             ai_difficulty: int = 0
             p1: User = User("p1")
             p2: User = User("p2")
@@ -84,6 +85,7 @@ class GetGameServerRequest(BaseServerRequest):
                     p1_first_move=not bool(next_turn - 1),
                 )
                 new_game_manager.game.set_id(game_id)
+                new_game_manager.game.board = new_board
             return new_game_manager
         elif (
             self.is_response_success() is True and not self._send_message["resume_game"]
