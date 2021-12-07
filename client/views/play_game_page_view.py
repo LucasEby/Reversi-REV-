@@ -4,6 +4,7 @@ from typing import List, Callable, Tuple, Optional
 from client.model.cell import CellState
 from client.model.game import Game
 from client.model.game_manager import GameManager
+from client.model.player import Player
 from client.model.preference import Preference
 from client.model.user import User
 from client.views.base_page_view import BasePageView
@@ -207,8 +208,9 @@ class PlayGamePageView(BasePageView):
         """
         Handles the operations of the board size spinbox.
         """
-        if isinstance(self._game_manager.get_player2(), AI):
-            self._game_manager.get_player2().set_difficulty(int(difficulty))
+        player: Player = self._game_manager.get_player2()
+        if isinstance(player, AI):
+            player.difficulty = difficulty
 
     def update_game(self, game: Game):
         self._game = game

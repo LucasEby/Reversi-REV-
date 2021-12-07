@@ -34,7 +34,10 @@ class GameManager:
 
     def make_move(self) -> None:
         self.__players[self.game.get_curr_player() - 1].place_tile(self.game)
-        while isinstance(self.__players[self.game.get_curr_player() - 1], AI) and not self.game.is_game_over():
+        while (
+            isinstance(self.__players[self.game.get_curr_player() - 1], AI)
+            and not self.game.is_game_over()
+        ):
             self.__players[self.game.get_curr_player() - 1].place_tile(self.game)
 
     # def set_move(self, posn: Tuple[int, int]) -> None:
