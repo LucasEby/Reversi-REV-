@@ -2,6 +2,9 @@ from typing import Tuple, List
 
 
 class CalculateNewELOs:
+
+    DEFAULT_ELO: int = 500
+
     @classmethod
     def get_new_elos(
         cls, p1_id: int, p1_old_elo: int, p2_id: int, p2_old_elo: int, p1_won: bool

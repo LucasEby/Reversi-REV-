@@ -3,7 +3,9 @@ import time
 
 from client.controllers.home_button_page_controller import HomeButtonPageController
 from client.model.account import Account
+from client.model.calculate_new_elos import CalculateNewELOs
 from client.model.password_crypter import PasswordCrypter
+from client.server_comms.create_account_server_request import CreateAccountServerRequest
 from client.views.create_account_page_view import CreateAccountPageView
 from client.model.user import User
 
@@ -11,7 +13,6 @@ from client.model.user import User
 class CreateAccountPageController(HomeButtonPageController):
 
     _CREATE_ACCOUNT_TIMEOUT_SEC: float = 5
-    _DEFAULT_ELO: int = 500
 
     def __init__(
         self,
@@ -47,33 +48,36 @@ class CreateAccountPageController(HomeButtonPageController):
         """
         username, password = next_task_info
         account: Account = Account(
-            username=username, elo=self._DEFAULT_ELO, account_id=0
+            username=username, elo=CalculateNewELOs.DEFAULT_ELO, account_id=0
         )
 
         # Encrypt password
-        encrypted_password: bytes = PasswordCrypter.encrypt(password=password)
+        # encrypted_password: bytes = PasswordCrypter.encrypt(password=password)
+        encrypted_password: bytes = password.encode("utf-8")
+        string_password: str = "".join(map(chr, encrypted_password))
 
-        # TODO: Create an account in the database
-        # try:
-        #     server_request: CreateAccountServerRequest = CreateAccountServerRequest(
-        #         account, password
-        #     )
-        #     server_request.send()
-        #     start_time: float = time.time()
-        #     while server_request.is_response_success() is None:
-        #         if time.time() - start_time > self._CREATE_ACCOUNT_TIMEOUT_SEC:
-        #             raise ConnectionError(
-        #                 "Server unresponsive. Account could not be created"
-        #             )
-        #     if server_request.is_response_success() is False:
-        #         raise ConnectionError("Server could not properly create account")
-        #     else:
-        #         account = Account(
-        #             username, self._DEFAULT_ELO, server_request.get_account_id()
-        #         )
-        # except ConnectionError as e:
-        #     # TODO: Notify view of server error
-        #     print(e)
+        try:
+            server_request: CreateAccountServerRequest = CreateAccountServerRequest(
+                account, string_password
+            )
+            server_request.send()
+            start_time: float = time.time()
+            while server_request.is_response_success() is None:
+                if time.time() - start_time > self._CREATE_ACCOUNT_TIMEOUT_SEC:
+                    raise ConnectionError(
+                        "Server unresponsive. Account could not be created"
+                    )
+            if server_request.is_response_success() is False:
+                raise ConnectionError("Server could not properly create account")
+            else:
+                account = Account(
+                    username,
+                    CalculateNewELOs.DEFAULT_ELO,
+                    server_request.get_account_id(),
+                )
+        except ConnectionError as e:
+            # TODO: Notify view of server error
+            print(e)
 
         self.__login_callback(account)
         self.__view.destroy()

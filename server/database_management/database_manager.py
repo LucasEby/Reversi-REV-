@@ -351,6 +351,7 @@ class DatabaseManager:
         # Extract data from request info
         acc: DatabaseAccount = request_info.data
         # Create new account with query
+        query_args: List[Any] = []
         query_str1: str = "insert into account ("
         query_str2: str = "values ("
         if acc.username is not None:
@@ -358,7 +359,8 @@ class DatabaseManager:
             query_str2 += f"'{acc.username}',"
         if acc.password is not None:
             query_str1 += "password,"
-            query_str2 += f"'{acc.password}',"
+            query_str2 += "%s,"
+            query_args.append(acc.password)
         if acc.elo is not None:
             query_str1 += "elo,"
             query_str2 += f"{acc.elo},"
@@ -392,9 +394,10 @@ class DatabaseManager:
         try:
             if self._db_cursor is None or self._db_connection is None:
                 raise DatabaseConnectionException("Database not connected")
-            self._db_cursor.execute(query_str)
+            self._db_cursor.execute(query_str, query_args)
             self._db_connection.commit()
-        except Exception:
+        except Exception as e:
+            print(e)
             success = False
         # Callback called with correct success boolean
         request_info.callback(success)
@@ -610,7 +613,8 @@ class DatabaseManager:
                 raise DatabaseConnectionException("Database not connected")
             self._db_cursor.execute(query_str, query_args)
             self._db_connection.commit()
-        except Exception:
+        except Exception as e:
+            print(e)
             success = False
         # Callback called with correct success boolean
         request_info.callback(success)
@@ -719,7 +723,8 @@ class DatabaseManager:
                             temp_dbg[i] = result[result_cnt]
                         result_cnt += 1
                 dbg = DatabaseGame(*temp_dbg)
-        except Exception:
+        except Exception as e:
+            print(e)
             success = False
         # Callback called with correct success boolean and database game
         request_info.callback(success, dbg)

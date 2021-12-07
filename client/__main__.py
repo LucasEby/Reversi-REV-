@@ -1,5 +1,4 @@
 from _thread import start_new_thread
-from threading import Thread
 
 from client.controllers.page_machine import PageMachine
 from client.server_comms.client_comms_manager import ClientCommsManager

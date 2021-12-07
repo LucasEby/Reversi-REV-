@@ -119,7 +119,7 @@ class WelcomePageView(BasePageView):
         """
         Creates the entry field for the password being attempted
         """
-        return tk.Entry(self._topframe, textvariable=self._password_entry)
+        return tk.Entry(self._topframe, textvariable=self._password_entry, show="*")
 
     def __login_button(self) -> tk.Button:
         """

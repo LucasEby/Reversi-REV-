@@ -4,13 +4,21 @@ from typing import Callable, Tuple, List, Optional
 from random_word import RandomWords  # type: ignore
 
 from client.controllers.base_page_controller import BasePageController
+from client.model.account import Account
+from client.model.calculate_new_elos import CalculateNewELOs
 from client.model.password_crypter import PasswordCrypter
 from client.model.user import User
+from client.server_comms.credential_check_server_request import (
+    CredentialCheckServerRequest,
+)
 from client.server_comms.get_top_elos_server_request import GetTopELOsServerRequest
 from client.views.welcome_page_view import WelcomePageView
 
 
 class WelcomePageController(BasePageController):
+
+    _CREDENTIAL_CHECK_TIMEOUT_SEC: float = 5
+
     def __init__(
         self,
         user_created_callback: Callable[[User], None],
@@ -82,17 +90,47 @@ class WelcomePageController(BasePageController):
         entered_password: str
         username, entered_password = task_info
 
-        # TODO: Get credentials from server
+        # Get credentials from server
+        account_id: Optional[int] = None
+        encrypted_password: Optional[str] = None
+        try:
+            server_request: CredentialCheckServerRequest = CredentialCheckServerRequest(
+                username=username
+            )
+            server_request.send()
+            start_time: float = time.time()
+            while server_request.is_response_success() is None:
+                if time.time() - start_time > self._CREDENTIAL_CHECK_TIMEOUT_SEC:
+                    raise ConnectionError(
+                        "Server unresponsive. Account could not be created"
+                    )
+            if server_request.is_response_success() is False:
+                raise ConnectionError("Server could not properly create account")
+            else:
+                encrypted_password = server_request.get_encrypted_password()
+                account_id = server_request.get_account_id()
+        except ConnectionError as e:
+            # TODO: Notify view of server error
+            print(e)
 
         # Check passwords match
-        password_correct: bool = PasswordCrypter.is_match(
-            entered_password, "".encode("utf-8")
-        )
+        password_correct: bool = False
+        if encrypted_password is not None and account_id is not None:
+            password_correct = entered_password == encrypted_password
+            # password_correct = PasswordCrypter.is_match(
+            #    entered_password, encrypted_password.encode("utf-8")
+            # )
 
-        # TODO: If passwords match, create account
+        # If passwords match, create account
         if password_correct:
             self._view.destroy()
-            self._user_created_callback(User(username=username))
+            self._user_created_callback(
+                Account(
+                    username=username,
+                    elo=CalculateNewELOs.DEFAULT_ELO,
+                    account_id=account_id,
+                )
+            )
 
     def __execute_task_create_account(self) -> None:
         """

@@ -115,3 +115,43 @@ get_top_elos_server_schema = Schema(
         "top_elos": [[str, int]],
     }
 )
+
+credential_check_client_schema = Schema(
+    {
+        "protocol_type": "login",
+        "username": str,
+    }
+)
+
+credential_check_server_schema = Schema(
+    {
+        "protocol_type": "login",
+        "success": bool,
+        "encrypted_password": str,
+        "account_id": int,
+    }
+)
+
+create_account_client_schema = Schema(
+    {
+        "protocol_type": "create_account",
+        "username": str,
+        "password": str,
+        "elo": int,
+        "pref_board_length": int,
+        "pref_board_color": str,
+        "pref_disk_color": str,
+        "pref_opp_disk_color": str,
+        "pref_line_color": str,
+        "pref_rules": str,
+        "pref_tile_move_confirmation": bool,
+    }
+)
+
+create_account_server_schema = Schema(
+    {
+        "protocol_type": "create_account",
+        "success": bool,
+        "account_id": int,
+    }
+)
