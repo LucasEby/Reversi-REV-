@@ -103,3 +103,5 @@ class PageMachine:
             manage_preferences_callback=self.manage_preferences_callback,
             main_user=main_user,
         )
+
+    def change_preferences_callback(self):

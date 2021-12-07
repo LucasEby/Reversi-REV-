@@ -1,9 +1,9 @@
 from typing import Callable
-
-from client.model.preference import Preference
-from client.model.user import User
-from client.views.home_button_page_view import HomeButtonPageView
 import tkinter as tk
+
+from client.model.user import User
+from client.model.colors import Color
+from client.views.home_button_page_view import HomeButtonPageView
 
 
 class ManagePreferencesPageView(HomeButtonPageView):
@@ -11,7 +11,16 @@ class ManagePreferencesPageView(HomeButtonPageView):
     The class represents the view for Manage Preferences Page. It will display the preference choice for the given user.
     """
 
-    def __init__(self, go_home_callback: Callable[[], None], user: User) -> None:
+    def __init__(self,
+                 go_home_callback: Callable[[], None],
+                 user: User,
+                 board_size_cb: Callable[[int], None],
+                 board_color_cb: Callable[[str], None],
+                 main_user_disk_color_cb: Callable[[str], None],
+                 opponent_disk_color_cb: Callable[[str], None],
+                 rules_cb: Callable[[str], None],
+                 set_preferences_cb: Callable[[], None]
+        ) -> None:
         """
         Construct a new ManagePreferencesPageView with given user object.
 
@@ -19,89 +28,116 @@ class ManagePreferencesPageView(HomeButtonPageView):
         :param user: the user object
         """
         super().__init__(go_home_callback=go_home_callback)
+        self._color_options: [tk.StringVar] = [Color[0].value, Color[1].value, Color[2].value, Color[3].value,
+                                              Color[4].value, Color[5].value, Color[6].value, Color[7].value]
+        self._rule_options: [tk.StringVar] = ["Standard"]
+        self._board_size_box: tk.Spinbox = self.__board_size_spin_box(from_=4, to=12, increment=2)
+        self._board_color_menu: tk.OptionMenu = self.__board_color()
+        self._main_user_disk_color_menu: tk.OptionMenu = self.__main_user_disk_color()
+        self._opponent_disk_color_menu: tk.OptionMenu = self.__opponent_disk_color()
+        self._change_rules_menu: tk.OptionMenu = self.__change_rules()
 
-        self.color_options = ["white", "black", "red", "green", "blue", "cyan", "yellow", "magenta"]
-        self.value_inside = tk.StringVar(self._frame)
-        self.value_inside.set(self.options_list[0])
-        question_menu = tk.OptionMenu(self._frame, self.value_inside, *self.options_list)
-        print("Selected Option: {}".format(self.value_inside.get()))
-        self.board_size_box = self.__spin_box()
-
-        question_menu.pack()
-
-        self.__user: User = user
-        self.__preference: Preference = self.__user.get_preference()
+        self._user = user
+        self._board_size_cb: Callable[[int], None] = board_size_cb
+        self._board_color_cb: Callable[[str], None] = board_color_cb
+        self._main_user_disk_color_cb: Callable[[str], None] = main_user_disk_color_cb
+        self._opponent_disk_color_cb: Callable[[str], None] = opponent_disk_color_cb
+        self._rules_cb: Callable[[str], None] = rules_cb
+        self._set_preferences_cb: Callable[[], None] = set_preferences_cb
         self.display()
-
-    def display_board_size(self) -> None:
-        """
-        Display the current board size.
-        """
-        print("Current board size: " + str(self.__preference.get_board_size()))
-
-    def display_board_color(self) -> None:
-        """
-        Display the current board color.
-        """
-        print("Current board color: " + self.__preference.get_board_color())
-
-    def display_my_disk_color(self) -> None:
-        """
-        Display the current disk color for oneself.
-        """
-        print("My current disk color: " + self.__preference.get_my_disk_color())
-
-    def display_opp_disk_color(self) -> None:
-        """
-        Display the current disk color for opponent.
-        """
-        print(
-            "My opponent's current disk color: "
-            + self.__preference.get_opp_disk_color()
-        )
-
-    def display_line_color(self) -> None:
-        """
-        Display the current line color.
-        """
-        print("Current line color: " + self.__preference.get_line_color())
-
-    def display_rule(self) -> None:
-        """
-        Display the current rule.
-        """
-        print("Current rule: " + str(self.__preference.get_rule()))
-
-    def destroy(self) -> None:
-        """
-        Destroy all widgets in this view
-        """
-        pass
 
     def display(self) -> None:
         """
         Display the menu for preference. Initial page that display to the user.
         """
-        print("Here are the options for your preference:")
-        print("0. Change board size")
-        self.display_board_size()
-        print("1. Change board color")
-        self.display_board_color()
-        print("2. Change my disk color")
-        self.display_my_disk_color()
-        print("3. Change opponent's disk color")
-        self.display_opp_disk_color()
-        print("4. Change line color")
-        self.display_line_color()
-        print("5. Change rule")
-        self.display_rule()
-        print("6. Set tile move confirmation")
-        self.display_tile_move_confirmation()
-        print("7. Exit preference setting")
-        # back to home page command
+        self._board_size_box.pack()
+        self._board_color_menu.pack()
+        self._main_user_disk_color_menu.pack()
+        self._opponent_disk_color_menu.pack()
+        self._change_rules_menu.pack()
 
-    def __spin_box(self, from_: float, to: float, increment: float, command) -> tk.Spinbox:
+    def __board_size_spin_box(self, from_: float, to: float, increment: float) -> tk.Spinbox:
         """
-        Creates label to display the game's score.
+        Creates a spinbox for the preferences page
         """
-        return tk.Spinbox(from_=from_, to=to, incement=increment, command=command)
+        return tk.Spinbox(self._frame, from_=from_, to=to, incement=increment,
+                          command=lambda: self._handle_spinbox(self._board_size_box.get()))
+
+    def __board_color(self) -> tk.OptionMenu:
+        """
+        Creates an option menu to give the user the choice of a wide variety of options
+        """
+        variable = tk.StringVar()
+        variable.set(self._color_options[3])
+        return tk.OptionMenu(self._frame, variable, *self._color_options,
+                             command=lambda: self._handle_board_color(variable.get()))
+
+    def __main_user_disk_color(self) -> tk.OptionMenu:
+        """
+        Creates an option menu to give the user the choice of a wide variety of options
+        """
+        variable = tk.StringVar()
+        variable.set(self._color_options[4])
+        return tk.OptionMenu(self._frame, variable, *self._color_options,
+                             command=lambda: self._handle_main_user_disk_color(variable.get()))
+
+    def __opponent_disk_color(self) -> tk.OptionMenu:
+        """
+        Creates an option menu to give the user the choice of a wide variety of options
+        """
+        variable = tk.StringVar()
+        variable.set(self._color_options[2])
+        return tk.OptionMenu(self._frame, variable, *self._color_options,
+                             command=lambda: self._handle_opponent_disk_color(variable.get()))
+
+    def __change_rules(self) -> tk.OptionMenu:
+        """
+        Creates an option menu to give the user the choice of a wide variety of options
+        """
+        variable = tk.StringVar()
+        variable.set(self._color_options[0])
+        return tk.OptionMenu(self._frame, variable, *self._color_options,
+                             command=lambda: self._handle_rules(variable.get()))
+
+    def __set_preferences(self) -> tk.Button:
+        """
+        Builds the play different mode button
+        """
+        return tk.Button(
+            self._frame,
+            text="Set Preferences",
+            width=25,
+            height=5,
+            bg="cyan",
+            fg="black",
+            command=self._handle_set_preferences,
+        )
+
+    def _handle_spinbox(self, board_size: int):
+        self._board_size_cb(board_size)
+
+    def _handle_board_color(self, color: str):
+        self._board_color_cb(color)
+
+    def _handle_main_user_disk_color(self, color: str):
+        self._main_user_disk_color_cb(color)
+
+    def _handle_opponent_disk_color(self, color: str):
+        self._opponent_disk_color_cb(color)
+
+    def _handle_rules(self, chosen_rule: str):
+        self._rules_cb(chosen_rule)
+
+    def _handle_set_preferences(self):
+        self._set_preferences_cb()
+
+    def destroy(self) -> None:
+        """
+        Destroy all widgets in this view
+        """
+        super().destroy()
+        self._board_size_box.destroy()
+        self._board_color_menu.destroy()
+        self._main_user_disk_color_menu.destroy()
+        self._opponent_disk_color_menu.destroy()
+        self._change_rules_menu.destroy()
