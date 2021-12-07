@@ -7,6 +7,7 @@ from client.model.game_manager import GameManager
 from client.model.preference import Preference
 from client.model.user import User
 from client.views.base_page_view import BasePageView
+from client.model.ai import AI
 import tkinter as tk
 
 
@@ -71,6 +72,13 @@ class PlayGamePageView(BasePageView):
             ]
             for row in range(self._size)
         ]
+        self._ai_spinbox: tk.Spinbox = self.__ai_spin_box_maker(
+            from_=0, to=4, increment=1
+        )
+        self._ai_label: tk.Label = tk.Label(
+            self._frame,
+            text="AI difficulty level: ",
+        )
         self.display()
 
     def display(self) -> None:
@@ -82,6 +90,8 @@ class PlayGamePageView(BasePageView):
         self.__display_score()
         self.__display_forfeit()
         self.__display_current_player()
+        if isinstance(self._game_manager.get_player2(), AI):
+            self.__display_spin_box()
 
     def destroy(self) -> None:
         """
@@ -173,6 +183,32 @@ class PlayGamePageView(BasePageView):
         tk.Label(self._frame, fg="red", text=turn_string).grid(
             column=self._size, row=self._size + 3
         )
+
+    def __display_spin_box(self) -> None:
+        """
+        Displays AI spinbox.
+        """
+        self._ai_label.grid(column=self._size, row=self._size + 4)
+        self._ai_spinbox.grid(column=self._size, row=self._size + 5)
+
+    def __ai_spin_box_maker(self, from_: int, to: int, increment: int) -> tk.Spinbox:
+        """
+        Creates a spinbox for the preferences page
+        """
+        return tk.Spinbox(
+            self._frame,
+            from_=from_,
+            to=to,
+            increment=increment,
+            command=lambda: self._handle_spinbox(self._ai_spinbox.get()),
+        )
+
+    def _handle_spinbox(self, difficulty: int):
+        """
+        Handles the operations of the board size spinbox.
+        """
+        if isinstance(self._game_manager.get_player2(), AI):
+            self._game_manager.get_player2().set_difficulty(int(difficulty))
 
     def update_game(self, game: Game):
         self._game = game
