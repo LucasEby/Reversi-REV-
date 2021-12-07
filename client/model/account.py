@@ -8,3 +8,6 @@ class Account(User):
         super().__init__(username=username)
         self.id = account_id
         self.elo = elo
+
+    def set_account_id(self, account_id: int):
+        self.id = account_id

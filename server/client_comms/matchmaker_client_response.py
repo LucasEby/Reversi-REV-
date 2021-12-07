@@ -47,7 +47,7 @@ class MatchmakerClientResponse(BaseClientResponse):
         # Provide information to Matchmaker for online player matching
         matchmaker: Matchmaker = Matchmaker()
         matchmaker.match_user(
-            self._sent_message["account_id"],
+            self._sent_message["my_account_id"],
             self._sent_message["pref_rule"],
             self._sent_message["pref_board_size"],
             self.__wait_for_match_callback,
@@ -57,6 +57,9 @@ class MatchmakerClientResponse(BaseClientResponse):
         with self._complete_matchmaker:
             while self._opp_account_id is None:
                 self._complete_matchmaker.wait()
+
+        # print("game_id: " + str(self._game_id))
+        # print("opp_account_id: " + str(self._opp_account_id))
 
         # Check if an opponent id is returned to retrieve information; return false message directly if it is none
         if self._opp_account_id is None or self._game_id is None:

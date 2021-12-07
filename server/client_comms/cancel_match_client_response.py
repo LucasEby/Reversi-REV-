@@ -39,10 +39,13 @@ class CancelMatchClientResponse(BaseClientResponse):
             self._response_message["success"] = False
             return self._response_message
 
+        print("here in cancel match before remove in matchmaker")
+
         # Provide information to Matchmaker for online player matching
         matchmaker: Matchmaker = Matchmaker()
-        self._cancel_match_success = matchmaker.remove_user(
-            self._sent_message["account_id"]
+        matchmaker.remove_user(self._sent_message["my_account_id"])
+        self._cancel_match_success = matchmaker.check_user_removed(
+            self._sent_message["my_account_id"]
         )
 
         # Return the response message
