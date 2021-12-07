@@ -41,7 +41,7 @@ class EndGamePageController(HomeButtonPageController):
         ] = self.__execute_task_play_different_mode
 
         self._view = EndGamePageView(
-            go_home_cb=go_home_callback,
+            go_home_cb=self.handle_home_button,
             play_again_cb=self.__handle_play_again,
             play_different_mode_cb=self.__handle_play_different_mode,
             game_manager=game_manager,
