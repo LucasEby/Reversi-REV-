@@ -26,6 +26,7 @@ class ManagePreferencesPageController(HomeButtonPageController):
         self,
         go_home_callback: Callable[[], None],
         preferences_complete_callback: Callable[[], None],
+        back_to_pick_game_callback: Callable[[User], None],
         user: User,
     ) -> None:
         """
@@ -36,15 +37,7 @@ class ManagePreferencesPageController(HomeButtonPageController):
         :param user: The user who is interacting with Manage Preferences Page
         """
         super().__init__(go_home_callback=go_home_callback)
-        # self._task_execute_dict["board_size"] = self.__execute_change_board_size
-        # self._task_execute_dict["board_color"] = self.__execute_change_board_color
-        # self._task_execute_dict["my_disk_color"] = self.__execute_change_my_disk_color
-        # self._task_execute_dict["opp_disk_color"] = self.__execute_change_opp_disk_color
-        # self._task_execute_dict["line_color"] = self.__execute_change_line_color
-        # self._task_execute_dict["rule"] = self.__execute_change_rule
-        # self._task_execute_dict["tile_move_confirmation"] = self.__execute_change_tile_move_confirmation
-        # execute stuffs
-        self._task_execute_dict["change_preferences"] = self.__handle_change_preferences
+        self._task_execute_dict["change_preferences"] = self.execute_change_preferences
 
         # Old values:
         # I figure we can just store them initially and just rewrite all values to simplify the code
@@ -55,17 +48,13 @@ class ManagePreferencesPageController(HomeButtonPageController):
         self._opponent_disk_color: str = user.get_preference().get_opp_disk_color()
         self._chosen_rule: AbstractRule = user.get_preference().get_rule()
         self._end_home_callback: Callable[[], None] = preferences_complete_callback
+        self._back_to_pick_game_callback: Callable[[User], None] = back_to_pick_game_callback
 
         self._user: User = user
         self._view: ManagePreferencesPageView = ManagePreferencesPageView(
             go_home_callback=go_home_callback,
             user=user,
-            board_size_cb=self.handle_board_size,
-            board_color_cb=self.handle_board_color,
-            main_user_disk_color_cb=self.handle_main_user_disk_color,
-            opponent_disk_color_cb=self.handle_opponent_disk_color,
-            rules_cb=self.handle_change_rules,
-            set_preferences_cb=self.handle_change_preferences
+            set_preferences_cb=self.execute_change_preferences
         )
 
     def handle_board_size(self, task_info: int):
@@ -109,4 +98,8 @@ class ManagePreferencesPageController(HomeButtonPageController):
             return Color.BLUE
         else:
             return Color.PURPLE
->>>>>>> d9c6e32 (Still need to finish ironing out the kinks.)
+
+    def execute_change_preferences(self, preference: Preference):
+        self.queue(task_name="change_preferences", task_info=preference)
+        self._view.destroy()
+        self._back_to_pick_game_callback(self._user)
