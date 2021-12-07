@@ -24,12 +24,6 @@ class PageMachine:
             user_created_callback=self.user_created_callback,
             create_account_callback=self.create_account_callback,
         )
-        # self.current_page_controller: BasePageController = PickGamePageController(
-        #    go_home_callback=self.go_home_callback,
-        #    game_picked_callback=self.game_picked_callback,
-        #    manage_preferences_callback=self.manage_preferences_callback,
-        #    main_user=main_user,
-        # )
 
     def run(self) -> None:
         """

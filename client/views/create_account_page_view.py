@@ -40,7 +40,7 @@ class CreateAccountPageView(HomeButtonPageView):
         self._username_field.pack()
         self._password_label.pack()
         self._password_field.pack()
-        self._submit_button.pack()
+        self._submit_button.pack(pady=5)
 
     def destroy(self) -> None:
         """
@@ -82,10 +82,10 @@ class CreateAccountPageView(HomeButtonPageView):
         return tk.Button(
             self._frame,
             text="Submit",
-            width=25,
-            height=5,
-            bg="Blue",
-            fg="Black",
+            padx=10,
+            pady=5,
+            bg="green",
+            fg="white",
             command=lambda: self._login_callback(
                 self._username_entry.get(), self._password_entry.get()
             ),
