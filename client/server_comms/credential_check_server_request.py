@@ -2,6 +2,8 @@ from typing import Optional
 
 from schema import Schema  # type: ignore
 
+from client.model.account import Account
+from client.model.preference import Preference
 from client.server_comms.base_server_request import BaseServerRequest
 from common.client_server_protocols import credential_check_server_schema
 
@@ -46,13 +48,28 @@ class CredentialCheckServerRequest(BaseServerRequest):
         else:
             return None
 
-    def get_account_id(self) -> Optional[int]:
+    def get_account(self) -> Optional[Account]:
         """
-        Retrieves account ID from the server response if available
+        Get the account info from the server
 
-        :return: Account ID if available, None otherwise
+        :return: Account info
         """
         if self.is_response_success() is True:
-            return self._response_message["account_id"]
+            account: Account = Account(
+                username=self._send_message["username"],
+                elo=self._response_message["elo"],
+                account_id=self._response_message["account_id"],
+            )
+            preference: Preference = Preference()
+            preference.set_board_size(self._response_message["pref_board_length"])
+            preference.set_board_color(self._response_message["pref_board_color"])
+            preference.set_my_disk_color(self._response_message["pref_disk_color"])
+            preference.set_opp_disk_color(self._response_message["pref_opp_disk_color"])
+            preference.set_line_color(self._response_message["pref_line_color"])
+            preference.set_tile_move_confirmation(
+                self._response_message["pref_tile_move_confirmation"]
+            )
+            account.set_preference(preference)
+            return account
         else:
             return None

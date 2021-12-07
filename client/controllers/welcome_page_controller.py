@@ -91,7 +91,7 @@ class WelcomePageController(BasePageController):
         username, entered_password = task_info
 
         # Get credentials from server
-        account_id: Optional[int] = None
+        account: Optional[Account] = None
         encrypted_password: Optional[str] = None
         try:
             server_request: CredentialCheckServerRequest = CredentialCheckServerRequest(
@@ -108,29 +108,23 @@ class WelcomePageController(BasePageController):
                 raise ConnectionError("Server could not properly create account")
             else:
                 encrypted_password = server_request.get_encrypted_password()
-                account_id = server_request.get_account_id()
+                account = server_request.get_account()
         except ConnectionError as e:
             # TODO: Notify view of server error
             print(e)
 
         # Check passwords match
         password_correct: bool = False
-        if encrypted_password is not None and account_id is not None:
+        if encrypted_password is not None and account is not None:
             password_correct = entered_password == encrypted_password
             # password_correct = PasswordCrypter.is_match(
             #    entered_password, encrypted_password.encode("utf-8")
             # )
 
         # If passwords match, create account
-        if password_correct:
+        if password_correct and account is not None:
             self._view.destroy()
-            self._user_created_callback(
-                Account(
-                    username=username,
-                    elo=CalculateNewELOs.DEFAULT_ELO,
-                    account_id=account_id,
-                )
-            )
+            self._user_created_callback(account)
 
     def __execute_task_create_account(self) -> None:
         """

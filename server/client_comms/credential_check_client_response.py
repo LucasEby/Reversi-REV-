@@ -45,6 +45,14 @@ class CredentialCheckClientResponse(BaseClientResponse):
             key=self._sent_message["username"],
             get_account_id=True,
             get_password=True,
+            get_elo=True,
+            get_pref_board_length=True,
+            get_pref_board_color=True,
+            get_pref_disk_color=True,
+            get_pref_opp_disk_color=True,
+            get_pref_line_color=True,
+            get_pref_rules=True,
+            get_pref_tile_move_confirmation=True,
         )
 
         # Wait for database manager to complete task
@@ -53,17 +61,38 @@ class CredentialCheckClientResponse(BaseClientResponse):
                 self._db_complete_cv.wait()
 
         # Return the response message
-        self._response_message.update(
-            {
-                "success": self._db_credential_check_success,
-                "encrypted_password": ""
-                if self._retrieved_dba is None
-                else self._retrieved_dba.password,
-                "account_id": 0
-                if self._retrieved_dba is None
-                else self._retrieved_dba.account_id,
-            }
-        )
+        if self._retrieved_dba is not None:
+            self._response_message.update(
+                {
+                    "success": self._db_credential_check_success,
+                    "encrypted_password": self._retrieved_dba.password,
+                    "account_id": self._retrieved_dba.account_id,
+                    "elo": self._retrieved_dba.elo,
+                    "pref_board_length": self._retrieved_dba.pref_board_length,
+                    "pref_board_color": self._retrieved_dba.pref_board_color,
+                    "pref_disk_color": self._retrieved_dba.pref_disk_color,
+                    "pref_opp_disk_color": self._retrieved_dba.pref_opp_disk_color,
+                    "pref_line_color": self._retrieved_dba.pref_line_color,
+                    "pref_rules": self._retrieved_dba.pref_rules,
+                    "pref_tile_move_confirmation": self._retrieved_dba.pref_tile_move_confirmation,
+                }
+            )
+        else:
+            self._response_message.update(
+                {
+                    "success": False,
+                    "encrypted_password": "",
+                    "account_id": 0,
+                    "elo": 0,
+                    "pref_board_length": 0,
+                    "pref_board_color": "",
+                    "pref_disk_color": "",
+                    "pref_opp_disk_color": "",
+                    "pref_line_color": "",
+                    "pref_rules": "",
+                    "pref_tile_move_confirmation": False,
+                }
+            )
 
         return self._response_message
 
